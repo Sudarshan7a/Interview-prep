@@ -1,0 +1,1421 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bangalore Full Stack Fresher Roadmap 2025</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700;800&family=Inter:wght@400;500&display=swap');
+
+  :root {
+    --bg: #0d0d0d;
+    --surface: #141414;
+    --surface2: #1a1a1a;
+    --border: #2a2a2a;
+    --border2: #333;
+    --accent: #c8ff00;
+    --accent2: #ff6b35;
+    --accent3: #00d4ff;
+    --accent4: #b57bff;
+    --text: #f0f0f0;
+    --text2: #888;
+    --text3: #555;
+    --font-head: 'Syne', sans-serif;
+    --font-body: 'Inter', sans-serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  .header {
+    padding: 48px 40px 32px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -80px; right: -80px;
+    width: 300px; height: 300px;
+    background: radial-gradient(circle, rgba(200,255,0,0.08) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .header-tag {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .header-tag::before {
+    content: '';
+    display: inline-block;
+    width: 24px;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-family: var(--font-head);
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+  }
+
+  h1 span { color: var(--accent); }
+
+  .header-meta {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+
+  .meta-pill {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    border: 1px solid var(--border2);
+    border-radius: 99px;
+    color: var(--text2);
+  }
+
+  .meta-pill.highlight {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .nav {
+    display: flex;
+    gap: 0;
+    padding: 0 40px;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar { display: none; }
+
+  .nav-btn {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text3);
+    padding: 14px 20px;
+    border: none;
+    border-bottom: 2px solid transparent;
+    background: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+  }
+
+  .nav-btn:hover { color: var(--text2); }
+  .nav-btn.active { color: var(--accent); border-bottom-color: var(--accent); }
+
+  .content {
+    padding: 40px;
+    max-width: 1100px;
+  }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Phase cards */
+  .phase-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin-bottom: 40px;
+  }
+
+  .phase-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 0;
+    overflow: hidden;
+    transition: border-color 0.2s;
+  }
+
+  .phase-card:first-child { border-radius: 12px 12px 0 0; }
+  .phase-card:last-child { border-radius: 0 0 12px 12px; }
+
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .phase-header:hover { background: var(--surface2); }
+
+  .phase-num {
+    font-family: var(--font-head);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    padding: 4px 10px;
+    border-radius: 6px;
+    min-width: 80px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  .ph-0 { background: rgba(136,136,136,0.15); color: #888; }
+  .ph-1 { background: rgba(200,255,0,0.12); color: var(--accent); }
+  .ph-2 { background: rgba(0,212,255,0.12); color: var(--accent3); }
+  .ph-3 { background: rgba(255,107,53,0.12); color: var(--accent2); }
+  .ph-4 { background: rgba(181,123,255,0.12); color: var(--accent4); }
+  .ph-5 { background: rgba(200,255,0,0.2); color: var(--accent); border: 1px solid rgba(200,255,0,0.4); }
+
+  .phase-title {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 600;
+    flex: 1;
+  }
+
+  .phase-duration {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text2);
+  }
+
+  .phase-arrow {
+    color: var(--text3);
+    font-size: 12px;
+    transition: transform 0.3s;
+  }
+
+  .phase-card.open .phase-arrow { transform: rotate(180deg); }
+
+  .phase-body {
+    display: none;
+    padding: 0 24px 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .phase-card.open .phase-body { display: block; }
+
+  .phase-body-inner {
+    padding-top: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 700px) {
+    .phase-body-inner { grid-template-columns: 1fr; }
+    .content { padding: 20px; }
+    .nav { padding: 0 20px; }
+    .header { padding: 32px 20px 24px; }
+  }
+
+  .phase-col h4 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 12px;
+  }
+
+  .checklist {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .checklist li {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  .checklist li::before {
+    content: '—';
+    color: var(--border2);
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .checklist li strong {
+    color: var(--text);
+    font-weight: 500;
+  }
+
+  .checkpoint-box {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: rgba(200,255,0,0.04);
+    border: 1px solid rgba(200,255,0,0.15);
+    border-radius: 8px;
+    grid-column: 1 / -1;
+  }
+
+  .checkpoint-box .cp-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .checkpoint-box ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .checkpoint-box ul li {
+    font-size: 12px;
+    color: var(--text2);
+    padding-left: 12px;
+    position: relative;
+  }
+
+  .checkpoint-box ul li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-size: 10px;
+  }
+
+  /* DSA Table */
+  .dsa-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 32px;
+    font-size: 13px;
+  }
+
+  .dsa-table th {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text3);
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+
+  .dsa-table td {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  .dsa-table tr:hover td { background: var(--surface2); }
+
+  .dsa-table td:first-child {
+    color: var(--text);
+    font-weight: 500;
+    font-size: 13px;
+    white-space: nowrap;
+  }
+
+  .q-badge {
+    display: inline-block;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-right: 4px;
+    white-space: nowrap;
+  }
+
+  .q-easy { background: rgba(0,212,100,0.15); color: #00d464; }
+  .q-med { background: rgba(255,165,0,0.15); color: #ffa500; }
+  .q-hard { background: rgba(255,80,80,0.15); color: #ff5050; }
+
+  .week-tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    padding: 2px 7px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    color: var(--text3);
+    white-space: nowrap;
+  }
+
+  /* Daily plan */
+  .day-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .day-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px;
+  }
+
+  .day-block .time {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text3);
+    margin-bottom: 6px;
+  }
+
+  .day-block .activity {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .day-block .detail {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  .day-block.dsa-block { border-top: 3px solid var(--accent); }
+  .day-block.dev-block { border-top: 3px solid var(--accent3); }
+  .day-block.cs-block { border-top: 3px solid var(--accent2); }
+  .day-block.rev-block { border-top: 3px solid var(--accent4); }
+
+  /* Projects */
+  .project-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px;
+    margin-bottom: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .project-card::before {
+    content: attr(data-num);
+    position: absolute;
+    top: 16px; right: 20px;
+    font-family: var(--font-head);
+    font-size: 48px;
+    font-weight: 800;
+    color: var(--border2);
+    line-height: 1;
+  }
+
+  .project-card h3 {
+    font-family: var(--font-head);
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .project-card .stack {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent3);
+    margin-bottom: 12px;
+  }
+
+  .project-card .features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 14px;
+  }
+
+  .project-card .features li {
+    font-size: 12px;
+    color: var(--text2);
+    padding-left: 14px;
+    position: relative;
+  }
+
+  .project-card .features li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--border2);
+  }
+
+  .project-card .impact {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent);
+    padding: 8px 12px;
+    background: rgba(200,255,0,0.05);
+    border-radius: 6px;
+    border: 1px solid rgba(200,255,0,0.1);
+  }
+
+  /* Mistakes */
+  .mistake-card {
+    display: flex;
+    gap: 16px;
+    padding: 18px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 10px;
+  }
+
+  .mistake-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .mistake-card h4 {
+    font-family: var(--font-head);
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: var(--accent2);
+  }
+
+  .mistake-card p {
+    font-size: 12px;
+    color: var(--text2);
+    line-height: 1.5;
+  }
+
+  /* Prompt block */
+  .prompt-block {
+    background: #0a0f00;
+    border: 1px solid rgba(200,255,0,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+    position: relative;
+  }
+
+  .prompt-block .prompt-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .prompt-block .prompt-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: rgba(200,255,0,0.15);
+  }
+
+  .prompt-block pre {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: #c8ff9a;
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.8;
+  }
+
+  .copy-btn {
+    position: absolute;
+    top: 16px; right: 16px;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid rgba(200,255,0,0.3);
+    border-radius: 4px;
+    background: none;
+    color: var(--accent);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .copy-btn:hover { background: rgba(200,255,0,0.08); }
+
+  .section-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text3);
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .h2 {
+    font-family: var(--font-head);
+    font-size: 20px;
+    font-weight: 700;
+    margin-bottom: 6px;
+    margin-top: 32px;
+  }
+
+  .h2:first-child { margin-top: 0; }
+
+  .sub {
+    font-size: 13px;
+    color: var(--text2);
+    margin-bottom: 20px;
+  }
+
+  .info-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+
+  .info-chip {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    padding: 5px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border2);
+    color: var(--text2);
+  }
+
+  .info-chip.g { border-color: rgba(200,255,0,0.4); color: var(--accent); background: rgba(200,255,0,0.04); }
+  .info-chip.b { border-color: rgba(0,212,255,0.4); color: var(--accent3); background: rgba(0,212,255,0.04); }
+
+  .total-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .total-bar .tl { font-family: var(--font-head); font-size: 13px; font-weight: 600; }
+  .total-bar .tv { font-family: var(--font-mono); font-size: 13px; color: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-tag">Bangalore • Fresher • 2025–2026</div>
+  <h1>Full Stack <span>Job Roadmap</span><br>MERN + Java → High-Paying Role</h1>
+  <div class="header-meta">
+    <span class="meta-pill highlight">Target: ₹8–20 LPA</span>
+    <span class="meta-pill">~5–6 months intensive</span>
+    <span class="meta-pill">MERN known · Java learning</span>
+    <span class="meta-pill">Product companies first</span>
+  </div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="switchTab('phases', this)">Phases</button>
+  <button class="nav-btn" onclick="switchTab('dsa', this)">DSA Plan</button>
+  <button class="nav-btn" onclick="switchTab('projects', this)">Projects</button>
+  <button class="nav-btn" onclick="switchTab('daily', this)">Daily Plan</button>
+  <button class="nav-btn" onclick="switchTab('mistakes', this)">Mistakes</button>
+  <button class="nav-btn" onclick="switchTab('prompts', this)">AI Prompts</button>
+</nav>
+
+<!-- PHASES TAB -->
+<div id="tab-phases" class="tab-panel active content">
+  <div class="h2">Phase-wise Roadmap</div>
+  <p class="sub">You already know MERN — so Phase 0 is about filling gaps, not starting over. Every phase builds on the previous.</p>
+
+  <div class="total-bar">
+    <span class="tl">Total Duration</span>
+    <span class="tv">22–26 weeks (~5–6 months intensive)</span>
+  </div>
+
+  <div class="phase-grid">
+    <!-- Phase 0 -->
+    <div class="phase-card" id="ph0">
+      <div class="phase-header" onclick="togglePhase('ph0')">
+        <span class="phase-num ph-0">Phase 0</span>
+        <span class="phase-title">Gap Fill — CS Fundamentals + TypeScript + SQL</span>
+        <span class="phase-duration">3–4 weeks</span>
+        <span class="phase-arrow">▼</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="phase-col">
+            <h4>What to study</h4>
+            <ul class="checklist">
+              <li><strong>OOP in depth</strong> — encapsulation, abstraction, inheritance, polymorphism (both Java and JS)</li>
+              <li><strong>OS basics</strong> — processes vs threads, memory management, deadlock, context switching</li>
+              <li><strong>DBMS</strong> — normalization (1NF–3NF), ACID properties, transactions, joins, indexing</li>
+              <li><strong>Computer Networks</strong> — HTTP/HTTPS, TCP/IP, DNS, REST vs WebSocket, status codes</li>
+              <li><strong>TypeScript</strong> — types, interfaces, generics, utility types, strict mode with React</li>
+              <li><strong>SQL</strong> — all JOIN types, GROUP BY, HAVING, subqueries, window functions, indexes</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>Measurable targets</h4>
+            <ul class="checklist">
+              <li>Complete 1 OS/DBMS/Networks revision sheet each (Notion or paper)</li>
+              <li>Write 20 TypeScript exercises — convert 1 MERN project to TypeScript</li>
+              <li>Solve 30 SQL problems on HackerRank SQL track + LeetCode Database Easy/Medium</li>
+              <li>Be able to explain OOP concepts with Java AND JavaScript examples back-to-back</li>
+              <li>Record 3-minute voice explanation of each CS topic (simulates interview)</li>
+            </ul>
+            <div style="margin-top:12px; padding: 10px 14px; background: var(--surface2); border-radius:8px; border-left: 2px solid var(--accent3);">
+              <span style="font-family: var(--font-mono); font-size:10px; color:var(--accent3);">WHY FIRST</span>
+              <p style="font-size:12px; color:var(--text2); margin-top:4px;">CS fundamentals + SQL are asked in <em>every</em> product company interview in Bangalore. Don't skip this even if you "know" some of it.</p>
+            </div>
+          </div>
+          <div class="checkpoint-box">
+            <div class="cp-label">✓ Done when you can...</div>
+            <ul>
+              <li>Explain the difference between process and thread without notes, with an example</li>
+              <li>Write a SQL query with 2+ JOINs, GROUP BY, and HAVING from memory</li>
+              <li>Explain ACID with a real-world example (e.g., bank transfer)</li>
+              <li>Convert a React component from JS to TypeScript with proper typing</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 1 -->
+    <div class="phase-card" id="ph1">
+      <div class="phase-header" onclick="togglePhase('ph1')">
+        <span class="phase-num ph-1">Phase 1</span>
+        <span class="phase-title">DSA Core — Arrays to Binary Trees</span>
+        <span class="phase-duration">6–7 weeks</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="phase-col">
+            <h4>Topics (in order)</h4>
+            <ul class="checklist">
+              <li><strong>Arrays + Hashing</strong> — prefix sum, frequency maps, sliding window (Week 1–2)</li>
+              <li><strong>Two Pointers + Intervals</strong> — merge intervals, sorting tricks (Week 2)</li>
+              <li><strong>Strings</strong> — palindrome, anagram, substring problems (Week 3)</li>
+              <li><strong>Linked List</strong> — reversal, cycle detection, merge, two-pointer tricks (Week 3–4)</li>
+              <li><strong>Stack + Queue</strong> — monotonic stack, queue from stack, next greater element (Week 4)</li>
+              <li><strong>Binary Search</strong> — on arrays, on answers, rotated array (Week 5)</li>
+              <li><strong>Recursion + Backtracking</strong> — subsets, permutations, N-Queens (Week 6)</li>
+              <li><strong>Binary Trees + BST</strong> — traversals, LCA, height, validate BST (Week 6–7)</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>Measurable targets</h4>
+            <ul class="checklist">
+              <li>Solve 120–140 LeetCode problems total (70 Easy, 55 Medium, 10 Hard)</li>
+              <li>Each problem: solve without hints first, then optimize if needed</li>
+              <li>Keep a "failed problems" list — revisit weekly</li>
+              <li>Explain every solution in plain English within 60 seconds</li>
+              <li>Time yourself: Easy ≤15 min, Medium ≤30 min, Hard ≤60 min</li>
+            </ul>
+            <div style="margin-top:12px; padding:10px 14px; background:var(--surface2); border-radius:8px; border-left:2px solid var(--accent);">
+              <span style="font-family:var(--font-mono); font-size:10px; color:var(--accent);">LANGUAGE</span>
+              <p style="font-size:12px; color:var(--text2); margin-top:4px;">Use JavaScript for DSA (you know it). Switch to Java only when specifically practicing Java interviews. Do not switch languages mid-phase.</p>
+            </div>
+          </div>
+          <div class="checkpoint-box">
+            <div class="cp-label">✓ Done when you can...</div>
+            <ul>
+              <li>Solve any Easy LeetCode in under 10 minutes</li>
+              <li>Solve 60% of Medium problems without hints</li>
+              <li>Explain your approach and complexity before writing code</li>
+              <li>Identify which pattern (sliding window / two pointer / etc.) applies within 2 minutes</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 2 -->
+    <div class="phase-card" id="ph2">
+      <div class="phase-header" onclick="togglePhase('ph2')">
+        <span class="phase-num ph-2">Phase 2</span>
+        <span class="phase-title">DSA Advanced + Full Stack Deepening</span>
+        <span class="phase-duration">6–7 weeks</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="phase-col">
+            <h4>DSA advanced topics</h4>
+            <ul class="checklist">
+              <li><strong>Graphs</strong> — BFS, DFS, Dijkstra, topological sort, Union-Find (2 weeks)</li>
+              <li><strong>Dynamic Programming</strong> — 1D DP, 2D DP, knapsack, LCS, LIS patterns (2 weeks)</li>
+              <li><strong>Heaps / Priority Queue</strong> — top-K, merge K lists, median stream (1 week)</li>
+              <li><strong>Tries</strong> — insert, search, prefix matching (3–4 days)</li>
+              <li><strong>Greedy</strong> — activity selection, intervals, jump game (3–4 days)</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>Full stack deepening (parallel)</h4>
+            <ul class="checklist">
+              <li><strong>React advanced</strong> — useReducer, useContext, useMemo, custom hooks, lazy loading, code splitting</li>
+              <li><strong>Node + Express</strong> — JWT auth, refresh tokens, rate limiting, input validation, error middleware</li>
+              <li><strong>Spring Boot</strong> — REST controllers, @Service/@Repository, JPA queries, Spring Security basics, exception handling</li>
+              <li><strong>MongoDB</strong> — aggregation pipeline, indexing, populate, schema design for real apps</li>
+              <li><strong>PostgreSQL</strong> — add to skill set, use with Spring Boot (JPA + PostgreSQL)</li>
+            </ul>
+          </div>
+          <div class="checkpoint-box">
+            <div class="cp-label">✓ Done when you can...</div>
+            <ul>
+              <li>Solve Graph BFS/DFS problems confidently, explain time/space complexity</li>
+              <li>Solve at least 15 DP problems including 2D DP</li>
+              <li>Build a complete auth system (register, login, JWT, refresh, logout) in both Node and Spring Boot from memory</li>
+              <li>Write custom React hooks for real use cases (useDebounce, useFetch, useLocalStorage)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 3 -->
+    <div class="phase-card" id="ph3">
+      <div class="phase-header" onclick="togglePhase('ph3')">
+        <span class="phase-num ph-3">Phase 3</span>
+        <span class="phase-title">Projects + System Design Basics</span>
+        <span class="phase-duration">5–6 weeks</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="phase-col">
+            <h4>Projects to build (see Projects tab)</h4>
+            <ul class="checklist">
+              <li><strong>Project 1</strong> — upgraded version of something you already built (add TypeScript, proper auth, tests)</li>
+              <li><strong>Project 2</strong> — mid-complexity full stack app (real-time features, 3rd-party API, proper deployment)</li>
+              <li><strong>Project 3</strong> — capstone project that solves a real problem (the one you talk about in interviews)</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>System design basics</h4>
+            <ul class="checklist">
+              <li>Design a URL shortener (most common fresher question)</li>
+              <li>Design a notification system (Swiggy order notifications)</li>
+              <li>Design a rate limiter</li>
+              <li>Understand: load balancers, caching (Redis), CDN, horizontal vs vertical scaling, SQL vs NoSQL trade-offs, message queues (basics)</li>
+              <li>Add Docker to all projects — write a Dockerfile + docker-compose</li>
+              <li>Deploy 1 project on AWS (EC2 + RDS or S3 + Lambda)</li>
+            </ul>
+          </div>
+          <div class="checkpoint-box">
+            <div class="cp-label">✓ Done when you can...</div>
+            <ul>
+              <li>Explain every project on your resume in 2 minutes with tech choices, challenges, and what you learned</li>
+              <li>Design URL shortener on a whiteboard with high-level components, DB schema, and scale discussion</li>
+              <li>Show GitHub repos with clean READMEs, proper commits, and live deployments</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 4 -->
+    <div class="phase-card" id="ph4">
+      <div class="phase-header" onclick="togglePhase('ph4')">
+        <span class="phase-num ph-4">Phase 4</span>
+        <span class="phase-title">Interview Prep — Mock Rounds + Resume</span>
+        <span class="phase-duration">3–4 weeks</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="phase-col">
+            <h4>Technical interview prep</h4>
+            <ul class="checklist">
+              <li>Do 2 timed mock interviews per week (use AI mentor with /mock-interview mode)</li>
+              <li>Revisit all failed LeetCode problems — must solve without hints now</li>
+              <li>Practice explaining your projects out loud — record yourself</li>
+              <li>Prepare answers to 30 core CS questions (OOP, OS, DBMS, Networks)</li>
+              <li>Practice live coding on Google Docs / CoderPad (not your IDE)</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>Non-technical prep</h4>
+            <ul class="checklist">
+              <li>Write a strong 1-page resume — projects section is most important</li>
+              <li>Craft 2-minute intro for every interview ("tell me about yourself")</li>
+              <li>Prepare STAR stories for: challenge overcome, learning from failure, teamwork</li>
+              <li>Research each company before applying — know their stack, product, recent news</li>
+              <li>Apply to 5–10 companies per week — track in a spreadsheet</li>
+            </ul>
+          </div>
+          <div class="checkpoint-box">
+            <div class="cp-label">✓ Ready to apply when you can...</div>
+            <ul>
+              <li>Solve Medium DSA problems consistently in 20–25 minutes</li>
+              <li>Explain 3 projects confidently with follow-up answers ready</li>
+              <li>Answer 25/30 core CS questions without hesitation</li>
+              <li>Pass 2 self-assessed mock interviews back-to-back</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Phase 5 -->
+    <div class="phase-card" id="ph5">
+      <div class="phase-header" onclick="togglePhase('ph5')">
+        <span class="phase-num ph-5">Phase 5</span>
+        <span class="phase-title">Active Applications + Continuous Improvement</span>
+        <span class="phase-duration">Ongoing from week 20</span>
+      </div>
+      <div class="phase-body">
+        <div class="phase-body-inner">
+          <div class="phase-col">
+            <h4>Where to apply in Bangalore</h4>
+            <ul class="checklist">
+              <li><strong>Tier 1 target</strong> — Swiggy, Zepto, PhonePe, CRED, Razorpay, Groww, Meesho, Dunzo</li>
+              <li><strong>Tier 2 target</strong> — Juspay, Multiplier, Setu, Niyo, BrowserStack, Postman, Chargebee</li>
+              <li><strong>Tier 3 backup</strong> — Infosys SP, TCS Digital, Wipro Elite, Capgemini Select</li>
+              <li><strong>Off-campus</strong> — LinkedIn, Naukri, Instahyre, Cutshort, AngelList (for startups)</li>
+              <li><strong>Referrals</strong> — most underused strategy. Connect with engineers from target companies on LinkedIn.</li>
+            </ul>
+          </div>
+          <div class="phase-col">
+            <h4>Keep doing while applying</h4>
+            <ul class="checklist">
+              <li>2 LeetCode problems daily (don't stop practice)</li>
+              <li>1 mock interview per week</li>
+              <li>Post about your projects on LinkedIn — 1 post per week</li>
+              <li>Contribute 1 PR to an open-source project (shows real-world collaboration)</li>
+              <li>Review every rejection — identify the gap and fix it</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DSA TAB -->
+<div id="tab-dsa" class="tab-panel content">
+  <div class="h2">DSA Topic-by-Topic Plan</div>
+  <p class="sub">Complete order, problem counts, and done criteria. Use JavaScript. Solve on LeetCode.</p>
+
+  <div class="info-row">
+    <span class="info-chip g">Total: ~260 problems over 13 weeks</span>
+    <span class="info-chip b">Language: JavaScript (switch to Java for Java interview prep only)</span>
+    <span class="info-chip">Platform: LeetCode + NeetCode</span>
+  </div>
+
+  <table class="dsa-table">
+    <thead>
+      <tr>
+        <th>Topic</th>
+        <th>Week</th>
+        <th>Problem Count</th>
+        <th>Key problems</th>
+        <th>Done when...</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Arrays + Hashing</td>
+        <td><span class="week-tag">W1–2</span></td>
+        <td>
+          <span class="q-badge q-easy">12 Easy</span>
+          <span class="q-badge q-med">10 Med</span>
+        </td>
+        <td>Two Sum, Top K Frequent, Longest Consecutive, Product Except Self, Group Anagrams</td>
+        <td>Solve Two Sum variants in &lt;8 min</td>
+      </tr>
+      <tr>
+        <td>Two Pointers</td>
+        <td><span class="week-tag">W2</span></td>
+        <td>
+          <span class="q-badge q-easy">8 Easy</span>
+          <span class="q-badge q-med">7 Med</span>
+        </td>
+        <td>3Sum, Container With Most Water, Trapping Rain Water, Move Zeroes</td>
+        <td>Identify two-pointer pattern in 60 sec</td>
+      </tr>
+      <tr>
+        <td>Sliding Window</td>
+        <td><span class="week-tag">W2</span></td>
+        <td>
+          <span class="q-badge q-easy">5 Easy</span>
+          <span class="q-badge q-med">8 Med</span>
+        </td>
+        <td>Best Time to Buy Stock, Longest Substring Without Repeat, Min Window Substring</td>
+        <td>Solve Min Window Substring independently</td>
+      </tr>
+      <tr>
+        <td>Strings</td>
+        <td><span class="week-tag">W3</span></td>
+        <td>
+          <span class="q-badge q-easy">8 Easy</span>
+          <span class="q-badge q-med">6 Med</span>
+        </td>
+        <td>Valid Palindrome, Longest Palindromic Substring, String Encode/Decode, Valid Anagram</td>
+        <td>All Easy strings in &lt;10 min</td>
+      </tr>
+      <tr>
+        <td>Linked List</td>
+        <td><span class="week-tag">W3–4</span></td>
+        <td>
+          <span class="q-badge q-easy">8 Easy</span>
+          <span class="q-badge q-med">8 Med</span>
+          <span class="q-badge q-hard">2 Hard</span>
+        </td>
+        <td>Reverse LL, Detect Cycle, Merge Two Sorted, LRU Cache, Merge K Sorted Lists</td>
+        <td>Implement LRU Cache from scratch</td>
+      </tr>
+      <tr>
+        <td>Stack + Queue</td>
+        <td><span class="week-tag">W4</span></td>
+        <td>
+          <span class="q-badge q-easy">6 Easy</span>
+          <span class="q-badge q-med">8 Med</span>
+        </td>
+        <td>Valid Parentheses, Min Stack, Daily Temperatures, Largest Rectangle in Histogram</td>
+        <td>Solve monotonic stack problems intuitively</td>
+      </tr>
+      <tr>
+        <td>Binary Search</td>
+        <td><span class="week-tag">W5</span></td>
+        <td>
+          <span class="q-badge q-easy">5 Easy</span>
+          <span class="q-badge q-med">10 Med</span>
+          <span class="q-badge q-hard">2 Hard</span>
+        </td>
+        <td>Search Rotated Array, Find Min in Rotated, Koko Eating Bananas, Median of Two Arrays</td>
+        <td>Solve BS-on-answer problems independently</td>
+      </tr>
+      <tr>
+        <td>Recursion + Backtracking</td>
+        <td><span class="week-tag">W6</span></td>
+        <td>
+          <span class="q-badge q-med">12 Med</span>
+          <span class="q-badge q-hard">3 Hard</span>
+        </td>
+        <td>Subsets, Permutations, Combination Sum, Word Search, N-Queens, Sudoku Solver</td>
+        <td>Generate subsets and permutations without reference</td>
+      </tr>
+      <tr>
+        <td>Trees + BST</td>
+        <td><span class="week-tag">W6–7</span></td>
+        <td>
+          <span class="q-badge q-easy">8 Easy</span>
+          <span class="q-badge q-med">12 Med</span>
+          <span class="q-badge q-hard">2 Hard</span>
+        </td>
+        <td>Level Order Traversal, Max Depth, Invert Tree, LCA, Construct from Inorder+Preorder, Serialize/Deserialize</td>
+        <td>All traversals from memory; solve LCA confidently</td>
+      </tr>
+      <tr>
+        <td>Graphs</td>
+        <td><span class="week-tag">W8–9</span></td>
+        <td>
+          <span class="q-badge q-med">14 Med</span>
+          <span class="q-badge q-hard">4 Hard</span>
+        </td>
+        <td>Number of Islands, Clone Graph, Course Schedule (topo sort), Dijkstra, Rotting Oranges, Word Ladder</td>
+        <td>Implement BFS, DFS, topo sort from scratch</td>
+      </tr>
+      <tr>
+        <td>Dynamic Programming</td>
+        <td><span class="week-tag">W10–11</span></td>
+        <td>
+          <span class="q-badge q-med">15 Med</span>
+          <span class="q-badge q-hard">6 Hard</span>
+        </td>
+        <td>Climbing Stairs, House Robber, Coin Change, LCS, LIS, Edit Distance, 0/1 Knapsack, DP on Grid</td>
+        <td>Solve 1D DP &lt;20 min; complete 5+ 2D DP problems</td>
+      </tr>
+      <tr>
+        <td>Heaps + Priority Queue</td>
+        <td><span class="week-tag">W12</span></td>
+        <td>
+          <span class="q-badge q-med">8 Med</span>
+          <span class="q-badge q-hard">3 Hard</span>
+        </td>
+        <td>Kth Largest Element, Top K Frequent, Merge K Sorted Lists, Find Median from Data Stream</td>
+        <td>Know when to use min-heap vs max-heap</td>
+      </tr>
+      <tr>
+        <td>Trie + Greedy</td>
+        <td><span class="week-tag">W13</span></td>
+        <td>
+          <span class="q-badge q-med">8 Med</span>
+          <span class="q-badge q-hard">2 Hard</span>
+        </td>
+        <td>Implement Trie, Word Search II, Jump Game, Greedy Intervals, Gas Station</td>
+        <td>Implement Trie from memory; solve 3 greedy problems</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- PROJECTS TAB -->
+<div id="tab-projects" class="tab-panel content">
+  <div class="h2">Projects to Build</div>
+  <p class="sub">3 projects total. Each more complex than the last. These go on your resume — build them seriously.</p>
+
+  <div class="project-card" data-num="01">
+    <div class="project-card">
+      <div class="project-card" data-num="01" style="border-top: 3px solid var(--accent);">
+        <h3>DevTracker — Job Application + Skill Progress Tracker</h3>
+        <p class="stack">React + TypeScript · Node.js + Express · MongoDB · JWT Auth · Deployed on Render/Railway</p>
+        <ul class="features">
+          <li>Full auth: register, login, JWT + refresh token, protected routes</li>
+          <li>Job application CRUD — status tracking (Applied, Interview, Rejected, Offer)</li>
+          <li>DSA progress tracker — log problems solved, view streak, filter by topic</li>
+          <li>Dashboard with charts (recharts) showing weekly progress</li>
+          <li>TypeScript throughout — no any types</li>
+          <li>Input validation (Zod or Joi), error middleware, proper HTTP status codes</li>
+          <li>Unit tests with Jest for at least 3 key functions</li>
+          <li>Deployed with live URL in GitHub README</li>
+        </ul>
+        <p class="impact">Why it impresses: Real use case, solves your own problem, shows full stack depth + TypeScript + auth + testing</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="project-card" data-num="02" style="border-top: 3px solid var(--accent3);">
+    <h3>CollabDocs — Real-time Collaborative Notes App</h3>
+    <p class="stack">React + TypeScript · Node.js · Socket.io · MongoDB · Redis (rate limiting) · Docker · EC2 deploy</p>
+    <ul class="features">
+      <li>Real-time collaboration using WebSockets (Socket.io) — multiple users edit same note</li>
+      <li>Rich text editor (Quill.js or TipTap) with formatting</li>
+      <li>User rooms — share note with specific users by email</li>
+      <li>Presence indicators — see who's online in a document</li>
+      <li>Auto-save with debounce, version history (last 10 saves)</li>
+      <li>Redis for session caching and rate limiting API calls</li>
+      <li>Dockerized — docker-compose runs backend + frontend + Redis together</li>
+      <li>Deployed on EC2 with NGINX reverse proxy</li>
+    </ul>
+    <p class="impact">Why it impresses: Real-time features are rare in fresher portfolios. Shows WebSockets, Redis, Docker, and cloud deployment — differentiates you immediately</p>
+  </div>
+
+  <div class="project-card" data-num="03" style="border-top: 3px solid var(--accent2);">
+    <h3>Capstone — Spring Boot Microservice: E-commerce Order Service</h3>
+    <p class="stack">Spring Boot · Java · PostgreSQL · JPA/Hibernate · Spring Security · REST API · Docker · GitHub Actions CI</p>
+    <ul class="features">
+      <li>Separate services: User Service, Product Service, Order Service (basic microservice pattern)</li>
+      <li>REST API design — proper resource naming, versioning (/api/v1/...), pagination</li>
+      <li>Spring Security with JWT — role-based access (USER vs ADMIN)</li>
+      <li>PostgreSQL with JPA — proper entity relationships, fetch strategies</li>
+      <li>Exception handling — @ControllerAdvice, custom error responses</li>
+      <li>API documentation with Swagger/OpenAPI</li>
+      <li>GitHub Actions CI pipeline — runs tests on every push</li>
+      <li>Postman collection exported in repo for testing all endpoints</li>
+    </ul>
+    <p class="impact">Why it impresses: Java full stack + Spring Boot is your differentiation from MERN-only freshers. This shows you can build enterprise-grade backend — adds 3–5 LPA to your ask</p>
+  </div>
+</div>
+
+<!-- DAILY TAB -->
+<div id="tab-daily" class="tab-panel content">
+  <div class="h2">Daily & Weekly Plan</div>
+  <p class="sub">6 days a week. Sunday is review + rest. Total: 6–7 hours per day. Adjust based on your schedule.</p>
+
+  <div class="section-label" style="margin-bottom:20px;">Weekday — perfect day structure</div>
+  <div class="day-grid">
+    <div class="day-block dsa-block">
+      <div class="time">6:00 AM – 8:00 AM</div>
+      <div class="activity">DSA Practice</div>
+      <div class="detail">2 problems. No hints for 30 min each. Write approach before code. Analyze complexity after.</div>
+    </div>
+    <div class="day-block cs-block">
+      <div class="time">9:00 AM – 10:30 AM</div>
+      <div class="activity">CS Fundamentals / SQL</div>
+      <div class="detail">Rotate: Mon-OS, Tue-DBMS, Wed-Networks, Thu-OOP, Fri-SQL. Use AI to quiz yourself, not just read.</div>
+    </div>
+    <div class="day-block dev-block">
+      <div class="time">11:00 AM – 2:00 PM</div>
+      <div class="activity">Development (Project / Tech)</div>
+      <div class="detail">Build project features OR learn a specific tech (React hook, Spring Boot concept, etc.). Always write code, never just watch tutorials.</div>
+    </div>
+    <div class="day-block dev-block">
+      <div class="time">3:00 PM – 5:00 PM</div>
+      <div class="activity">Deep tech study</div>
+      <div class="detail">Pick one topic from current phase. Go deep. Use AI mentor. Make notes. Aim for interview-ready understanding.</div>
+    </div>
+    <div class="day-block rev-block">
+      <div class="time">6:00 PM – 7:30 PM</div>
+      <div class="activity">Revision + Mock</div>
+      <div class="detail">Review yesterday's failed problems. Revisit weak topics. 1 mock interview question per day (answer out loud).</div>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-bottom:20px;">Saturday — intensive session</div>
+  <div class="day-grid">
+    <div class="day-block dsa-block">
+      <div class="time">Morning (3 hrs)</div>
+      <div class="activity">3-problem DSA sprint</div>
+      <div class="detail">Timed: solve 3 new problems. All medium. Under 25 min each. No hints.</div>
+    </div>
+    <div class="day-block rev-block">
+      <div class="time">Afternoon (3 hrs)</div>
+      <div class="activity">Weekly review</div>
+      <div class="detail">Revisit all failed problems from the week. Record voice explanations of 3 topics. Update Notion notes.</div>
+    </div>
+    <div class="day-block cs-block">
+      <div class="time">Evening (1.5 hrs)</div>
+      <div class="activity">Project progress review</div>
+      <div class="detail">Push a working feature to GitHub. Write meaningful commit messages. Update README if needed.</div>
+    </div>
+  </div>
+
+  <div class="section-label" style="margin-bottom:16px;">Weekly split targets</div>
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:32px;">
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; text-align:center;">
+      <div style="font-family:var(--font-head); font-size:28px; font-weight:800; color:var(--accent);">12</div>
+      <div style="font-family:var(--font-mono); font-size:11px; color:var(--text2); margin-top:4px;">DSA problems/week</div>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; text-align:center;">
+      <div style="font-family:var(--font-head); font-size:28px; font-weight:800; color:var(--accent3);">15h</div>
+      <div style="font-family:var(--font-mono); font-size:11px; color:var(--text2); margin-top:4px;">Development/week</div>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; text-align:center;">
+      <div style="font-family:var(--font-head); font-size:28px; font-weight:800; color:var(--accent2);">5h</div>
+      <div style="font-family:var(--font-mono); font-size:11px; color:var(--text2); margin-top:4px;">CS fundamentals/week</div>
+    </div>
+    <div style="background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; text-align:center;">
+      <div style="font-family:var(--font-head); font-size:28px; font-weight:800; color:var(--accent4);">3h</div>
+      <div style="font-family:var(--font-mono); font-size:11px; color:var(--text2); margin-top:4px;">Revision + Mock/week</div>
+    </div>
+  </div>
+</div>
+
+<!-- MISTAKES TAB -->
+<div id="tab-mistakes" class="tab-panel content">
+  <div class="h2">Common Mistakes to Avoid</div>
+  <p class="sub">These are the exact reasons freshers in Bangalore waste 6 months and still don't get hired.</p>
+
+  <div class="mistake-card">
+    <div class="mistake-icon">📺</div>
+    <div>
+      <h4>Tutorial hell — watching without building</h4>
+      <p>Watching 40 hours of React/Spring Boot videos feels productive but builds nothing. Rule: for every 1 hour of video, write 2 hours of code. If you can't build what the tutorial shows from scratch the next day, you didn't learn it.</p>
+    </div>
+  </div>
+
+  <div class="mistake-card">
+    <div class="mistake-icon">🔀</div>
+    <div>
+      <h4>Jumping ahead to System Design before DSA is solid</h4>
+      <p>Freshers waste weeks on Kubernetes and microservices architecture when they can't solve a Medium LeetCode problem. Product companies in Bangalore will reject you on the DSA round before you ever reach system design. Get DSA solid first.</p>
+    </div>
+  </div>
+
+  <div class="mistake-card">
+    <div class="mistake-icon">🧠</div>
+    <div>
+      <h4>Memorizing solutions instead of understanding patterns</h4>
+      <p>Memorizing 200 LeetCode solutions helps in 0 interviews. Interviewers change the problem. Learn the pattern — sliding window, two pointer, BFS/DFS — and you can solve 80% of problems you've never seen.</p>
+    </div>
+  </div>
+
+  <div class="mistake-card">
+    <div class="mistake-icon">🏗️</div>
+    <div>
+      <h4>Building weak, basic CRUD projects</h4>
+      <p>A to-do list or basic blog with no auth, no deployment, and no TypeScript tells an interviewer nothing. Your projects must have: real auth, proper error handling, deployment, and at least one feature that's non-trivial (real-time, external API, file upload, etc.).</p>
+    </div>
+  </div>
+
+  <div class="mistake-card">
+    <div class="mistake-icon">🔧</div>
+    <div>
+      <h4>Switching languages mid-preparation</h4>
+      <p>Picking JavaScript for DSA then switching to Java for DSA then switching back is the #1 time waster. Pick one language for DSA (JavaScript, since you know it) and stick with it for all problem solving. Use Java only for Java backend topics.</p>
+    </div>
+  </div>
+
+  <div class="mistake-card">
+    <div class="mistake-icon">📚</div>
+    <div>
+      <h4>Ignoring CS fundamentals</h4>
+      <p>Freshers who only know frameworks get destroyed in Bangalore product company interviews. "What is a deadlock?" "Explain ACID with a real example." "How does DNS resolution work?" These are asked at Swiggy, PhonePe, CRED. Know them cold.</p>
+    </div>
+  </div>
+
+  <div class="mistake-card">
+    <div class="mistake-icon">🚫</div>
+    <div>
+      <h4>Applying before you're ready — and wasting top companies</h4>
+      <p>Apply to Tier 3 companies first (service companies, smaller startups) to practice real interviews. Don't apply to Swiggy or Razorpay when you've done 40 LeetCode problems. You get very few chances at top companies — use them when you're ready.</p>
+    </div>
+  </div>
+
+  <div class="mistake-card">
+    <div class="mistake-icon">📱</div>
+    <div>
+      <h4>No LinkedIn presence</h4>
+      <p>60–70% of Bangalore tech jobs at good startups are filled through LinkedIn and referrals — not Naukri. Post about your projects, share your learning, and connect with engineers at your target companies. Do this from week 1, not week 20.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PROMPTS TAB -->
+<div id="tab-prompts" class="tab-panel content">
+  <div class="h2">AI Mentor Prompts — Ready to Copy</div>
+  <p class="sub">Use these with your MENTOR.md system prompt active. Each prompt is precision-designed to get maximum value from your AI session.</p>
+
+  <div class="prompt-block">
+    <div class="prompt-label">Daily DSA session prompt</div>
+    <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+    <pre>/dsa
+
+Topic: [TOPIC NAME e.g. "Sliding Window"]
+My current level: I know the basic concept but struggle with [specific problem type e.g. "variable-size windows"]
+
+Give me:
+1. A 2-minute concept refresh — what pattern to look for and when to apply it
+2. One warm-up problem (Easy) — show me the brute force, then optimal approach with complexity
+3. One main problem (Medium) — guide me through the thought process only, don't give the solution yet
+4. After I attempt it and share my code/approach, give me detailed feedback
+
+Also: what are the 3 most common interview questions on this topic at Bangalore product companies?</pre>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-label">CS fundamentals deep dive prompt</div>
+    <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+    <pre>/cs
+
+Topic: [e.g. "Database Indexing"]
+
+Teach me this topic as if I'm being interviewed at a Bangalore product company (Swiggy/PhonePe level).
+
+Structure:
+1. Plain English explanation — what it is and why it exists
+2. How it works internally (enough depth to answer follow-up questions)
+3. Real-world example from an actual product (e.g. how Swiggy might use indexes)
+4. 5 interview questions on this topic — from easy to hard
+5. Strong answers to each question (what the interviewer wants to hear)
+6. One common trap or misconception that trips up freshers
+
+Flag anything I need to know for full stack work that's directly related.</pre>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-label">Project architecture review prompt</div>
+    <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+    <pre>/project-review
+
+Project: [Project name]
+Stack: [Your exact stack]
+GitHub: [Link if available, or paste your README]
+
+My project does: [1 sentence description]
+Current features: [list them]
+
+Review this across 5 dimensions:
+1. Architecture — is this how real companies structure this kind of app? What's wrong?
+2. Missing features — what should this project have that it doesn't (for interview impressiveness)?
+3. Code quality signals — what should I clean up before showing this to an interviewer?
+4. Interview pitch — give me a 90-second pitch for this project that sounds strong
+5. Likely follow-up questions — what will an interviewer ask after I explain this project, and what are strong answers?
+
+Be direct. Don't sugarcoat weak parts.</pre>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-label">Mock technical interview prompt</div>
+    <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+    <pre>/mock-interview
+
+Simulate a real technical interview at a mid-size Bangalore product company (like Juspay, Setu, or BrowserStack) for a Full Stack Fresher role.
+
+Interview format:
+- Round 1: DSA (2 problems — one data structure, one algorithm)
+- Round 2: Full stack / system concepts (3 questions mixing frontend, backend, and CS)
+- Round 3: Project deep-dive (ask about my project as a real interviewer would)
+
+Rules:
+- Ask one question at a time. Wait for my answer before proceeding.
+- Don't give hints unless I ask. If I ask, give a small nudge, not the answer.
+- After each answer, score it: [Strong / Acceptable / Needs Work] and explain why.
+- At the end, give me an overall assessment and the top 2 things I must improve.
+
+Start with the DSA round. Ask the first problem.</pre>
+  </div>
+
+  <div class="prompt-block">
+    <div class="prompt-label">Weekly planning prompt (use every Sunday)</div>
+    <button class="copy-btn" onclick="copyPrompt(this)">Copy</button>
+    <pre">/roadmap
+
+Weekly check-in. Here's where I am:
+
+Current phase: [Phase 0/1/2/3/4]
+Week number: [Week X of roadmap]
+DSA problems solved this week: [number, topics]
+Dev work done: [what you built or learned]
+CS studied: [which topics]
+
+Struggles this week:
+- [e.g., "DP problems — I understand the concept but can't derive recurrences"]
+- [e.g., "React performance — not sure when to use useMemo vs useCallback"]
+
+Questions I couldn't answer in mock interviews:
+- [list them]
+
+Based on this, give me:
+1. Priority focus for next week (what matters most)
+2. Specific problems/topics to fix my weak areas
+3. One thing I should stop doing that's wasting time
+4. Honest assessment: am I on track, ahead, or behind? What does the next milestone look like?</pre>
+  </div>
+</div>
+
+<script>
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function togglePhase(id) {
+  const card = document.getElementById(id);
+  card.classList.toggle('open');
+}
+
+function copyPrompt(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+// Open first phase by default
+document.getElementById('ph0').classList.add('open');
+</script>
+</body>
+</html>
