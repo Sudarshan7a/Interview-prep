@@ -1,0 +1,1687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 1 — DSA Learning Map</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+:root{
+  --bg:#09090b;--s1:#111113;--s2:#18181b;--s3:#27272a;--b1:#3f3f46;--b2:#52525b;
+  --t1:#fafafa;--t2:#a1a1aa;--t3:#52525b;
+  --mono:'Space Mono',monospace;--sans:'Space Grotesk',sans-serif;
+  --arr:#f97316;--hash:#eab308;--ptr:#22c55e;--str:#06b6d4;
+  --ll:#a855f7;--stk:#f43f5e;--bs:#3b82f6;--rec:#ec4899;--tree:#10b981;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.6;}
+
+.topbar{padding:28px 32px 24px;border-bottom:1px solid var(--s3);}
+.topbar h1{font-size:22px;font-weight:700;margin-bottom:6px;}
+.topbar p{font-size:13px;color:var(--t2);max-width:600px;}
+.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.tag{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid var(--b1);color:var(--t2);}
+.tag.hi{border-color:var(--arr);color:var(--arr);}
+
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--s3);scrollbar-width:none;padding:0 32px;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{font-family:var(--mono);font-size:10px;padding:12px 16px;border:none;background:none;
+  color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;transition:color 0.15s;letter-spacing:0.04em;}
+.tab:hover{color:var(--t2);}
+.tab.on{color:var(--t1);border-bottom-color:currentColor;}
+.tdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+.panel{display:none;padding:32px;max-width:980px;}
+.panel.on{display:block;}
+
+.sh{display:flex;align-items:flex-start;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--s3);}
+.sh-badge{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.sh h2{font-size:20px;font-weight:700;margin-bottom:4px;}
+.sh p{font-size:12px;color:var(--t2);line-height:1.6;max-width:580px;}
+
+.section{margin-bottom:36px;}
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--s3);}
+
+/* TOPIC */
+.topic{background:var(--s1);border:1px solid var(--s3);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+.topic-head{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;cursor:pointer;}
+.topic-head:hover{background:var(--s2);}
+.t-check{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--b1);flex-shrink:0;display:flex;
+  align-items:center;justify-content:center;font-size:11px;color:transparent;margin-top:1px;cursor:pointer;transition:all 0.15s;}
+.topic.done .t-check{background:#16a34a;border-color:#16a34a;color:#fff;}
+.t-main{flex:1;}
+.t-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:3px;}
+.topic.done .t-name{color:var(--t3);text-decoration:line-through;}
+.t-sub{font-size:12px;color:var(--t2);}
+.topic.done .t-sub{color:var(--t3);}
+.t-right{display:flex;align-items:center;gap:8px;flex-shrink:0;}
+.t-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;white-space:nowrap;}
+.b-must{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+.b-high{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);}
+.b-pat{background:rgba(168,85,247,0.15);color:#c084fc;border:1px solid rgba(168,85,247,0.3);}
+
+.topic-body{display:none;padding:0 16px 16px 16px;border-top:1px solid var(--s3);}
+.topic.open .topic-body{display:block;}
+
+.tb-sec{margin-top:14px;}
+.tb-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+
+.learn-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.learn-list li{font-size:12px;color:var(--t2);padding-left:14px;position:relative;line-height:1.5;}
+.learn-list li::before{content:'→';position:absolute;left:0;color:var(--b2);font-size:11px;}
+.learn-list li strong{color:var(--t1);font-weight:500;}
+
+/* PROBLEMS TABLE */
+.prob-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px;}
+.prob-table th{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--t3);text-align:left;padding:7px 10px;border-bottom:1px solid var(--s3);background:var(--s2);}
+.prob-table td{padding:8px 10px;border-bottom:1px solid var(--s3);color:var(--t2);vertical-align:top;}
+.prob-table tr:last-child td{border-bottom:none;}
+.prob-table td:first-child{white-space:nowrap;}
+.diff{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:3px;}
+.d-e{background:rgba(34,197,94,0.15);color:#4ade80;}
+.d-m{background:rgba(234,179,8,0.15);color:#fbbf24;}
+.d-h{background:rgba(239,68,68,0.15);color:#f87171;}
+.prob-link{color:var(--t2);text-decoration:none;font-size:11px;}
+.prob-link:hover{color:var(--t1);}
+
+/* PATTERN BOX */
+.pattern-box{background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.2);
+  border-radius:8px;padding:12px 14px;margin-top:8px;}
+.pat-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;
+  color:#c084fc;margin-bottom:6px;}
+.pat-text{font-size:12px;color:var(--t2);line-height:1.6;}
+.pat-text strong{color:var(--t1);}
+
+/* GOTCHA */
+.gotcha{display:flex;gap:10px;padding:12px 14px;border-radius:8px;background:rgba(234,179,8,0.06);
+  border:1px solid rgba(234,179,8,0.2);margin-top:8px;}
+.gotcha p{font-size:12px;color:#fef08a;line-height:1.5;}
+.gotcha p strong{color:#fde047;}
+
+/* INTERVIEW SCENARIO */
+.int-box{background:var(--s2);border:1px solid var(--s3);border-radius:8px;margin-top:8px;}
+.int-head{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--t3);padding:10px 14px;border-bottom:1px solid var(--s3);}
+.iq{border-bottom:1px solid var(--s3);}
+.iq:last-child{border-bottom:none;}
+.iq-q{padding:12px 14px;font-size:12px;font-weight:600;cursor:pointer;
+  display:flex;justify-content:space-between;align-items:flex-start;gap:10px;transition:background 0.1s;}
+.iq-q:hover{background:var(--s3);}
+.iq-arr{color:var(--t3);font-size:10px;flex-shrink:0;margin-top:2px;transition:transform 0.2s;}
+.iq.open .iq-arr{transform:rotate(180deg);}
+.iq-a{display:none;padding:0 14px 12px;font-size:12px;color:var(--t2);line-height:1.7;border-top:1px solid var(--s3);}
+.iq.open .iq-a{display:block;}
+.iq-a code{font-family:var(--mono);font-size:10px;background:var(--s3);padding:1px 5px;border-radius:3px;color:var(--t1);}
+
+/* DONE CRITERIA */
+.done-box{background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);
+  border-radius:8px;padding:12px 14px;margin-top:8px;}
+.done-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#34d399;margin-bottom:6px;}
+.done-list{list-style:none;}
+.done-list li{font-size:12px;color:var(--t2);padding:3px 0 3px 16px;position:relative;}
+.done-list li::before{content:'✓';position:absolute;left:0;color:#34d399;font-size:10px;}
+
+/* RESOURCES */
+.res-list{display:flex;flex-direction:column;gap:6px;}
+.res{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--s2);
+  border:1px solid var(--s3);border-radius:8px;text-decoration:none;color:inherit;transition:border-color 0.15s;}
+.res:hover{border-color:var(--b1);}
+.res-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.res-body{flex:1;}
+.res-name{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:2px;}
+.res-what{font-size:11px;color:var(--t2);line-height:1.4;}
+.res-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;}
+.rt{font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:3px;background:var(--s3);color:var(--t3);}
+.rt.free{background:rgba(34,197,94,0.1);color:#4ade80;}
+.rt.best{background:rgba(234,179,8,0.1);color:#fbbf24;}
+
+/* OVERVIEW CARDS */
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:28px;}
+.ov-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:14px;cursor:pointer;transition:border-color 0.15s;}
+.ov-card:hover{border-color:var(--b1);}
+.ov-num{font-family:var(--mono);font-size:10px;color:var(--t3);margin-bottom:4px;}
+.ov-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.ov-meta{font-size:11px;color:var(--t2);}
+.ov-bar{height:3px;border-radius:2px;margin-top:10px;background:var(--s3);}
+
+/* PROBLEM COUNTER */
+.counter-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:24px;}
+.counter-box{background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:12px;text-align:center;}
+.counter-num{font-family:var(--mono);font-size:22px;font-weight:700;margin-bottom:3px;}
+.counter-label{font-family:var(--mono);font-size:9px;letter-spacing:0.08em;text-transform:uppercase;color:var(--t3);}
+
+/* CODE BLOCK */
+.code-wrap{background:#0d1117;border:1px solid var(--s3);border-radius:8px;margin-top:8px;overflow:hidden;}
+.code-title{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;
+  color:var(--t3);padding:8px 14px;border-bottom:1px solid var(--s3);}
+.code-wrap pre{font-family:var(--mono);font-size:11px;line-height:1.8;padding:12px 14px;
+  color:#c9d1d9;overflow-x:auto;white-space:pre;}
+.ck{color:#ff7b72;}.cs{color:#a5d6ff;}.cm{color:#8b949e;font-style:italic;}.cf{color:#d2a8ff;}
+.cn{color:#79c0ff;}.co{color:#ffa657;}
+
+/* PROMPT */
+.prompt-block{background:#0a1000;border:1px solid rgba(74,222,128,0.2);border-radius:10px;padding:18px;position:relative;}
+.prompt-block pre{font-family:var(--mono);font-size:11px;color:#86efac;line-height:1.8;white-space:pre-wrap;}
+.copy-btn{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:9px;
+  padding:4px 10px;border:1px solid rgba(74,222,128,0.3);border-radius:4px;background:none;color:#4ade80;cursor:pointer;}
+
+/* WEEK GRID */
+.week-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:20px;}
+.wday{background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:12px;}
+.wday-name{font-family:var(--mono);font-size:9px;color:var(--t3);margin-bottom:5px;}
+.wday-task{font-size:12px;font-weight:600;margin-bottom:4px;color:var(--t1);}
+.wday-sub{font-size:11px;color:var(--t2);line-height:1.4;}
+
+/* INFO CARD */
+.info-card{padding:14px 16px;background:var(--s1);border:1px solid var(--s3);border-radius:10px;margin-bottom:10px;}
+.info-card.warn{border-left:3px solid #fbbf24;background:rgba(234,179,8,0.04);}
+.info-card.good{border-left:3px solid #4ade80;background:rgba(34,197,94,0.04);}
+.info-card.info{border-left:3px solid #60a5fa;background:rgba(59,130,246,0.04);}
+.info-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.info-card.warn .info-title{color:#fbbf24;}
+.info-card.good .info-title{color:#4ade80;}
+.info-card.info .info-title{color:#60a5fa;}
+.info-text{font-size:12px;color:var(--t2);line-height:1.6;}
+
+@media(max-width:640px){
+  .topbar,.tabs,.panel{padding-left:16px;padding-right:16px;}
+  .counter-row{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Phase 1 — DSA Core</h1>
+  <p>Arrays to Binary Trees. Every pattern you need to crack Bangalore product company DSA rounds. What to learn, exact LeetCode problems, how many, and when you're ready to move on.</p>
+  <div class="tagrow">
+    <span class="tag hi">6–7 weeks · ~260 problems</span>
+    <span class="tag">Language: JavaScript</span>
+    <span class="tag">Platform: LeetCode</span>
+    <span class="tag">8 patterns</span>
+    <span class="tag">click any topic to expand</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="go('overview',this)"><span class="tdot" style="background:#888"></span>Overview</button>
+  <button class="tab" onclick="go('arr',this)"><span class="tdot" style="background:var(--arr)"></span>Arrays+Hash</button>
+  <button class="tab" onclick="go('ptr',this)"><span class="tdot" style="background:var(--ptr)"></span>2 Pointers</button>
+  <button class="tab" onclick="go('win',this)"><span class="tdot" style="background:var(--str)"></span>Sliding Window</button>
+  <button class="tab" onclick="go('str',this)"><span class="tdot" style="background:var(--hash)"></span>Strings</button>
+  <button class="tab" onclick="go('ll',this)"><span class="tdot" style="background:var(--ll)"></span>Linked List</button>
+  <button class="tab" onclick="go('stk',this)"><span class="tdot" style="background:var(--stk)"></span>Stack+Queue</button>
+  <button class="tab" onclick="go('bs',this)"><span class="tdot" style="background:var(--bs)"></span>Binary Search</button>
+  <button class="tab" onclick="go('rec',this)"><span class="tdot" style="background:var(--rec)"></span>Recursion+BT</button>
+  <button class="tab" onclick="go('tree',this)"><span class="tdot" style="background:var(--tree)"></span>Trees+BST</button>
+  <button class="tab" onclick="go('plan',this)"><span class="tdot" style="background:#f43f5e"></span>Daily Plan</button>
+</div>
+
+<!-- ===== OVERVIEW ===== -->
+<div id="p-overview" class="panel on">
+  <div class="counter-row">
+    <div class="counter-box"><div class="counter-num" style="color:#4ade80">90</div><div class="counter-label">Easy problems</div></div>
+    <div class="counter-box"><div class="counter-num" style="color:#fbbf24">140</div><div class="counter-label">Medium problems</div></div>
+    <div class="counter-box"><div class="counter-num" style="color:#f87171">25</div><div class="counter-label">Hard problems</div></div>
+    <div class="counter-box"><div class="counter-num" style="color:var(--t1)">8</div><div class="counter-label">Patterns to master</div></div>
+  </div>
+
+  <div class="info-card warn">
+    <div class="info-title">⚠️ Most important rule of DSA practice</div>
+    <div class="info-text">For every problem: spend 15–20 min trying on your own first. No hints. If stuck after 20 min, look at the approach only — not the code. Code it yourself from the approach. Then read the editorial and compare. Reading solutions without attempting = zero learning.</div>
+  </div>
+  <div class="info-card good">
+    <div class="info-title">✓ Use JavaScript for all DSA</div>
+    <div class="info-text">You know JS. Don't switch to Java for DSA — it will slow you down. Use JS throughout. If a company specifically wants Java DSA, you can switch to Java syntax at the end — the patterns are identical.</div>
+  </div>
+  <div class="info-card info">
+    <div class="info-title">The NeetCode Method — how to actually learn patterns</div>
+    <div class="info-text">1. Watch NeetCode's video for each topic (5–10 min). 2. Understand the pattern — why it works. 3. Try 2–3 problems on your own. 4. Track your "failed problems" list — revisit every 3 days. By the end you should recognize which pattern to apply within 2 minutes of reading a problem.</div>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">All 8 patterns — click to navigate</div>
+  <div class="ov-grid">
+    <div class="ov-card" onclick="go('arr',document.querySelectorAll('.tab')[1])">
+      <div class="ov-num">01 · Week 1–2</div>
+      <div class="ov-title" style="color:var(--arr)">Arrays + Hashing</div>
+      <div class="ov-meta">22 problems · prefix sum, freq maps</div>
+      <div class="ov-bar" style="background:var(--arr)"></div>
+    </div>
+    <div class="ov-card" onclick="go('ptr',document.querySelectorAll('.tab')[2])">
+      <div class="ov-num">02 · Week 2</div>
+      <div class="ov-title" style="color:var(--ptr)">Two Pointers</div>
+      <div class="ov-meta">15 problems · shrink/expand, sort first</div>
+      <div class="ov-bar" style="background:var(--ptr)"></div>
+    </div>
+    <div class="ov-card" onclick="go('win',document.querySelectorAll('.tab')[3])">
+      <div class="ov-num">03 · Week 2</div>
+      <div class="ov-title" style="color:var(--str)">Sliding Window</div>
+      <div class="ov-meta">13 problems · fixed/variable window</div>
+      <div class="ov-bar" style="background:var(--str)"></div>
+    </div>
+    <div class="ov-card" onclick="go('str',document.querySelectorAll('.tab')[4])">
+      <div class="ov-num">04 · Week 3</div>
+      <div class="ov-title" style="color:var(--hash)">Strings</div>
+      <div class="ov-meta">14 problems · palindrome, anagram, substring</div>
+      <div class="ov-bar" style="background:var(--hash)"></div>
+    </div>
+    <div class="ov-card" onclick="go('ll',document.querySelectorAll('.tab')[5])">
+      <div class="ov-num">05 · Week 3–4</div>
+      <div class="ov-title" style="color:var(--ll)">Linked List</div>
+      <div class="ov-meta">18 problems · reversal, cycle, merge</div>
+      <div class="ov-bar" style="background:var(--ll)"></div>
+    </div>
+    <div class="ov-card" onclick="go('stk',document.querySelectorAll('.tab')[6])">
+      <div class="ov-num">06 · Week 4</div>
+      <div class="ov-title" style="color:var(--stk)">Stack + Queue</div>
+      <div class="ov-meta">14 problems · monotonic stack</div>
+      <div class="ov-bar" style="background:var(--stk)"></div>
+    </div>
+    <div class="ov-card" onclick="go('bs',document.querySelectorAll('.tab')[7])">
+      <div class="ov-num">07 · Week 5</div>
+      <div class="ov-title" style="color:var(--bs)">Binary Search</div>
+      <div class="ov-meta">17 problems · on array + on answer</div>
+      <div class="ov-bar" style="background:var(--bs)"></div>
+    </div>
+    <div class="ov-card" onclick="go('rec',document.querySelectorAll('.tab')[8])">
+      <div class="ov-num">08 · Week 6</div>
+      <div class="ov-title" style="color:var(--rec)">Recursion + Backtracking</div>
+      <div class="ov-meta">15 problems · subsets, permutations</div>
+      <div class="ov-bar" style="background:var(--rec)"></div>
+    </div>
+    <div class="ov-card" onclick="go('tree',document.querySelectorAll('.tab')[9])">
+      <div class="ov-num">09 · Week 6–7</div>
+      <div class="ov-title" style="color:var(--tree)">Trees + BST</div>
+      <div class="ov-meta">22 problems · traversals, LCA, BST ops</div>
+      <div class="ov-bar" style="background:var(--tree)"></div>
+    </div>
+  </div>
+
+  <div class="sec-label">The DSA session prompt — use for every practice session</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>I am practicing DSA for Bangalore product company interviews (Swiggy, PhonePe, CRED level).
+Language: JavaScript. Platform: LeetCode.
+
+Current topic: [PATTERN NAME e.g. "Sliding Window"]
+
+For this session:
+1. Give me a warm-up Easy problem on this pattern — wait for my solution attempt
+2. After I solve it, critique my solution: correctness, edge cases, time/space complexity
+3. Then give me a Medium problem — same process
+4. After each problem: show me the optimal approach if mine is suboptimal
+5. At the end: list the 3 key signals that tell me "this problem uses [PATTERN]"
+
+Rules:
+- Don't give the solution unless I explicitly ask "show me the solution"
+- If I'm stuck: give a hint about the approach, not the code
+- Be strict about time/space complexity — always ask me to state it before you verify
+
+Start with the warm-up Easy problem.</pre>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">The "failed problems" rule</div>
+  <div style="padding:14px 16px;background:var(--s1);border:1px solid var(--s3);border-radius:10px;font-size:12px;color:var(--t2);line-height:1.8;">
+    Every time you can't solve a problem in 20 min, or you solved it but didn't understand the approach fully — add it to a "failed problems" list (Notion or a txt file). Revisit this list every 3 days. A problem is fully learned only when you can solve it from scratch without looking at your previous solution. This is the single biggest mistake freshers skip.
+  </div>
+</div>
+
+<!-- ===== ARRAYS + HASHING ===== -->
+<div id="p-arr" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(249,115,22,0.15);">🗃️</div>
+    <div>
+      <h2>Arrays + Hashing</h2>
+      <p>The foundation of DSA. Almost every problem uses arrays. Hashing (Maps + Sets) turns O(n²) brute force solutions into O(n). Learn this first — everything else builds on it.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">What to understand before solving problems</div>
+
+    <div class="topic" id="arr-1">
+      <div class="topic-head" onclick="expand('arr-1')">
+        <div class="t-check" onclick="check(event,'arr-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Array fundamentals + time complexities</div>
+          <div class="t-sub">Access, search, insert, delete — which are O(1) vs O(n) and why</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Access by index</strong>: O(1) — memory is contiguous, just calculate offset</li>
+            <li><strong>Search (unsorted)</strong>: O(n) — must check every element</li>
+            <li><strong>Insert at end</strong>: O(1) amortized (dynamic array). Insert at index: O(n) — must shift elements</li>
+            <li><strong>Delete at end</strong>: O(1). Delete at index: O(n) — must shift elements</li>
+            <li>JS arrays are dynamic — no fixed size. JS Array methods to know: push/pop O(1), shift/unshift O(n), splice O(n), slice O(n), indexOf O(n), includes O(n), sort O(n log n)</li>
+            <li><strong>Prefix sum</strong>: precompute running sum so range sum queries become O(1) after O(n) build</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Core pattern: Prefix Sum</div>
+          <div class="code-wrap">
+            <div class="code-title">Prefix Sum — range sum in O(1)</div>
+            <pre>
+<span class="cm">// Build prefix sum array: O(n) once</span>
+<span class="ck">function</span> <span class="cf">buildPrefix</span>(nums) {
+    <span class="ck">const</span> prefix = [<span class="co">0</span>];  <span class="cm">// prefix[0] = 0, prefix[i] = sum of nums[0..i-1]</span>
+    <span class="ck">for</span> (<span class="ck">const</span> n <span class="ck">of</span> nums) prefix.push(prefix.at(-<span class="co">1</span>) + n);
+    <span class="ck">return</span> prefix;
+}
+
+<span class="cm">// Query sum of range [l, r] inclusive: O(1)</span>
+<span class="ck">function</span> <span class="cf">rangeSum</span>(prefix, l, r) {
+    <span class="ck">return</span> prefix[r + <span class="co">1</span>] - prefix[l];
+}
+
+<span class="cm">// Example: nums = [1,2,3,4,5]</span>
+<span class="cm">// prefix =  [0,1,3,6,10,15]</span>
+<span class="cm">// sum(1,3) = prefix[4] - prefix[1] = 10 - 1 = 9 ✓ (2+3+4)</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Core pattern: HashMap for O(n) lookups</div>
+          <div class="code-wrap">
+            <div class="code-title">HashMap — trading space for time</div>
+            <pre>
+<span class="cm">// Brute force: find two numbers that sum to target — O(n²)</span>
+<span class="ck">for</span> (<span class="ck">let</span> i = <span class="co">0</span>; i < nums.length; i++)
+    <span class="ck">for</span> (<span class="ck">let</span> j = i+<span class="co">1</span>; j < nums.length; j++)
+        <span class="ck">if</span> (nums[i] + nums[j] === target) <span class="ck">return</span> [i, j];
+
+<span class="cm">// Optimized: HashMap — O(n) time, O(n) space</span>
+<span class="ck">function</span> <span class="cf">twoSum</span>(nums, target) {
+    <span class="ck">const</span> seen = <span class="ck">new</span> <span class="cn">Map</span>();  <span class="cm">// value → index</span>
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="co">0</span>; i < nums.length; i++) {
+        <span class="ck">const</span> complement = target - nums[i];
+        <span class="ck">if</span> (seen.has(complement)) <span class="ck">return</span> [seen.get(complement), i];
+        seen.set(nums[i], i);
+    }
+}
+<span class="cm">// KEY INSIGHT: for every element, we ask "have I seen what I need?"</span>
+<span class="cm">// instead of "what's the other element?" — this is the HashMap mindset</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="arr-2">
+      <div class="topic-head" onclick="expand('arr-2')">
+        <div class="t-check" onclick="check(event,'arr-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">HashMap + HashSet patterns</div>
+          <div class="t-sub">Frequency counting, seen-before detection, grouping by key</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Frequency map</strong>: count occurrences of each element — <code>map.set(x, (map.get(x) || 0) + 1)</code></li>
+            <li><strong>Set for O(1) lookup</strong>: when you only care "have I seen this?" not "how many times"</li>
+            <li><strong>Grouping by key</strong>: Map from key → array of values (Group Anagrams pattern)</li>
+            <li>When to use Map vs plain object: Map handles any key type, better performance for frequent add/delete</li>
+            <li>JS Map methods: get, set, has, delete, size, entries(), values(), keys()</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems to solve — in this order</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Pattern</th><th>Time / Space</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/two-sum/" target="_blank">Two Sum #1</a></td><td><span class="diff d-e">Easy</span></td><td>HashMap complement lookup</td><td>O(n) / O(n)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/contains-duplicate/" target="_blank">Contains Duplicate #217</a></td><td><span class="diff d-e">Easy</span></td><td>HashSet seen-before</td><td>O(n) / O(n)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/valid-anagram/" target="_blank">Valid Anagram #242</a></td><td><span class="diff d-e">Easy</span></td><td>Frequency map comparison</td><td>O(n) / O(1)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/group-anagrams/" target="_blank">Group Anagrams #49</a></td><td><span class="diff d-m">Med</span></td><td>Map: sorted key → group</td><td>O(n·k log k) / O(n)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/top-k-frequent-elements/" target="_blank">Top K Frequent Elements #347</a></td><td><span class="diff d-m">Med</span></td><td>Freq map + bucket sort</td><td>O(n) / O(n)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/product-of-array-except-self/" target="_blank">Product Except Self #238</a></td><td><span class="diff d-m">Med</span></td><td>Prefix + suffix product (no division)</td><td>O(n) / O(1)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/longest-consecutive-sequence/" target="_blank">Longest Consecutive #128</a></td><td><span class="diff d-m">Med</span></td><td>HashSet + sequence start check</td><td>O(n) / O(n)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/subarray-sum-equals-k/" target="_blank">Subarray Sum Equals K #560</a></td><td><span class="diff d-m">Med</span></td><td>Prefix sum + HashMap</td><td>O(n) / O(n)</td></tr>
+          </table>
+        </div>
+        <div class="pattern-box">
+          <div class="pat-label">🔑 Pattern recognition signal</div>
+          <div class="pat-text">If the problem asks to find a pair, count occurrences, check duplicates, or group items — think <strong>HashMap/HashSet first</strong>. The trade: O(n) space to get O(n) time instead of O(n²).</div>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when</div>
+          <ul class="done-list">
+            <li>Solve Two Sum variants without looking at previous solutions</li>
+            <li>Can explain why HashMap gives O(n) instead of O(n²) in plain English</li>
+            <li>Solve Longest Consecutive without sorting (must use HashSet approach)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="arr-3">
+      <div class="topic-head" onclick="expand('arr-3')">
+        <div class="t-check" onclick="check(event,'arr-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Additional Array Problems</div>
+          <div class="t-sub">Prefix sums, sorting tricks, multiple passes, in-place operations</div>
+        </div>
+        <span class="t-badge b-high">high value</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Problems to solve</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key concept</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/" target="_blank">Best Time to Buy/Sell Stock #121</a></td><td><span class="diff d-e">Easy</span></td><td>Track min-so-far, max profit at each step</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/move-zeroes/" target="_blank">Move Zeroes #283</a></td><td><span class="diff d-e">Easy</span></td><td>In-place two-pointer write position</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/" target="_blank">Find Disappeared Numbers #448</a></td><td><span class="diff d-e">Easy</span></td><td>Mark visited using negative sign (O(1) space)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/range-sum-query-immutable/" target="_blank">Range Sum Query #303</a></td><td><span class="diff d-e">Easy</span></td><td>Prefix sum array</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/maximum-subarray/" target="_blank">Maximum Subarray #53</a></td><td><span class="diff d-m">Med</span></td><td>Kadane's algorithm — extend or restart</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/rotate-array/" target="_blank">Rotate Array #189</a></td><td><span class="diff d-m">Med</span></td><td>Reverse trick — 3 reverses = rotate</td></tr>
+          </table>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Kadane's Algorithm — must know</div>
+          <div class="code-wrap">
+            <div class="code-title">Maximum Subarray — Kadane's</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">maxSubArray</span>(nums) {
+    <span class="ck">let</span> maxSum = nums[<span class="co">0</span>], current = nums[<span class="co">0</span>];
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="co">1</span>; i < nums.length; i++) {
+        <span class="cm">// At each step: extend current subarray OR start fresh from nums[i]</span>
+        current = <span class="cn">Math</span>.max(nums[i], current + nums[i]);
+        maxSum = <span class="cn">Math</span>.max(maxSum, current);
+    }
+    <span class="ck">return</span> maxSum;
+}
+<span class="cm">// Key insight: if extending makes it worse (current + nums[i] < nums[i]),</span>
+<span class="cm">// restart from nums[i]. That's it — greedy decision at every step.</span></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Resources</div>
+    <div class="res-list">
+      <a class="res" href="https://neetcode.io/roadmap" target="_blank">
+        <span class="res-icon">🗺️</span>
+        <div class="res-body">
+          <div class="res-name">NeetCode Roadmap + Videos</div>
+          <div class="res-what">For every LeetCode problem: watch NeetCode's solution video AFTER your attempt. 5–12 min each. Best explanation quality for patterns. His Arrays & Hashing section is the starting point.</div>
+          <div class="res-tags"><span class="rt free">free</span><span class="rt best">primary resource for DSA</span></div>
+        </div>
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TWO POINTERS ===== -->
+<div id="p-ptr" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(34,197,94,0.15);">👆👆</div>
+    <div>
+      <h2>Two Pointers</h2>
+      <p>Two pointers move toward each other (or at different speeds) to avoid nested loops. Turns O(n²) into O(n). Recognize it when: sorted array, find pair, shrink from both ends.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">The 3 Two-Pointer setups</div>
+
+    <div class="topic" id="ptr-1">
+      <div class="topic-head" onclick="expand('ptr-1')">
+        <div class="t-check" onclick="check(event,'ptr-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Opposite-end pointers (left + right)</div>
+          <div class="t-sub">Sort array, start pointers at both ends, move based on sum comparison</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>Setup: left = 0, right = n-1. Move left → if need larger sum. Move right ← if need smaller sum.</li>
+            <li><strong>Prerequisite</strong>: array must be sorted (or sortable). Why? Sorted = predictable direction to move.</li>
+            <li>Works for: find pair with target sum, check palindrome, container with most water</li>
+            <li>When sum too small → move left right (increase). When sum too big → move right left (decrease)</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems — solve in order</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/valid-palindrome/" target="_blank">Valid Palindrome #125</a></td><td><span class="diff d-e">Easy</span></td><td>Left/right compare chars, skip non-alphanumeric</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/two-sum-ii-input-array-is-sorted/" target="_blank">Two Sum II #167</a></td><td><span class="diff d-m">Med</span></td><td>Sorted array → opposite pointers</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/3sum/" target="_blank">3Sum #15</a></td><td><span class="diff d-m">Med</span></td><td>Fix one, two-pointer for remaining. Skip duplicates!</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/container-with-most-water/" target="_blank">Container With Most Water #11</a></td><td><span class="diff d-m">Med</span></td><td>Move the shorter side — greedy reasoning</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/trapping-rain-water/" target="_blank">Trapping Rain Water #42</a></td><td><span class="diff d-h">Hard</span></td><td>Track max from left + right, water = min(maxL, maxR) - height</td></tr>
+          </table>
+        </div>
+        <div class="pattern-box">
+          <div class="pat-label">🔑 Signal: use opposite-end pointers when</div>
+          <div class="pat-text">Sorted (or sortable) array + find pair/triple with a sum condition + need O(n) solution. <strong>3Sum pattern</strong> is the foundation of many interview problems.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="ptr-2">
+      <div class="topic-head" onclick="expand('ptr-2')">
+        <div class="t-check" onclick="check(event,'ptr-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Fast + Slow pointers (Floyd's cycle)</div>
+          <div class="t-sub">Detect cycles, find middle, kth from end</div>
+        </div>
+        <span class="t-badge b-must">must · linked list + array</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>Slow moves 1 step, fast moves 2 steps. If cycle exists: they meet inside it.</li>
+            <li><strong>Cycle detection</strong>: fast catches slow if cycle (they meet). If fast reaches null: no cycle.</li>
+            <li><strong>Find middle</strong>: when fast reaches end, slow is at middle. (Fast = 2x speed = middle when done)</li>
+            <li><strong>Kth from end</strong>: move fast K steps first, then both at same speed. When fast reaches end, slow is at kth from end.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/linked-list-cycle/" target="_blank">Linked List Cycle #141</a></td><td><span class="diff d-e">Easy</span></td><td>Fast/slow meet = cycle exists</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/middle-of-the-linked-list/" target="_blank">Middle of Linked List #876</a></td><td><span class="diff d-e">Easy</span></td><td>Fast 2x → slow is at middle</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/find-the-duplicate-number/" target="_blank">Find Duplicate Number #287</a></td><td><span class="diff d-m">Med</span></td><td>Array as linked list + Floyd's cycle detection</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="ptr-3">
+      <div class="topic-head" onclick="expand('ptr-3')">
+        <div class="t-check" onclick="check(event,'ptr-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Write pointer (in-place modification)</div>
+          <div class="t-sub">One pointer reads, one pointer writes. Remove duplicates, move zeroes.</div>
+        </div>
+        <span class="t-badge b-high">high value</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/remove-duplicates-from-sorted-array/" target="_blank">Remove Duplicates #26</a></td><td><span class="diff d-e">Easy</span></td><td>write pointer only advances when new unique element found</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/remove-element/" target="_blank">Remove Element #27</a></td><td><span class="diff d-e">Easy</span></td><td>write pointer skips target value</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/sort-colors/" target="_blank">Sort Colors #75</a></td><td><span class="diff d-m">Med</span></td><td>Dutch national flag — 3 pointers (low, mid, high)</td></tr>
+          </table>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when</div>
+          <ul class="done-list">
+            <li>Solve 3Sum from scratch — handle duplicates correctly without hints</li>
+            <li>Explain why Trapping Rain Water works with two pointers (the greedy reasoning)</li>
+            <li>Identify fast/slow pointer setup within 2 minutes of reading any cycle problem</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SLIDING WINDOW ===== -->
+<div id="p-win" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(6,182,212,0.15);">🪟</div>
+    <div>
+      <h2>Sliding Window</h2>
+      <p>A contiguous subarray or substring that expands/shrinks dynamically. Avoids recomputing from scratch each time. Signal: "find subarray/substring with condition" → think sliding window.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Fixed window vs Variable window</div>
+
+    <div class="topic" id="win-1">
+      <div class="topic-head" onclick="expand('win-1')">
+        <div class="t-check" onclick="check(event,'win-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Fixed-size window</div>
+          <div class="t-sub">Window size k is given. Slide and maintain running state.</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Pattern template</div>
+          <div class="code-wrap">
+            <div class="code-title">Fixed window template</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">fixedWindow</span>(nums, k) {
+    <span class="ck">let</span> windowSum = <span class="co">0</span>, maxSum = <span class="co">-Infinity</span>;
+
+    <span class="cm">// Build first window</span>
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="co">0</span>; i < k; i++) windowSum += nums[i];
+    maxSum = windowSum;
+
+    <span class="cm">// Slide: add right element, remove left element</span>
+    <span class="ck">for</span> (<span class="ck">let</span> right = k; right < nums.length; right++) {
+        windowSum += nums[right] - nums[right - k];  <span class="cm">// add new, drop old</span>
+        maxSum = <span class="cn">Math</span>.max(maxSum, windowSum);
+    }
+    <span class="ck">return</span> maxSum;
+}</pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/maximum-average-subarray-i/" target="_blank">Maximum Average Subarray I #643</a></td><td><span class="diff d-e">Easy</span></td><td>Classic fixed window sum</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/find-all-anagrams-in-a-string/" target="_blank">Find All Anagrams #438</a></td><td><span class="diff d-m">Med</span></td><td>Fixed window + frequency map comparison</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="win-2">
+      <div class="topic-head" onclick="expand('win-2')">
+        <div class="t-check" onclick="check(event,'win-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Variable-size window (expand + shrink)</div>
+          <div class="t-sub">Expand right, shrink left when condition violated. Find longest/shortest valid window.</div>
+        </div>
+        <span class="t-badge b-must">must · harder but more common</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Pattern template</div>
+          <div class="code-wrap">
+            <div class="code-title">Variable window template</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">variableWindow</span>(s) {
+    <span class="ck">let</span> left = <span class="co">0</span>, maxLen = <span class="co">0</span>;
+    <span class="ck">const</span> window = <span class="ck">new</span> <span class="cn">Map</span>();  <span class="cm">// track window state</span>
+
+    <span class="ck">for</span> (<span class="ck">let</span> right = <span class="co">0</span>; right < s.length; right++) {
+        <span class="cm">// 1. Expand: add s[right] to window</span>
+        window.set(s[right], (window.get(s[right]) || <span class="co">0</span>) + <span class="co">1</span>);
+
+        <span class="cm">// 2. Shrink: while window is INVALID, move left</span>
+        <span class="ck">while</span> (<span class="cm">/* condition violated */</span> window.size > <span class="co">2</span>) {
+            <span class="ck">const</span> c = s[left++];
+            window.set(c, window.get(c) - <span class="co">1</span>);
+            <span class="ck">if</span> (window.get(c) === <span class="co">0</span>) window.delete(c);
+        }
+
+        <span class="cm">// 3. Window is now valid — record result</span>
+        maxLen = <span class="cn">Math</span>.max(maxLen, right - left + <span class="co">1</span>);
+    }
+    <span class="ck">return</span> maxLen;
+}
+<span class="cm">// Same structure for almost ALL variable window problems</span>
+<span class="cm">// Only the "condition" and "window state" change</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems — these are interview gold</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/longest-substring-without-repeating-characters/" target="_blank">Longest Substring No Repeat #3</a></td><td><span class="diff d-m">Med</span></td><td>Shrink when duplicate enters window</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/longest-repeating-character-replacement/" target="_blank">Longest Repeating Char Replace #424</a></td><td><span class="diff d-m">Med</span></td><td>Shrink when (window - max_freq) > k</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/permutation-in-string/" target="_blank">Permutation in String #567</a></td><td><span class="diff d-m">Med</span></td><td>Fixed window size (len of s1), freq map match</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/minimum-window-substring/" target="_blank">Minimum Window Substring #76</a></td><td><span class="diff d-h">Hard</span></td><td>Shrink left while window still valid. Track need/have counts.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/sliding-window-maximum/" target="_blank">Sliding Window Maximum #239</a></td><td><span class="diff d-h">Hard</span></td><td>Monotonic deque — O(n) instead of O(nk)</td></tr>
+          </table>
+        </div>
+        <div class="pattern-box">
+          <div class="pat-label">🔑 Signal: use sliding window when</div>
+          <div class="pat-text"><strong>Keywords</strong>: "contiguous subarray/substring", "maximum/minimum length", "at most k", "exactly k". The pattern: expand → check → shrink until valid → record. Always O(n).</div>
+        </div>
+        <div class="gotcha">
+          <p><strong>⚠️ Minimum Window Substring is the hardest Easy-to-understand Hard problem.</strong> Take your time with it. The trick is tracking "need" (chars required) vs "have" (chars currently satisfied) counts — making the valid-check O(1).</p>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when</div>
+          <ul class="done-list">
+            <li>Write the variable window template from memory (left/right, expand, shrink loop, record)</li>
+            <li>Solve Longest Substring No Repeat in under 10 minutes</li>
+            <li>Attempt Minimum Window Substring and get the approach right even if the code has bugs</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STRINGS ===== -->
+<div id="p-str" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(234,179,8,0.15);">🔤</div>
+    <div>
+      <h2>Strings</h2>
+      <p>Strings are arrays of characters. Most string problems reuse array + hashing + two-pointer patterns. The extra skills: palindrome expansion, string encoding/decoding, character frequency tricks.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Core string techniques</div>
+
+    <div class="topic" id="str-1">
+      <div class="topic-head" onclick="expand('str-1')">
+        <div class="t-check" onclick="check(event,'str-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Palindrome problems</div>
+          <div class="t-sub">Check palindrome, longest palindromic substring, expand from center</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Check palindrome</strong>: two pointers from both ends — O(n)</li>
+            <li><strong>Expand from center</strong>: for each position, expand outward while characters match. Check both odd-length (center = char) and even-length (center = between chars)</li>
+            <li>Manacher's algorithm: O(n) for longest palindrome. Don't need to implement — just know expand-from-center O(n²) is fine for interviews.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/valid-palindrome/" target="_blank">Valid Palindrome #125</a></td><td><span class="diff d-e">Easy</span></td><td>Two pointers, skip non-alphanumeric</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/palindromic-substrings/" target="_blank">Palindromic Substrings #647</a></td><td><span class="diff d-m">Med</span></td><td>Expand from center, count all palindromes</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/longest-palindromic-substring/" target="_blank">Longest Palindromic Substring #5</a></td><td><span class="diff d-m">Med</span></td><td>Expand from center, track longest</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="str-2">
+      <div class="topic-head" onclick="expand('str-2')">
+        <div class="t-check" onclick="check(event,'str-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">String manipulation + encoding</div>
+          <div class="t-sub">Reverse words, encode/decode, string to integer, Roman numerals</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>JS String methods: split, join, slice, substring, indexOf, includes, startsWith, endsWith, replace, trim, repeat</li>
+            <li>JS immutability: strings are immutable — every "change" creates a new string. For many modifications, convert to array first: <code>[...str]</code> or <code>str.split('')</code></li>
+            <li><strong>String encoding trick</strong>: to serialize a list of strings, prefix each with its length + delimiter: <code>"3#abc4#defg"</code></li>
+            <li>charCodeAt for character ASCII arithmetic. String.fromCharCode to convert back.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/reverse-string/" target="_blank">Reverse String #344</a></td><td><span class="diff d-e">Easy</span></td><td>In-place two pointers</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/reverse-words-in-a-string/" target="_blank">Reverse Words in String #151</a></td><td><span class="diff d-m">Med</span></td><td>Split, filter empty, reverse, join</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/string-to-integer-atoi/" target="_blank">String to Integer (atoi) #8</a></td><td><span class="diff d-m">Med</span></td><td>Handle whitespace, sign, overflow edge cases</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/encode-and-decode-strings/" target="_blank">Encode and Decode Strings #271</a></td><td><span class="diff d-m">Med</span></td><td>Length-prefix encoding: "4#abcd3#xyz"</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="str-3">
+      <div class="topic-head" onclick="expand('str-3')">
+        <div class="t-check" onclick="check(event,'str-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Anagram + substring problems</div>
+          <div class="t-sub">Frequency maps, sorted key, window matching</div>
+        </div>
+        <span class="t-badge b-high">high value</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/valid-anagram/" target="_blank">Valid Anagram #242</a></td><td><span class="diff d-e">Easy</span></td><td>Compare frequency maps or sorted strings</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/ransom-note/" target="_blank">Ransom Note #383</a></td><td><span class="diff d-e">Easy</span></td><td>Check if one string's freq ≥ another's</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/word-pattern/" target="_blank">Word Pattern #290</a></td><td><span class="diff d-e">Easy</span></td><td>Bijection check with two maps</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/check-if-two-string-arrays-are-equivalent/" target="_blank">Check String Arrays Equiv #1662</a></td><td><span class="diff d-e">Easy</span></td><td>Join and compare</td></tr>
+          </table>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when</div>
+          <ul class="done-list">
+            <li>Solve Longest Palindromic Substring using expand-from-center (not DP) in under 15 min</li>
+            <li>Implement encode/decode from scratch — the length-prefix approach from memory</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== LINKED LIST ===== -->
+<div id="p-ll" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(168,85,247,0.15);">🔗</div>
+    <div>
+      <h2>Linked Lists</h2>
+      <p>Nodes with next pointers. No index access (O(n) to find). But O(1) insert/delete at known position. The patterns: reversal, two pointers, merge. Draw the pointer operations before coding.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Must-know patterns</div>
+
+    <div class="topic" id="ll-1">
+      <div class="topic-head" onclick="expand('ll-1')">
+        <div class="t-check" onclick="check(event,'ll-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">LL basics + Reversal</div>
+          <div class="t-sub">Node structure, traversal, reverse iteratively and recursively</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>Node structure: <code>{ val: number, next: Node | null }</code>. Last node's next = null.</li>
+            <li><strong>Iterative reversal</strong>: 3 pointers — prev, curr, next. Move forward, flip pointer backward.</li>
+            <li><strong>Recursive reversal</strong>: base case (null or single node), recursive step flips one link</li>
+            <li>Reverse sublist (between positions L and R): find L, reverse next (R-L) nodes, reconnect</li>
+            <li><strong>Critical rule</strong>: always draw the linked list and pointer movements before coding LL problems</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Iterative reversal — must know cold</div>
+          <div class="code-wrap">
+            <div class="code-title">Reverse Linked List — iterative</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">reverseList</span>(head) {
+    <span class="ck">let</span> prev = <span class="ck">null</span>, curr = head;
+
+    <span class="ck">while</span> (curr) {
+        <span class="ck">const</span> next = curr.next;  <span class="cm">// save next before overwriting</span>
+        curr.next = prev;         <span class="cm">// flip the pointer</span>
+        prev = curr;              <span class="cm">// advance prev</span>
+        curr = next;              <span class="cm">// advance curr</span>
+    }
+    <span class="ck">return</span> prev;  <span class="cm">// prev is new head</span>
+}
+<span class="cm">// Trace: 1→2→3→null  becomes  null←1←2←3 (prev=3, new head)</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/reverse-linked-list/" target="_blank">Reverse Linked List #206</a></td><td><span class="diff d-e">Easy</span></td><td>Iterative with prev/curr/next</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/palindrome-linked-list/" target="_blank">Palindrome Linked List #234</a></td><td><span class="diff d-e">Easy</span></td><td>Find middle, reverse second half, compare</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/reverse-linked-list-ii/" target="_blank">Reverse Linked List II #92</a></td><td><span class="diff d-m">Med</span></td><td>Reverse sublist between positions L and R</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="ll-2">
+      <div class="topic-head" onclick="expand('ll-2')">
+        <div class="t-check" onclick="check(event,'ll-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Cycle detection + Two pointers on LL</div>
+          <div class="t-sub">Floyd's cycle, find cycle start, kth from end</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/linked-list-cycle/" target="_blank">Linked List Cycle #141</a></td><td><span class="diff d-e">Easy</span></td><td>Fast/slow — they meet if cycle</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/remove-nth-node-from-end-of-list/" target="_blank">Remove Nth from End #19</a></td><td><span class="diff d-m">Med</span></td><td>Fast moves N steps ahead, then both move together</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/linked-list-cycle-ii/" target="_blank">Linked List Cycle II #142</a></td><td><span class="diff d-m">Med</span></td><td>After fast/slow meet: reset slow to head, both move 1 step to find cycle start</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="ll-3">
+      <div class="topic-head" onclick="expand('ll-3')">
+        <div class="t-check" onclick="check(event,'ll-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Merge, intersection, and complex operations</div>
+          <div class="t-sub">Merge sorted lists, find intersection, reorder list, LRU Cache</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/merge-two-sorted-lists/" target="_blank">Merge Two Sorted Lists #21</a></td><td><span class="diff d-e">Easy</span></td><td>Dummy head, compare, advance smaller</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/intersection-of-two-linked-lists/" target="_blank">Intersection of Two LLs #160</a></td><td><span class="diff d-e">Easy</span></td><td>Two pointers switch to other list at end — equalize path lengths</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/reorder-list/" target="_blank">Reorder List #143</a></td><td><span class="diff d-m">Med</span></td><td>Find middle + reverse second half + merge alternating</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/copy-list-with-random-pointer/" target="_blank">Copy List with Random Pointer #138</a></td><td><span class="diff d-m">Med</span></td><td>HashMap: original node → clone. Two passes.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/lru-cache/" target="_blank">LRU Cache #146</a></td><td><span class="diff d-m">Med</span></td><td>HashMap + doubly linked list. O(1) get and put.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/merge-k-sorted-lists/" target="_blank">Merge K Sorted Lists #23</a></td><td><span class="diff d-h">Hard</span></td><td>Divide and conquer — merge pairs repeatedly. O(n log k)</td></tr>
+          </table>
+        </div>
+        <div class="pattern-box">
+          <div class="pat-label">🔑 Dummy head trick</div>
+          <div class="pat-text">For any problem that modifies the head of a linked list: create a dummy node pointing to head. Return dummy.next. This avoids special-casing the head — your pointer operations work uniformly for all nodes.</div>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when</div>
+          <ul class="done-list">
+            <li>Write iterative reversal from memory in under 3 minutes</li>
+            <li>Implement LRU Cache with HashMap + doubly linked list — the "design" version interviewers love</li>
+            <li>Solve Merge K Sorted Lists — explain the divide and conquer approach</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== STACK + QUEUE ===== -->
+<div id="p-stk" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(244,63,94,0.15);">📚</div>
+    <div>
+      <h2>Stack + Queue</h2>
+      <p>Stack = LIFO (last in first out). Queue = FIFO. The real interview magic: <strong>monotonic stack</strong> — solves "next greater element" type problems in O(n) that seem to need O(n²).</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Stack patterns</div>
+
+    <div class="topic" id="stk-1">
+      <div class="topic-head" onclick="expand('stk-1')">
+        <div class="t-check" onclick="check(event,'stk-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Stack fundamentals + Balanced Parentheses</div>
+          <div class="t-sub">When to use stack: matching pairs, undo operations, DFS iteratively</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>Stack in JS: array with push/pop. Stack operations: push (add to top), pop (remove from top), peek (see top without removing)</li>
+            <li><strong>When to use stack</strong>: matching brackets/parentheses, undo/redo, converting infix to postfix, iterative DFS</li>
+            <li>Balanced parentheses pattern: push open brackets, when close bracket → check top of stack matches</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/valid-parentheses/" target="_blank">Valid Parentheses #20</a></td><td><span class="diff d-e">Easy</span></td><td>Push opens, pop and match on close</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/min-stack/" target="_blank">Min Stack #155</a></td><td><span class="diff d-m">Med</span></td><td>Two stacks — one for values, one for running min</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/evaluate-reverse-polish-notation/" target="_blank">Evaluate RPN #150</a></td><td><span class="diff d-m">Med</span></td><td>Push numbers, pop and apply on operator</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/generate-parentheses/" target="_blank">Generate Parentheses #22</a></td><td><span class="diff d-m">Med</span></td><td>Backtracking — add open if open < n, add close if close < open</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="stk-2">
+      <div class="topic-head" onclick="expand('stk-2')">
+        <div class="t-check" onclick="check(event,'stk-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Monotonic Stack</div>
+          <div class="t-sub">Next greater/smaller element in O(n). Decreasing stack = find next greater.</div>
+        </div>
+        <span class="t-badge b-must">must · interview favorite</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>Monotonic decreasing stack: elements in stack always decreasing from bottom to top</li>
+            <li>When new element is GREATER than top: pop top (we found its "next greater element"), keep popping until stack is empty or top is greater</li>
+            <li>Whatever remains in stack at the end has no next greater element</li>
+            <li>Monotonic increasing stack: same idea but for "next smaller element" problems</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Monotonic stack template</div>
+          <div class="code-wrap">
+            <div class="code-title">Next Greater Element — monotonic decreasing stack</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">nextGreaterElements</span>(nums) {
+    <span class="ck">const</span> result = <span class="ck">new</span> <span class="cn">Array</span>(nums.length).fill(-<span class="co">1</span>);
+    <span class="ck">const</span> stack = [];  <span class="cm">// stores INDICES (not values)</span>
+
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="co">0</span>; i < nums.length; i++) {
+        <span class="cm">// While current element is greater than top of stack</span>
+        <span class="ck">while</span> (stack.length && nums[i] > nums[stack.at(-<span class="co">1</span>)]) {
+            <span class="ck">const</span> idx = stack.pop();
+            result[idx] = nums[i];  <span class="cm">// found next greater for idx</span>
+        }
+        stack.push(i);
+    }
+    <span class="ck">return</span> result;
+    <span class="cm">// Remaining indices in stack have no next greater → already -1</span>
+}</pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/daily-temperatures/" target="_blank">Daily Temperatures #739</a></td><td><span class="diff d-m">Med</span></td><td>Monotonic decreasing stack, store indices</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/next-greater-element-i/" target="_blank">Next Greater Element I #496</a></td><td><span class="diff d-e">Easy</span></td><td>Monotonic stack + HashMap for lookup</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/car-fleet/" target="_blank">Car Fleet #853</a></td><td><span class="diff d-m">Med</span></td><td>Sort by position, stack of fleet arrival times</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/largest-rectangle-in-histogram/" target="_blank">Largest Rectangle in Histogram #84</a></td><td><span class="diff d-h">Hard</span></td><td>Monotonic increasing stack, extend width when popping</td></tr>
+          </table>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when</div>
+          <ul class="done-list">
+            <li>Implement Next Greater Element without reference — explain why the stack stays monotonic</li>
+            <li>Solve Daily Temperatures in under 15 minutes</li>
+            <li>Attempt Largest Rectangle — understand the approach even if implementation is tricky</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== BINARY SEARCH ===== -->
+<div id="p-bs" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(59,130,246,0.15);">🔍</div>
+    <div>
+      <h2>Binary Search</h2>
+      <p>Binary search is not just for sorted arrays. The real pattern: whenever you can eliminate half the search space at each step → binary search. "Binary search on the answer" is the key insight many miss.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Two forms of binary search</div>
+
+    <div class="topic" id="bs-1">
+      <div class="topic-head" onclick="expand('bs-1')">
+        <div class="t-check" onclick="check(event,'bs-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Classic binary search + sorted array variants</div>
+          <div class="t-sub">Find target, find leftmost/rightmost, search rotated array</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">The template — get this right first</div>
+          <div class="code-wrap">
+            <div class="code-title">Binary Search — the exact template to use</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">binarySearch</span>(nums, target) {
+    <span class="ck">let</span> left = <span class="co">0</span>, right = nums.length - <span class="co">1</span>;
+
+    <span class="ck">while</span> (left <= right) {  <span class="cm">// ← <= not <</span>
+        <span class="ck">const</span> mid = left + <span class="cn">Math</span>.floor((right - left) / <span class="co">2</span>);  <span class="cm">// avoid overflow</span>
+
+        <span class="ck">if</span> (nums[mid] === target) <span class="ck">return</span> mid;
+        <span class="ck">else if</span> (nums[mid] < target) left = mid + <span class="co">1</span>;   <span class="cm">// ← +1, not mid</span>
+        <span class="ck">else</span> right = mid - <span class="co">1</span>;                           <span class="cm">// ← -1, not mid</span>
+    }
+    <span class="ck">return</span> -<span class="co">1</span>;  <span class="cm">// not found</span>
+}
+<span class="cm">// Why left + (right-left)/2? Prevents integer overflow (irrelevant in JS</span>
+<span class="cm">// but good habit and expected in interviews)</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems — standard binary search</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/binary-search/" target="_blank">Binary Search #704</a></td><td><span class="diff d-e">Easy</span></td><td>Classic — get the template right</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/search-insert-position/" target="_blank">Search Insert Position #35</a></td><td><span class="diff d-e">Easy</span></td><td>Return left when not found — leftmost insertion point</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/" target="_blank">Find Min in Rotated Array #153</a></td><td><span class="diff d-m">Med</span></td><td>Compare mid with right to determine which half is sorted</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/search-in-rotated-sorted-array/" target="_blank">Search in Rotated Array #33</a></td><td><span class="diff d-m">Med</span></td><td>Identify sorted half, check if target is in it</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/" target="_blank">First and Last Position #34</a></td><td><span class="diff d-m">Med</span></td><td>Two binary searches: leftmost and rightmost</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="bs-2">
+      <div class="topic-head" onclick="expand('bs-2')">
+        <div class="t-check" onclick="check(event,'bs-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Binary Search on the Answer</div>
+          <div class="t-sub">The answer exists in a range. Binary search the range, check feasibility at each mid.</div>
+        </div>
+        <span class="t-badge b-must">must · this is the advanced level</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>Insight: if the answer is a number in a range [lo, hi], binary search that range and check "is this a valid answer?" at each mid</li>
+            <li>The <code>canDo(mid)</code> function: given a candidate answer, return true/false. Binary search finds the boundary.</li>
+            <li>Signal: "minimize the maximum", "maximize the minimum", "find minimum X such that condition holds" → binary search on answer</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Template for "binary search on answer"</div>
+          <div class="code-wrap">
+            <div class="code-title">Binary Search on Answer template</div>
+            <pre>
+<span class="cm">// Example: Koko Eating Bananas — find minimum speed to eat all in h hours</span>
+<span class="ck">function</span> <span class="cf">minEatingSpeed</span>(piles, h) {
+    <span class="ck">let</span> left = <span class="co">1</span>, right = <span class="cn">Math</span>.max(...piles);
+
+    <span class="ck">while</span> (left < right) {  <span class="cm">// ← < not <=  (looking for minimum valid)</span>
+        <span class="ck">const</span> mid = <span class="cn">Math</span>.floor((left + right) / <span class="co">2</span>);
+        <span class="ck">if</span> (<span class="cf">canFinish</span>(piles, h, mid)) {
+            right = mid;   <span class="cm">// valid, try smaller (minimize)</span>
+        } <span class="ck">else</span> {
+            left = mid + <span class="co">1</span>;  <span class="cm">// too slow, need faster</span>
+        }
+    }
+    <span class="ck">return</span> left;
+}
+
+<span class="ck">function</span> <span class="cf">canFinish</span>(piles, h, speed) {
+    <span class="ck">let</span> hours = <span class="co">0</span>;
+    <span class="ck">for</span> (<span class="ck">const</span> pile <span class="ck">of</span> piles) hours += <span class="cn">Math</span>.ceil(pile / speed);
+    <span class="ck">return</span> hours <= h;
+}</pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/koko-eating-bananas/" target="_blank">Koko Eating Bananas #875</a></td><td><span class="diff d-m">Med</span></td><td>BS on speed [1, max(piles)], check if finish in h hours</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/" target="_blank">Capacity to Ship Packages #1011</a></td><td><span class="diff d-m">Med</span></td><td>BS on capacity [max(weights), sum(weights)]</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/split-array-largest-sum/" target="_blank">Split Array Largest Sum #410</a></td><td><span class="diff d-h">Hard</span></td><td>BS on answer [max, sum], check if ≤ m subarrays possible</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/find-peak-element/" target="_blank">Find Peak Element #162</a></td><td><span class="diff d-m">Med</span></td><td>Binary search: go toward larger neighbor</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/median-of-two-sorted-arrays/" target="_blank">Median of Two Sorted Arrays #4</a></td><td><span class="diff d-h">Hard</span></td><td>Binary search partition on smaller array</td></tr>
+          </table>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when</div>
+          <ul class="done-list">
+            <li>Write classic binary search from memory in under 2 minutes, correctly</li>
+            <li>Solve Koko Eating Bananas — identify it as "BS on answer" and implement canFinish check</li>
+            <li>Solve Search in Rotated Sorted Array — explain which half to eliminate at each step</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== RECURSION + BACKTRACKING ===== -->
+<div id="p-rec" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(236,72,153,0.15);">🔄</div>
+    <div>
+      <h2>Recursion + Backtracking</h2>
+      <p>Recursion: solving a problem by solving smaller versions of itself. Backtracking: try a choice → recurse → undo the choice (backtrack) → try next choice. Used for: all combinations/permutations/subsets problems.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Recursion fundamentals first</div>
+
+    <div class="topic" id="rec-1">
+      <div class="topic-head" onclick="expand('rec-1')">
+        <div class="t-check" onclick="check(event,'rec-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Recursion basics — base case + recursive case</div>
+          <div class="t-sub">Call stack, how recursion works in memory, tail recursion</div>
+        </div>
+        <span class="t-badge b-must">must · foundation</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Base case</strong>: the condition where recursion stops. Without it → infinite recursion → stack overflow.</li>
+            <li><strong>Recursive case</strong>: call the same function with a smaller/simpler input that moves toward base case.</li>
+            <li>How call stack works: each recursive call adds a frame. Return unwinds frames. Stack depth = recursion depth.</li>
+            <li>For every recursive function: define (1) what does this function do? (2) base case (3) recursive step assuming function works correctly on smaller input</li>
+            <li>Fibonacci, factorial — trivial. Then move to harder: merge sort, tree traversal.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/climbing-stairs/" target="_blank">Climbing Stairs #70</a></td><td><span class="diff d-e">Easy</span></td><td>Recursion → memoization → DP (learn all 3 approaches)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/reverse-string/" target="_blank">Reverse String #344 (recursive)</a></td><td><span class="diff d-e">Easy</span></td><td>Recursive: swap first and last, recurse on middle</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/powx-n/" target="_blank">Pow(x, n) #50</a></td><td><span class="diff d-m">Med</span></td><td>Fast exponentiation: x^n = x^(n/2) * x^(n/2)</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="rec-2">
+      <div class="topic-head" onclick="expand('rec-2')">
+        <div class="t-check" onclick="check(event,'rec-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Backtracking — Subsets, Permutations, Combinations</div>
+          <div class="t-sub">The universal backtracking template. All 3 patterns come from the same structure.</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">The universal backtracking template</div>
+          <div class="code-wrap">
+            <div class="code-title">Backtracking template — memorize this structure</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">backtrack</span>(candidates, start, currentPath, result) {
+    <span class="cm">// Base case / record result</span>
+    result.push([...currentPath]);  <span class="cm">// spread — snapshot of current state</span>
+
+    <span class="ck">for</span> (<span class="ck">let</span> i = start; i < candidates.length; i++) {
+        <span class="cm">// Skip duplicates (when input has duplicates)</span>
+        <span class="ck">if</span> (i > start && candidates[i] === candidates[i-<span class="co">1</span>]) <span class="ck">continue</span>;
+
+        <span class="cm">// 1. CHOOSE: add to path</span>
+        currentPath.push(candidates[i]);
+
+        <span class="cm">// 2. RECURSE: explore with this choice</span>
+        <span class="cf">backtrack</span>(candidates, i + <span class="co">1</span>, currentPath, result);  <span class="cm">// i+1 = no reuse</span>
+        <span class="cm">// or i = allow reuse of same element (Combination Sum)</span>
+
+        <span class="cm">// 3. UNCHOOSE: remove from path (backtrack)</span>
+        currentPath.pop();
+    }
+}
+<span class="cm">// The 3 steps: Choose → Recurse → Unchoose</span>
+<span class="cm">// The spread [...currentPath] is critical — without it, all results point to same array</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems — same template, different constraints</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Constraint change in template</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/subsets/" target="_blank">Subsets #78</a></td><td><span class="diff d-m">Med</span></td><td>Record at every level (not just leaf). No duplicates in input.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/subsets-ii/" target="_blank">Subsets II #90</a></td><td><span class="diff d-m">Med</span></td><td>Sort first + skip duplicates at same level</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/permutations/" target="_blank">Permutations #46</a></td><td><span class="diff d-m">Med</span></td><td>Use each element once, no start index — track used boolean array</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/combination-sum/" target="_blank">Combination Sum #39</a></td><td><span class="diff d-m">Med</span></td><td>Can reuse elements. Pass i (not i+1) to recursion.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/combination-sum-ii/" target="_blank">Combination Sum II #40</a></td><td><span class="diff d-m">Med</span></td><td>Each element used once. Sort + skip duplicates.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/word-search/" target="_blank">Word Search #79</a></td><td><span class="diff d-m">Med</span></td><td>Backtrack on 2D grid. Mark visited, unmark on backtrack.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/n-queens/" target="_blank">N-Queens #51</a></td><td><span class="diff d-h">Hard</span></td><td>Place queen per row. Check col, diagonal, anti-diagonal conflicts.</td></tr>
+          </table>
+        </div>
+        <div class="pattern-box">
+          <div class="pat-label">🔑 Backtracking decision tree</div>
+          <div class="pat-text">Every backtracking problem = explore a decision tree. <strong>Choose</strong> (add to path), <strong>Recurse</strong> (go deeper), <strong>Unchoose</strong> (remove from path). The difference between Subsets/Permutations/Combinations is just which choices are available at each node.</div>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when</div>
+          <ul class="done-list">
+            <li>Write the backtracking template from memory</li>
+            <li>Solve Subsets, Permutations, Combination Sum independently — these are the 3 foundations</li>
+            <li>Explain why <code>[...currentPath]</code> (spread) is needed instead of just pushing currentPath</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TREES + BST ===== -->
+<div id="p-tree" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(16,185,129,0.15);">🌳</div>
+    <div>
+      <h2>Trees + Binary Search Tree</h2>
+      <p>Trees appear in almost every interview. Know all traversals cold. BST has ordered property — use it. 90% of tree problems are solved with recursion: "what do I need from left subtree? right subtree? then combine."</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Tree traversals — must know all 4</div>
+
+    <div class="topic" id="tree-1">
+      <div class="topic-head" onclick="expand('tree-1')">
+        <div class="t-check" onclick="check(event,'tree-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">DFS Traversals — Inorder, Preorder, Postorder</div>
+          <div class="t-sub">Recursive and iterative implementations. What each traversal gives you.</div>
+        </div>
+        <span class="t-badge b-must">must · write all 3 from memory</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">All 3 traversals</div>
+          <div class="code-wrap">
+            <div class="code-title">DFS Traversals — all 3</div>
+            <pre>
+<span class="cm">// INORDER: left → root → right → gives sorted order for BST</span>
+<span class="ck">function</span> <span class="cf">inorder</span>(root, result = []) {
+    <span class="ck">if</span> (!root) <span class="ck">return</span> result;
+    <span class="cf">inorder</span>(root.left, result);
+    result.push(root.val);
+    <span class="cf">inorder</span>(root.right, result);
+    <span class="ck">return</span> result;
+}
+
+<span class="cm">// PREORDER: root → left → right → used to clone/serialize a tree</span>
+<span class="ck">function</span> <span class="cf">preorder</span>(root, result = []) {
+    <span class="ck">if</span> (!root) <span class="ck">return</span> result;
+    result.push(root.val);      <span class="cm">// process root FIRST</span>
+    <span class="cf">preorder</span>(root.left, result);
+    <span class="cf">preorder</span>(root.right, result);
+    <span class="ck">return</span> result;
+}
+
+<span class="cm">// POSTORDER: left → right → root → used to delete a tree, evaluate expressions</span>
+<span class="ck">function</span> <span class="cf">postorder</span>(root, result = []) {
+    <span class="ck">if</span> (!root) <span class="ck">return</span> result;
+    <span class="cf">postorder</span>(root.left, result);
+    <span class="cf">postorder</span>(root.right, result);
+    result.push(root.val);      <span class="cm">// process root LAST</span>
+    <span class="ck">return</span> result;
+}</pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/maximum-depth-of-binary-tree/" target="_blank">Max Depth of Binary Tree #104</a></td><td><span class="diff d-e">Easy</span></td><td>1 + max(depth(left), depth(right))</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/invert-binary-tree/" target="_blank">Invert Binary Tree #226</a></td><td><span class="diff d-e">Easy</span></td><td>Swap left/right, recurse on both</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/same-tree/" target="_blank">Same Tree #100</a></td><td><span class="diff d-e">Easy</span></td><td>Both null → true. One null → false. Val differ → false. Recurse.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/balanced-binary-tree/" target="_blank">Balanced Binary Tree #110</a></td><td><span class="diff d-e">Easy</span></td><td>Height function: return -1 if unbalanced (early exit)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/diameter-of-binary-tree/" target="_blank">Diameter of Binary Tree #543</a></td><td><span class="diff d-e">Easy</span></td><td>At each node: diameter = leftHeight + rightHeight. Track max globally.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/subtree-of-another-tree/" target="_blank">Subtree of Another Tree #572</a></td><td><span class="diff d-e">Easy</span></td><td>sameTree check at every node</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="tree-2">
+      <div class="topic-head" onclick="expand('tree-2')">
+        <div class="t-check" onclick="check(event,'tree-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">BFS / Level Order Traversal</div>
+          <div class="t-sub">Queue-based traversal. Process level by level. Right side view, zigzag.</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">BFS template</div>
+          <div class="code-wrap">
+            <div class="code-title">Level Order BFS — the template</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">levelOrder</span>(root) {
+    <span class="ck">if</span> (!root) <span class="ck">return</span> [];
+    <span class="ck">const</span> result = [], queue = [root];
+
+    <span class="ck">while</span> (queue.length) {
+        <span class="ck">const</span> levelSize = queue.length;  <span class="cm">// snapshot current level size</span>
+        <span class="ck">const</span> level = [];
+
+        <span class="ck">for</span> (<span class="ck">let</span> i = <span class="co">0</span>; i < levelSize; i++) {
+            <span class="ck">const</span> node = queue.shift();
+            level.push(node.val);
+            <span class="ck">if</span> (node.left) queue.push(node.left);
+            <span class="ck">if</span> (node.right) queue.push(node.right);
+        }
+        result.push(level);
+    }
+    <span class="ck">return</span> result;
+}
+<span class="cm">// Key: capture levelSize BEFORE the loop — queue grows during the loop</span>
+<span class="cm">// This separates processing one level at a time</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/binary-tree-level-order-traversal/" target="_blank">Level Order Traversal #102</a></td><td><span class="diff d-m">Med</span></td><td>BFS template — groups per level</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/binary-tree-right-side-view/" target="_blank">Right Side View #199</a></td><td><span class="diff d-m">Med</span></td><td>BFS — take last element of each level</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/binary-tree-zigzag-level-order-traversal/" target="_blank">Zigzag Level Order #103</a></td><td><span class="diff d-m">Med</span></td><td>BFS — alternate push direction per level</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="tree-3">
+      <div class="topic-head" onclick="expand('tree-3')">
+        <div class="t-check" onclick="check(event,'tree-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Path problems + Lowest Common Ancestor</div>
+          <div class="t-sub">Path sum, root-to-leaf paths, LCA — the most asked tree interview questions</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/path-sum/" target="_blank">Path Sum #112</a></td><td><span class="diff d-e">Easy</span></td><td>DFS, subtract val, check if leaf and remaining = 0</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/path-sum-ii/" target="_blank">Path Sum II #113</a></td><td><span class="diff d-m">Med</span></td><td>DFS + backtracking — add to path, recurse, remove</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/binary-tree-maximum-path-sum/" target="_blank">Binary Tree Max Path Sum #124</a></td><td><span class="diff d-h">Hard</span></td><td>At each node: gain = max(left, 0) + max(right, 0) + val. Track global max.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-tree/" target="_blank">Lowest Common Ancestor #236</a></td><td><span class="diff d-m">Med</span></td><td>If node is p or q → return it. LCA = where both left and right are non-null.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/" target="_blank">Construct BT from Pre+Inorder #105</a></td><td><span class="diff d-m">Med</span></td><td>preorder[0] = root. Find root in inorder → splits left/right.</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="tree-4">
+      <div class="topic-head" onclick="expand('tree-4')">
+        <div class="t-check" onclick="check(event,'tree-4')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Binary Search Tree (BST) operations</div>
+          <div class="t-sub">BST property, search, insert, delete, validate BST, kth smallest</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>BST property</strong>: for every node, ALL values in left subtree < node < ALL values in right subtree</li>
+            <li><strong>Inorder of BST</strong>: gives sorted ascending order — this property solves many BST problems</li>
+            <li><strong>Search</strong>: O(h) where h = height. Balanced BST: O(log n). Skewed: O(n)</li>
+            <li><strong>Validate BST</strong>: pass min/max bounds down recursively. Left subtree: max = current val. Right subtree: min = current val.</li>
+            <li><strong>Kth smallest</strong>: inorder traversal, count to k</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/validate-binary-search-tree/" target="_blank">Validate BST #98</a></td><td><span class="diff d-m">Med</span></td><td>Pass (min, max) bounds — left: max=node.val, right: min=node.val</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/kth-smallest-element-in-a-bst/" target="_blank">Kth Smallest in BST #230</a></td><td><span class="diff d-m">Med</span></td><td>Inorder traversal, count k nodes</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/lowest-common-ancestor-of-a-binary-search-tree/" target="_blank">LCA of BST #235</a></td><td><span class="diff d-m">Med</span></td><td>Use BST property — if both < root go left, both > root go right, else root is LCA</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/serialize-and-deserialize-binary-tree/" target="_blank">Serialize and Deserialize BT #297</a></td><td><span class="diff d-h">Hard</span></td><td>BFS serialize with nulls. Deserialize by rebuilding level by level.</td></tr>
+          </table>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when you can</div>
+          <ul class="done-list">
+            <li>Write all 3 DFS traversals from memory — recursive version in under 3 min each</li>
+            <li>Write BFS level order template from memory</li>
+            <li>Solve LCA — explain why the logic works (when both left and right return non-null)</li>
+            <li>Solve Validate BST — explain why you need to pass min/max bounds, not just compare with parent</li>
+            <li>Attempt Max Path Sum — hardest tree problem. Understand the gain formula even if implementation is tricky</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DAILY PLAN ===== -->
+<div id="p-plan" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(244,63,94,0.15);">📅</div>
+    <div>
+      <h2>Daily Plan — 7 Weeks</h2>
+      <p>2 problems every morning before anything else. DSA with a fresh mind. Afternoon: development work. Evening: revisit failed problems. This routine builds the habit.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">The daily routine — non-negotiable</div>
+    <div class="info-card good">
+      <div class="info-title">✓ The 3-step daily DSA session</div>
+      <div class="info-text">1. 6:00 AM – attempt 2 LeetCode problems (20 min each, no hints). 2. After both: watch NeetCode solutions for both, compare to your approach. 3. Update your failed problems list. Time total: ~90 min. Do this before opening phone.</div>
+    </div>
+    <div class="info-card warn">
+      <div class="info-title">⚠️ The only metric that matters</div>
+      <div class="info-text">After 7 weeks you should be able to: recognize the pattern within 2 minutes, code a solution within 20 min for Easy and 30 min for Medium without hints, and state time/space complexity before submitting. Count problems solved is secondary — quality of understanding is primary.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Week-by-week breakdown</div>
+
+    <div class="week-grid">
+      <div class="wday" style="border-top:3px solid var(--arr);">
+        <div class="wday-name">WEEK 1–2</div>
+        <div class="wday-task">Arrays + Hashing</div>
+        <div class="wday-sub">All 22 problems. Focus on HashMap pattern — 2 per day.</div>
+      </div>
+      <div class="wday" style="border-top:3px solid var(--ptr);">
+        <div class="wday-name">WEEK 2</div>
+        <div class="wday-task">Two Pointers</div>
+        <div class="wday-sub">15 problems. 3Sum is the key — spend extra time on it.</div>
+      </div>
+      <div class="wday" style="border-top:3px solid var(--str);">
+        <div class="wday-name">WEEK 2</div>
+        <div class="wday-task">Sliding Window</div>
+        <div class="wday-sub">13 problems. Master the variable window template. Min Window is the boss problem.</div>
+      </div>
+      <div class="wday" style="border-top:3px solid var(--hash);">
+        <div class="wday-name">WEEK 3</div>
+        <div class="wday-task">Strings</div>
+        <div class="wday-sub">14 problems. Most reuse sliding window + hashing. Expand-from-center for palindromes.</div>
+      </div>
+      <div class="wday" style="border-top:3px solid var(--ll);">
+        <div class="wday-name">WEEK 3–4</div>
+        <div class="wday-task">Linked List</div>
+        <div class="wday-sub">18 problems. Draw before coding. LRU Cache is the design problem to know.</div>
+      </div>
+      <div class="wday" style="border-top:3px solid var(--stk);">
+        <div class="wday-name">WEEK 4</div>
+        <div class="wday-task">Stack + Queue</div>
+        <div class="wday-sub">14 problems. Monotonic stack is the key insight. Daily Temperatures is the template problem.</div>
+      </div>
+      <div class="wday" style="border-top:3px solid var(--bs);">
+        <div class="wday-name">WEEK 5</div>
+        <div class="wday-task">Binary Search</div>
+        <div class="wday-sub">17 problems. Classic + "on answer". Koko Eating Bananas is the gateway to advanced BS.</div>
+      </div>
+      <div class="wday" style="border-top:3px solid var(--rec);">
+        <div class="wday-name">WEEK 6</div>
+        <div class="wday-task">Recursion + Backtracking</div>
+        <div class="wday-sub">15 problems. Learn the template. Subsets → Permutations → Combination Sum in that order.</div>
+      </div>
+      <div class="wday" style="border-top:3px solid var(--tree);">
+        <div class="wday-name">WEEK 6–7</div>
+        <div class="wday-task">Trees + BST</div>
+        <div class="wday-sub">22 problems. Learn traversals first (write all 3 from memory). Then path problems. Then BST.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">The weekly review session — every Sunday</div>
+    <div style="padding:16px;background:var(--s1);border:1px solid var(--s3);border-radius:10px;font-size:12px;color:var(--t2);line-height:1.8;">
+      Every Sunday: (1) go through your failed problems list — attempt every problem you failed this week without looking at previous solutions. (2) Pick 3 random Medium problems from completed topics — solve them under time pressure (25 min each). (3) Assess: which topics feel weak? Spend Monday revisiting those before moving to new topic.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">The mock interview prompt — use from week 3 onward</div>
+    <div class="prompt-block">
+      <button class="copy-btn" onclick="copyText(this)">copy</button>
+      <pre>Give me a timed DSA mock interview session.
+Format: 2 problems, 45 minutes total (25 min each).
+My current level: completed [list topics you've finished].
+Target: Bangalore product company (Swiggy/PhonePe/CRED level).
+Language: JavaScript.
+
+Rules:
+- Don't tell me which pattern to use — I need to identify it
+- If I ask for a hint, give a small nudge only
+- After each problem: tell me if I identified the pattern correctly and if my complexity is optimal
+- At the end: overall assessment — am I at the right level for the companies above?
+
+Start problem 1. Give me the problem statement only.</pre>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Phase 1 done criteria — don't move to Phase 2 until these are all true</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;">
+        <span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span>
+        <span style="font-size:12px;color:var(--t2);">Solve any Easy LeetCode in under 10 minutes without hints</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;">
+        <span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span>
+        <span style="font-size:12px;color:var(--t2);">Solve 60% of Medium LeetCode problems in the covered topics without hints in under 25 minutes</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;">
+        <span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span>
+        <span style="font-size:12px;color:var(--t2);">Identify which pattern (sliding window / two pointer / binary search / etc.) applies within 2 minutes of reading a problem</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;">
+        <span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span>
+        <span style="font-size:12px;color:var(--t2);">State time and space complexity correctly for every solution before submitting</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;">
+        <span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span>
+        <span style="font-size:12px;color:var(--t2);">Write from memory: iterative LL reversal, backtracking template, BFS level order, binary search template</span>
+      </div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;">
+        <span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span>
+        <span style="font-size:12px;color:var(--t2);">Pass 2 self-assessed mock interviews back-to-back (2 problems each, 45 min)</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function go(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('p-' + name).classList.add('on');
+  btn.classList.add('on');
+  window.scrollTo(0,0);
+}
+function expand(id) {
+  const t = document.getElementById(id);
+  if (!t.classList.contains('done')) t.classList.toggle('open');
+}
+function check(e, id) {
+  e.stopPropagation();
+  const t = document.getElementById(id);
+  t.classList.toggle('done');
+  if (t.classList.contains('done')) t.classList.remove('open');
+}
+function copyText(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 2000);
+  });
+}
+</script>
+</body>
+</html>
