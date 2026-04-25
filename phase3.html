@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 3 — Projects + System Design</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+:root{
+  --bg:#09090b;--s1:#111113;--s2:#18181b;--s3:#27272a;--b1:#3f3f46;--b2:#52525b;
+  --t1:#fafafa;--t2:#a1a1aa;--t3:#52525b;
+  --mono:'Space Mono',monospace;--sans:'Space Grotesk',sans-serif;
+  --p1:#c8ff00;--p2:#00d4ff;--p3:#ff6b35;
+  --sd:#a855f7;--docker:#2496ed;--aws:#ff9900;--git:#f05032;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.6;}
+
+.topbar{padding:28px 32px 24px;border-bottom:1px solid var(--s3);}
+.topbar h1{font-size:22px;font-weight:700;margin-bottom:6px;}
+.topbar p{font-size:13px;color:var(--t2);max-width:640px;}
+.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.tag{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid var(--b1);color:var(--t2);}
+.tag.hi{border-color:var(--p1);color:var(--p1);}
+
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--s3);scrollbar-width:none;padding:0 32px;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{font-family:var(--mono);font-size:10px;padding:12px 16px;border:none;background:none;
+  color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;transition:color 0.15s;letter-spacing:0.04em;}
+.tab:hover{color:var(--t2);}
+.tab.on{color:var(--t1);border-bottom-color:currentColor;}
+.tdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+.panel{display:none;padding:32px;max-width:980px;}
+.panel.on{display:block;}
+
+/* PROJECT CARDS */
+.proj-card{border-radius:14px;overflow:hidden;margin-bottom:20px;border:1px solid var(--s3);}
+.proj-header{padding:24px 24px 20px;position:relative;}
+.proj-num{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:8px;}
+.proj-title{font-size:20px;font-weight:700;margin-bottom:4px;}
+.proj-stack{font-family:var(--mono);font-size:10px;color:rgba(255,255,255,0.5);margin-bottom:12px;}
+.proj-why{font-size:12px;color:rgba(255,255,255,0.6);line-height:1.6;max-width:560px;}
+.proj-big-num{position:absolute;top:16px;right:24px;font-family:var(--mono);font-size:80px;font-weight:700;color:rgba(255,255,255,0.04);line-height:1;pointer-events:none;}
+
+.proj-body{padding:24px;background:var(--s1);}
+.proj-body-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+@media(max-width:640px){.proj-body-grid{grid-template-columns:1fr;}.topbar,.tabs,.panel{padding-left:16px;padding-right:16px;}}
+
+.pb-label{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid var(--s3);}
+
+.feat-list{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.feat-list li{font-size:12px;color:var(--t2);padding-left:14px;position:relative;line-height:1.5;}
+.feat-list li::before{content:'→';position:absolute;left:0;color:var(--b2);font-size:11px;}
+.feat-list li strong{color:var(--t1);font-weight:500;}
+
+.milestone-list{list-style:none;display:flex;flex-direction:column;gap:6px;}
+.milestone-item{display:flex;gap:10px;align-items:flex-start;font-size:12px;padding:7px 10px;background:var(--s2);border-radius:6px;}
+.m-week{font-family:var(--mono);font-size:9px;color:var(--t3);flex-shrink:0;margin-top:2px;white-space:nowrap;}
+.m-task{color:var(--t2);line-height:1.4;}
+.m-task strong{color:var(--t1);font-weight:500;}
+
+.pitch-box{background:var(--s2);border-radius:8px;padding:14px;margin-top:16px;grid-column:1/-1;}
+.pitch-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--p1);margin-bottom:8px;}
+.pitch-text{font-size:12px;color:var(--t2);line-height:1.6;}
+.pitch-text strong{color:var(--t1);}
+
+.done-box{background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:12px 14px;margin-top:16px;grid-column:1/-1;}
+.done-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#34d399;margin-bottom:6px;}
+.done-list{list-style:none;}
+.done-list li{font-size:12px;color:var(--t2);padding:2px 0 2px 16px;position:relative;}
+.done-list li::before{content:'✓';position:absolute;left:0;color:#34d399;font-size:10px;}
+
+/* SYSTEM DESIGN */
+.sh{display:flex;align-items:flex-start;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--s3);}
+.sh-badge{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.sh h2{font-size:20px;font-weight:700;margin-bottom:4px;}
+.sh p{font-size:12px;color:var(--t2);line-height:1.6;max-width:600px;}
+
+.section{margin-bottom:36px;}
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--s3);}
+
+.topic{background:var(--s1);border:1px solid var(--s3);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+.topic-head{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;cursor:pointer;}
+.topic-head:hover{background:var(--s2);}
+.t-check{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--b1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;margin-top:1px;cursor:pointer;transition:all 0.15s;}
+.topic.done .t-check{background:#16a34a;border-color:#16a34a;color:#fff;}
+.t-main{flex:1;}
+.t-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:3px;}
+.topic.done .t-name{color:var(--t3);text-decoration:line-through;}
+.t-sub{font-size:12px;color:var(--t2);}
+.topic.done .t-sub{color:var(--t3);}
+.t-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+.b-must{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+.b-high{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);}
+
+.topic-body{display:none;padding:0 16px 16px 16px;border-top:1px solid var(--s3);}
+.topic.open .topic-body{display:block;}
+
+.tb-sec{margin-top:14px;}
+.tb-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+
+.learn-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.learn-list li{font-size:12px;color:var(--t2);padding-left:14px;position:relative;line-height:1.5;}
+.learn-list li::before{content:'→';position:absolute;left:0;color:var(--b2);font-size:11px;}
+.learn-list li strong{color:var(--t1);font-weight:500;}
+
+.res-list{display:flex;flex-direction:column;gap:6px;}
+.res{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--s2);border:1px solid var(--s3);border-radius:8px;text-decoration:none;color:inherit;transition:border-color 0.15s;}
+.res:hover{border-color:var(--b1);}
+.res-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.res-body{flex:1;}
+.res-name{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:2px;}
+.res-what{font-size:11px;color:var(--t2);line-height:1.4;}
+.res-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;}
+.rt{font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:3px;background:var(--s3);color:var(--t3);}
+.rt.free{background:rgba(34,197,94,0.1);color:#4ade80;}
+.rt.best{background:rgba(234,179,8,0.1);color:#fbbf24;}
+
+.code-wrap{background:#0d1117;border:1px solid var(--s3);border-radius:8px;margin-top:8px;overflow:hidden;}
+.code-title{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);padding:8px 14px;border-bottom:1px solid var(--s3);}
+.code-wrap pre{font-family:var(--mono);font-size:11px;line-height:1.8;padding:12px 14px;color:#c9d1d9;overflow-x:auto;white-space:pre;}
+.ck{color:#ff7b72;}.cs{color:#a5d6ff;}.cm{color:#8b949e;font-style:italic;}.cf{color:#d2a8ff;}.cn{color:#79c0ff;}.co{color:#ffa657;}
+
+.info-card{padding:14px 16px;background:var(--s1);border:1px solid var(--s3);border-radius:10px;margin-bottom:10px;}
+.info-card.warn{border-left:3px solid #fbbf24;}
+.info-card.good{border-left:3px solid #4ade80;}
+.info-card.info{border-left:3px solid #60a5fa;}
+.info-card.sd{border-left:3px solid var(--sd);}
+.info-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.info-card.warn .info-title{color:#fbbf24;}
+.info-card.good .info-title{color:#4ade80;}
+.info-card.info .info-title{color:#60a5fa;}
+.info-card.sd .info-title{color:var(--sd);}
+.info-text{font-size:12px;color:var(--t2);line-height:1.6;}
+
+/* SD design box */
+.sd-box{border:1px solid var(--s3);border-radius:10px;overflow:hidden;margin-bottom:16px;}
+.sd-q{padding:14px 16px;background:var(--s1);font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.sd-q:hover{background:var(--s2);}
+.sd-arr{color:var(--t3);font-size:10px;flex-shrink:0;margin-top:2px;transition:transform 0.2s;}
+.sd-box.open .sd-arr{transform:rotate(180deg);}
+.sd-a{display:none;background:var(--s2);border-top:1px solid var(--s3);padding:16px;}
+.sd-box.open .sd-a{display:block;}
+
+.sd-framework{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-bottom:16px;}
+.sd-step{background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:12px;}
+.sd-step-num{font-family:var(--mono);font-size:9px;color:var(--sd);margin-bottom:4px;}
+.sd-step-title{font-size:12px;font-weight:600;margin-bottom:4px;}
+.sd-step-desc{font-size:11px;color:var(--t2);line-height:1.4;}
+
+.concept-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;}
+.concept-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:14px;}
+.cc-icon{font-size:18px;margin-bottom:6px;}
+.cc-title{font-size:12px;font-weight:600;margin-bottom:4px;}
+.cc-desc{font-size:11px;color:var(--t2);line-height:1.4;}
+
+.prompt-block{background:#0a1000;border:1px solid rgba(74,222,128,0.2);border-radius:10px;padding:18px;position:relative;margin-top:8px;}
+.prompt-block pre{font-family:var(--mono);font-size:11px;color:#86efac;line-height:1.8;white-space:pre-wrap;}
+.copy-btn{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:9px;padding:4px 10px;border:1px solid rgba(74,222,128,0.3);border-radius:4px;background:none;color:#4ade80;cursor:pointer;}
+
+/* ov grid */
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:24px;}
+.ov-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:14px;cursor:pointer;transition:border-color 0.15s;}
+.ov-card:hover{border-color:var(--b1);}
+.ov-num{font-family:var(--mono);font-size:10px;color:var(--t3);margin-bottom:4px;}
+.ov-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.ov-meta{font-size:11px;color:var(--t2);}
+
+/* week plan */
+.week-row{display:grid;grid-template-columns:90px 1fr 1fr;gap:12px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;font-size:12px;margin-bottom:6px;}
+.wr-week{font-family:var(--mono);font-size:10px;color:var(--t3);}
+.wr-col strong{color:var(--t1);font-weight:600;display:block;margin-bottom:2px;}
+.wr-col{color:var(--t2);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Phase 3 — Projects + System Design</h1>
+  <p>Build 3 real projects that make interviewers take notice. Learn system design fundamentals — even freshers get asked "design a URL shortener." Add Docker and deploy one project to AWS. This phase is where your resume transforms.</p>
+  <div class="tagrow">
+    <span class="tag hi">5–6 weeks</span>
+    <span class="tag">3 projects · increasing complexity</span>
+    <span class="tag">system design basics</span>
+    <span class="tag">Docker + AWS deployment</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="go('overview',this)"><span class="tdot" style="background:#888"></span>Overview</button>
+  <button class="tab" onclick="go('p1',this)"><span class="tdot" style="background:var(--p1)"></span>Project 1</button>
+  <button class="tab" onclick="go('p2',this)"><span class="tdot" style="background:var(--p2)"></span>Project 2</button>
+  <button class="tab" onclick="go('p3',this)"><span class="tdot" style="background:var(--p3)"></span>Project 3</button>
+  <button class="tab" onclick="go('sd',this)"><span class="tdot" style="background:var(--sd)"></span>System Design</button>
+  <button class="tab" onclick="go('docker',this)"><span class="tdot" style="background:var(--docker)"></span>Docker</button>
+  <button class="tab" onclick="go('deploy',this)"><span class="tdot" style="background:var(--aws)"></span>Deploy</button>
+  <button class="tab" onclick="go('plan',this)"><span class="tdot" style="background:#f43f5e"></span>Plan</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="p-overview" class="panel on">
+  <div class="info-card sd">
+    <div class="info-title">💡 What this phase is actually about</div>
+    <div class="info-text">Phase 3 is the difference between a fresher who "knows React and Node" and one who can walk into an interview and say "here are 3 production-grade projects — let me show you the architecture." Projects are your proof. System design shows you think at scale. Docker + deployment shows you understand the full lifecycle.</div>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">3 projects — each with a specific purpose</div>
+  <div class="ov-grid">
+    <div class="ov-card" onclick="go('p1',document.querySelectorAll('.tab')[1])">
+      <div class="ov-num">Project 1 · Week 1–2</div>
+      <div class="ov-title" style="color:var(--p1)">DevTracker</div>
+      <div class="ov-meta">Job + skill tracker. MERN + TypeScript. Shows full stack depth + auth + TS discipline.</div>
+    </div>
+    <div class="ov-card" onclick="go('p2',document.querySelectorAll('.tab')[2])">
+      <div class="ov-num">Project 2 · Week 2–4</div>
+      <div class="ov-title" style="color:var(--p2)">CollabDocs</div>
+      <div class="ov-meta">Real-time collaborative notes. WebSocket + Redis. Shows rare skills — real-time + caching.</div>
+    </div>
+    <div class="ov-card" onclick="go('p3',document.querySelectorAll('.tab')[3])">
+      <div class="ov-num">Project 3 · Week 3–5</div>
+      <div class="ov-title" style="color:var(--p3)">Spring Boot Order API</div>
+      <div class="ov-meta">E-commerce order service. Java + PostgreSQL + Spring Security. Your Java full stack proof.</div>
+    </div>
+    <div class="ov-card" onclick="go('sd',document.querySelectorAll('.tab')[4])">
+      <div class="ov-num">Parallel · Week 1–5</div>
+      <div class="ov-title" style="color:var(--sd)">System Design</div>
+      <div class="ov-meta">URL shortener, notifications, rate limiter. 6 concepts every fresher must know.</div>
+    </div>
+    <div class="ov-card" onclick="go('docker',document.querySelectorAll('.tab')[5])">
+      <div class="ov-num">Week 4</div>
+      <div class="ov-title" style="color:var(--docker)">Docker</div>
+      <div class="ov-meta">Dockerfile, docker-compose for all 3 projects. Containerize everything.</div>
+    </div>
+    <div class="ov-card" onclick="go('deploy',document.querySelectorAll('.tab')[6])">
+      <div class="ov-num">Week 5</div>
+      <div class="ov-title" style="color:var(--aws)">Deploy</div>
+      <div class="ov-meta">EC2 + NGINX for Node app. RDS or Neon for Postgres. Live URLs on your resume.</div>
+    </div>
+  </div>
+
+  <div class="info-card warn">
+    <div class="info-title">⚠️ The project trap most freshers fall into</div>
+    <div class="info-text">Building projects nobody cares about: basic to-do apps, weather apps, blog clones with no auth. These tell an interviewer nothing. Your projects must have: real authentication, non-trivial features, deployment with a live URL, and a clean README. One good project is worth more than five bad ones.</div>
+  </div>
+
+  <div class="info-card good">
+    <div class="info-title">✓ The GitHub commit rule — non-negotiable</div>
+    <div class="info-text">Commit to GitHub every single day you work on a project. Small commits are fine. Your GitHub activity graph is the first thing technical recruiters look at. A green graph for 40 straight days says more than a resume bullet point. Use meaningful commit messages: "feat: add JWT refresh token rotation" not "update files".</div>
+  </div>
+</div>
+
+<!-- PROJECT 1 -->
+<div id="p-p1" class="panel">
+  <div class="proj-card">
+    <div class="proj-header" style="background:linear-gradient(135deg,#1a1a00 0%,#2a2800 100%);border-bottom:1px solid rgba(200,255,0,0.15);">
+      <div class="proj-big-num">01</div>
+      <div class="proj-num">Project 1 · Week 1–2 · MERN + TypeScript</div>
+      <div class="proj-title" style="color:var(--p1)">DevTracker</div>
+      <div class="proj-stack">React + TypeScript · Node.js + Express · MongoDB · JWT Auth · Deployed on Render</div>
+      <div class="proj-why">Solves your own problem — tracking job applications and DSA progress. Shows TypeScript discipline, proper auth, and a real use case. This is the project you upgrade from your existing MERN knowledge.</div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-body-grid">
+        <div>
+          <div class="pb-label">Features to build — in this order</div>
+          <ul class="feat-list">
+            <li><strong>Auth system</strong>: Register + Login with JWT (access token in memory, refresh token in HttpOnly cookie). Logout clears refresh token.</li>
+            <li><strong>Job tracker</strong>: CRUD for job applications. Fields: company, role, status (Applied/Interview/Rejected/Offer), notes, date applied. Filter by status.</li>
+            <li><strong>DSA progress tracker</strong>: log problems solved by topic. Show count per topic + streak (days solved consecutively).</li>
+            <li><strong>Dashboard</strong>: summary stats — total applications, interviews scheduled, DSA streak, problems this week. Use recharts for 2 charts.</li>
+            <li><strong>TypeScript throughout</strong>: no <code>any</code> types. Proper DTOs for all API requests/responses.</li>
+            <li><strong>Input validation</strong>: Zod on backend for every POST/PUT route. Error messages returned in consistent format.</li>
+            <li><strong>Protected routes</strong>: React Router v6 loader-based protection. Redirect to login if no token.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="pb-label">Week-by-week milestones</div>
+          <div class="milestone-list">
+            <div class="milestone-item"><span class="m-week">Day 1–2</span><span class="m-task"><strong>Setup</strong>: Vite+React+TS frontend. Node+Express+TS backend. MongoDB connection. Folder structure.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 3–4</span><span class="m-task"><strong>Auth</strong>: Register, login, refresh, logout endpoints. Auth middleware. React auth context.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 5–6</span><span class="m-task"><strong>Job tracker</strong>: Job CRUD API. Job list + form UI. Status filter.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 7–8</span><span class="m-task"><strong>DSA tracker</strong>: Log problem API. Progress view by topic. Streak calculation.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 9–10</span><span class="m-task"><strong>Dashboard + Charts</strong>: Recharts bar chart (problems by topic), pie chart (application status). Stats cards.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 11–12</span><span class="m-task"><strong>Polish + Deploy</strong>: Error handling, loading states, empty states. Deploy to Render. Write README.</span></div>
+          </div>
+        </div>
+        <div class="pitch-box">
+          <div class="pitch-label">How to explain this in an interview — 90 second pitch</div>
+          <div class="pitch-text">"DevTracker is a full stack app I built to solve my own problem — tracking job applications and DSA progress in one place. <strong>Tech</strong>: React with TypeScript for the frontend, Node.js with Express on the backend, MongoDB for the database. <strong>Key things I built</strong>: a complete JWT auth system with refresh token rotation stored in HttpOnly cookies — which protects against XSS. All API inputs are validated with Zod, so invalid data never reaches the database. The dashboard shows real-time stats using the MongoDB aggregation pipeline. <strong>Challenge I solved</strong>: calculating DSA streaks required a query that groups solved problems by date and finds consecutive days — I used a custom MongoDB aggregation for that."</div>
+        </div>
+        <div>
+          <div class="pb-label">What interviewers ask — prepare these</div>
+          <ul class="feat-list">
+            <li>Why did you use JWT instead of sessions? (Stateless, scales horizontally, no server-side session store needed)</li>
+            <li>Why store the refresh token in an HttpOnly cookie? (Can't be accessed by JavaScript — immune to XSS token theft)</li>
+            <li>How did you handle TypeScript in your React components? (Show prop types, event types, generic API response type)</li>
+            <li>How is the streak calculated? (Walk through the aggregation query or the JS logic)</li>
+            <li>What would you do differently at scale? (This is a system design question — Redis for sessions, horizontal scaling, database indexing)</li>
+          </ul>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Project 1 done when</div>
+          <ul class="done-list">
+            <li>Live URL on Render (or Railway) — works without running locally</li>
+            <li>GitHub repo with clean README: what it does, tech stack, how to run locally, screenshots</li>
+            <li>Zero <code>any</code> types in TypeScript code</li>
+            <li>Auth flow works end-to-end: register → login → token refresh on expiry → logout</li>
+            <li>You can demo the entire app in 3 minutes without stumbling</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tb-sec" style="margin-top:20px;">
+        <div class="tb-label">Tech + resources</div>
+        <div class="res-list">
+          <a class="res" href="https://render.com/docs/deploy-node-express-app" target="_blank">
+            <span class="res-icon">🚀</span>
+            <div class="res-body">
+              <div class="res-name">Render — Deploy Node.js App (free tier)</div>
+              <div class="res-what">Free hosting. Connect GitHub repo → auto-deploy on push. Add environment variables (MongoDB URI, JWT secret) in Render dashboard. Takes 10 min to set up.</div>
+              <div class="res-tags"><span class="rt free">free</span><span class="rt best">easiest deployment</span></div>
+            </div>
+          </a>
+          <a class="res" href="https://recharts.org/en-US/examples" target="_blank">
+            <span class="res-icon">📊</span>
+            <div class="res-body">
+              <div class="res-name">Recharts — chart examples</div>
+              <div class="res-what">Use BarChart for problems by topic, PieChart for application status. Copy the example code and adapt. 30 min total.</div>
+              <div class="res-tags"><span class="rt free">free</span></div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 2 -->
+<div id="p-p2" class="panel">
+  <div class="proj-card">
+    <div class="proj-header" style="background:linear-gradient(135deg,#001a1f 0%,#002830 100%);border-bottom:1px solid rgba(0,212,255,0.15);">
+      <div class="proj-big-num">02</div>
+      <div class="proj-num">Project 2 · Week 2–4 · Real-time + Redis</div>
+      <div class="proj-title" style="color:var(--p2)">CollabDocs</div>
+      <div class="proj-stack">React + TypeScript · Node.js · Socket.io · MongoDB · Redis · Docker · EC2</div>
+      <div class="proj-why">Real-time features are rare in fresher portfolios. WebSocket + Redis + Docker + cloud deployment is a combination that makes interviewers at Swiggy, PhonePe, and Zepto lean forward. This project alone differentiates you from 90% of freshers.</div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-body-grid">
+        <div>
+          <div class="pb-label">Features to build — in this order</div>
+          <ul class="feat-list">
+            <li><strong>Document CRUD</strong>: Create, read, update, delete documents. Each doc has a title, content, owner, list of collaborators.</li>
+            <li><strong>Real-time collaborative editing</strong>: Socket.io rooms per document. Broadcast changes to all connected users. Show who's typing (presence indicators).</li>
+            <li><strong>Conflict resolution (simple)</strong>: Last-write-wins with timestamps. More advanced: operational transformation (optional, mention it in interview).</li>
+            <li><strong>Auto-save</strong>: Debounce saves every 2 seconds of inactivity. Version history — store last 10 snapshots in MongoDB.</li>
+            <li><strong>Redis session store</strong>: Store user sessions in Redis for fast auth checks across socket connections.</li>
+            <li><strong>Redis rate limiting</strong>: Limit document saves to 30/minute per user using Redis atomic counters.</li>
+            <li><strong>Sharing</strong>: Share document with other users by email. They appear as collaborators.</li>
+            <li><strong>Docker + EC2</strong>: Dockerfile + docker-compose for backend + Redis. Deploy to EC2 with NGINX reverse proxy.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="pb-label">Week-by-week milestones</div>
+          <div class="milestone-list">
+            <div class="milestone-item"><span class="m-week">Day 1–3</span><span class="m-task"><strong>Backend setup</strong>: Express + Socket.io server. MongoDB document schema. Basic CRUD routes.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 4–6</span><span class="m-task"><strong>Real-time core</strong>: Socket.io rooms. Join/leave events. Broadcast edits. Presence (who's online).</span></div>
+            <div class="milestone-item"><span class="m-week">Day 7–9</span><span class="m-task"><strong>Frontend</strong>: React document editor UI. Socket.io client. Textarea syncs across browser tabs.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 10–11</span><span class="m-task"><strong>Redis</strong>: Add Redis. Session store. Rate limiting middleware.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 12–13</span><span class="m-task"><strong>Auto-save + history</strong>: Debounced save. Version history API. Restore from snapshot.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 14–16</span><span class="m-task"><strong>Docker + Deploy</strong>: Dockerfile, docker-compose. Push to EC2. NGINX config. Live URL.</span></div>
+          </div>
+        </div>
+        <div class="pitch-box">
+          <div class="pitch-label">How to explain this in an interview — 90 second pitch</div>
+          <div class="pitch-text">"CollabDocs is a real-time collaborative document editor — think Google Docs in miniature. <strong>The interesting engineering</strong>: I used Socket.io for WebSocket connections. Each document has its own socket room — when a user edits, the change is broadcast to all other users in that room instantly. For presence indicators, I track connected users per room in Redis so the server stays stateless. <strong>Redis does two jobs</strong>: stores active sessions for fast auth checks on socket connections, and rate-limits document saves at 30 per minute per user using atomic INCR + EXPIRE operations. <strong>Auto-save</strong> uses a debounce — waits 2 seconds of no typing, then saves and stores a version snapshot. Users can restore any of the last 10 versions. The whole backend is containerized with Docker and deployed on AWS EC2 behind an NGINX reverse proxy."</div>
+        </div>
+        <div>
+          <div class="pb-label">What interviewers ask — prepare these</div>
+          <ul class="feat-list">
+            <li>How does WebSocket differ from HTTP? Why use it here? (Full-duplex, persistent connection, server can push — HTTP is request-response only)</li>
+            <li>What happens if two users edit the same character simultaneously? (Last-write-wins, mention OT/CRDT as production solutions)</li>
+            <li>Why Redis for rate limiting instead of in-memory? (In-memory doesn't work across multiple server instances — Redis is shared)</li>
+            <li>What does NGINX do here? (Reverse proxy: routes HTTP/WebSocket to the Node server, handles SSL termination)</li>
+            <li>How would you scale this to 10,000 concurrent users? (This is system design — horizontal scaling, Redis pub/sub for socket events across instances, sticky sessions)</li>
+          </ul>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Project 2 done when</div>
+          <ul class="done-list">
+            <li>Open same document in 2 browser tabs — changes appear in both without refreshing</li>
+            <li>Presence indicator shows both users are editing</li>
+            <li>Live URL on EC2 (or Railway) accessible from any device</li>
+            <li>docker-compose up runs the entire stack (backend + Redis) in one command</li>
+            <li>README has architecture diagram showing: client → NGINX → Node → Redis/MongoDB</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tb-sec" style="margin-top:20px;">
+        <div class="tb-label">Key resources</div>
+        <div class="res-list">
+          <a class="res" href="https://socket.io/docs/v4/tutorial/introduction" target="_blank">
+            <span class="res-icon">🔌</span>
+            <div class="res-body">
+              <div class="res-name">Socket.io — Official Tutorial</div>
+              <div class="res-what">Build the basic chat app tutorial first (1 hour). Then adapt the room concept to documents. The tutorial teaches rooms, events, and broadcasting.</div>
+              <div class="res-tags"><span class="rt free">free</span><span class="rt best">start here for Socket.io</span></div>
+            </div>
+          </a>
+          <a class="res" href="https://redis.io/docs/latest/develop/connect/clients/nodejs/" target="_blank">
+            <span class="res-icon">🔴</span>
+            <div class="res-body">
+              <div class="res-name">Redis — Node.js client docs</div>
+              <div class="res-what">Use the ioredis package. Read: connect, SET/GET, INCR/EXPIRE (for rate limiting), key expiry. Install Redis locally via Docker: docker run -p 6379:6379 redis.</div>
+              <div class="res-tags"><span class="rt free">free</span></div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROJECT 3 -->
+<div id="p-p3" class="panel">
+  <div class="proj-card">
+    <div class="proj-header" style="background:linear-gradient(135deg,#1a0800 0%,#2a1000 100%);border-bottom:1px solid rgba(255,107,53,0.15);">
+      <div class="proj-big-num">03</div>
+      <div class="proj-num">Project 3 · Week 3–5 · Java Full Stack</div>
+      <div class="proj-title" style="color:var(--p3)">ShopFlow — Order Management API</div>
+      <div class="proj-stack">Spring Boot · Java · PostgreSQL · Spring Security + JWT · Docker · GitHub Actions CI</div>
+      <div class="proj-why">This is your Java proof. Most MERN-only freshers get filtered when a company uses Java on the backend (most fintech, enterprise, and large-scale companies in Bangalore do). This project adds ₹3–5 LPA to your negotiating position.</div>
+    </div>
+    <div class="proj-body">
+      <div class="proj-body-grid">
+        <div>
+          <div class="pb-label">Features to build — in this order</div>
+          <ul class="feat-list">
+            <li><strong>Data model</strong>: Users, Products, Orders, OrderItems, Categories. Proper JPA relationships with OneToMany, ManyToMany.</li>
+            <li><strong>REST API</strong>: Full CRUD for products and orders. Proper resource naming (/api/v1/products), HTTP methods, status codes.</li>
+            <li><strong>Spring Security + JWT</strong>: Role-based auth (USER, ADMIN). Users browse and order. Admins manage products. Unauthorized returns 401, forbidden returns 403.</li>
+            <li><strong>Order lifecycle</strong>: PENDING → CONFIRMED → SHIPPED → DELIVERED → CANCELLED. Status transitions validated server-side.</li>
+            <li><strong>Pagination + filtering</strong>: GET /products?category=electronics&minPrice=100&page=0&size=20&sort=price,asc</li>
+            <li><strong>Exception handling</strong>: @ControllerAdvice. Custom exceptions (OrderNotFoundException, InsufficientStockException). Standard error response format.</li>
+            <li><strong>Swagger docs</strong>: OpenAPI auto-generated. Every endpoint documented with request/response examples.</li>
+            <li><strong>Docker</strong>: Dockerfile + docker-compose with PostgreSQL. Run entire stack with one command.</li>
+            <li><strong>GitHub Actions CI</strong>: Run tests on every push. Build Docker image. Tests must pass before merging.</li>
+          </ul>
+        </div>
+        <div>
+          <div class="pb-label">Week-by-week milestones</div>
+          <div class="milestone-list">
+            <div class="milestone-item"><span class="m-week">Day 1–2</span><span class="m-task"><strong>Setup</strong>: Spring Initializr. PostgreSQL + Docker. JPA entities. Basic repository methods.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 3–4</span><span class="m-task"><strong>Product API</strong>: Full CRUD with pagination, filtering, sorting. Test with Postman.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 5–6</span><span class="m-task"><strong>Auth</strong>: Spring Security config. JWT filter. Register/login endpoints. Role-based access.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 7–9</span><span class="m-task"><strong>Order system</strong>: Order + OrderItem entities. Place order (reduce stock, create order). Order status transitions.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 10–11</span><span class="m-task"><strong>Exception handling + Swagger</strong>: @ControllerAdvice. @Valid on all DTOs. OpenAPI docs auto-generated.</span></div>
+            <div class="milestone-item"><span class="m-week">Day 12–14</span><span class="m-task"><strong>Docker + CI</strong>: Dockerfile, docker-compose with Postgres. GitHub Actions workflow. Tests pass.</span></div>
+          </div>
+        </div>
+        <div class="pitch-box">
+          <div class="pitch-label">How to explain this in an interview — 90 second pitch</div>
+          <div class="pitch-text">"ShopFlow is a RESTful order management API built with Spring Boot and PostgreSQL. <strong>Architecture</strong>: classic 3-layer — Controller handles HTTP, Service has business logic, Repository talks to the DB via JPA. Products, Orders, OrderItems, and Users are the main entities with proper JPA relationships. <strong>Auth</strong>: Spring Security with JWT. There are two roles — USER can browse and order, ADMIN manages the product catalog. The JWT filter validates the token on every request and populates the SecurityContext. <strong>Key challenge</strong>: the order placement is transactional — it checks stock availability, deducts stock, and creates the order atomically. If stock goes negative for any item, the whole transaction rolls back. <strong>Infrastructure</strong>: the entire stack runs with docker-compose up, and there's a GitHub Actions pipeline that runs the test suite on every push."</div>
+        </div>
+        <div>
+          <div class="pb-label">What interviewers ask — prepare these</div>
+          <ul class="feat-list">
+            <li>What's the difference between @RestController and @Controller? (@RestController = @Controller + @ResponseBody on every method)</li>
+            <li>What is lazy vs eager loading in JPA? What's the N+1 problem? (Lazy = load related entities only when accessed. N+1 = accessing lazy collection in a loop triggers N extra queries. Fix: JOIN FETCH)</li>
+            <li>How does @Transactional work? (Wraps method in DB transaction. Exception = rollback. Propagation and isolation level are configurable.)</li>
+            <li>Why constructor injection over @Autowired field injection? (Explicit dependencies, easier to test, no reflection)</li>
+            <li>How would you add rate limiting to this API? (Spring Boot + Redis rate limiter, or API gateway like Kong)</li>
+          </ul>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Project 3 done when</div>
+          <ul class="done-list">
+            <li>docker-compose up starts the full stack — Swagger UI accessible at /swagger-ui.html</li>
+            <li>GitHub Actions workflow runs on every push — test suite passes</li>
+            <li>Full order flow works: register → login → browse products → place order → check order status</li>
+            <li>Admin-only endpoints return 403 for USER-role tokens</li>
+            <li>README has: project overview, architecture diagram, how to run with Docker, API endpoint list</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="tb-sec" style="margin-top:20px;">
+        <div class="tb-label">Key resources</div>
+        <div class="res-list">
+          <a class="res" href="https://start.spring.io/" target="_blank">
+            <span class="res-icon">🍃</span>
+            <div class="res-body">
+              <div class="res-name">Spring Initializr</div>
+              <div class="res-what">Generate project. Select: Spring Web, Spring Data JPA, Spring Security, PostgreSQL Driver, Validation, Lombok, Spring Doc OpenAPI. Download and open in IntelliJ IDEA.</div>
+              <div class="res-tags"><span class="rt free">free</span></div>
+            </div>
+          </a>
+          <a class="res" href="https://www.baeldung.com/spring-boot-testing" target="_blank">
+            <span class="res-icon">🧪</span>
+            <div class="res-body">
+              <div class="res-name">Baeldung — Spring Boot Testing</div>
+              <div class="res-what">For GitHub Actions CI: write at least 5 integration tests using @SpringBootTest. Baeldung testing guide shows how. Tests = credibility in interviews.</div>
+              <div class="res-tags"><span class="rt free">free</span></div>
+            </div>
+          </a>
+          <a class="res" href="https://docs.github.com/en/actions/use-cases-and-examples/building-and-testing/building-and-testing-java-with-maven" target="_blank">
+            <span class="res-icon">⚙️</span>
+            <div class="res-body">
+              <div class="res-name">GitHub Actions — Java with Maven CI</div>
+              <div class="res-what">Official guide for setting up Java CI. Copy the workflow YAML, customize for your project. Takes 20 minutes to set up.</div>
+              <div class="res-tags"><span class="rt free">free</span></div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SYSTEM DESIGN -->
+<div id="p-sd" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(168,85,247,0.15);">🏗️</div>
+    <div>
+      <h2>System Design Basics</h2>
+      <p>Freshers get asked system design too — simpler versions, but still asked. "Design a URL shortener", "design a notification system", "design a rate limiter." Learn the framework first, then 3 specific designs, then the 6 building blocks that appear in every system.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">The framework — use for every system design question</div>
+    <div class="sd-framework">
+      <div class="sd-step">
+        <div class="sd-step-num">Step 1 · 5 min</div>
+        <div class="sd-step-title">Requirements</div>
+        <div class="sd-step-desc">Functional (what it does) + Non-functional (scale, latency, consistency). Ask: how many users? reads/writes ratio? data size?</div>
+      </div>
+      <div class="sd-step">
+        <div class="sd-step-num">Step 2 · 5 min</div>
+        <div class="sd-step-title">High-Level Design</div>
+        <div class="sd-step-desc">Draw the boxes: clients, load balancer, app servers, database, cache. Don't over-engineer yet.</div>
+      </div>
+      <div class="sd-step">
+        <div class="sd-step-num">Step 3 · 10 min</div>
+        <div class="sd-step-title">Deep Dive</div>
+        <div class="sd-step-desc">Pick 1–2 components to go deep. DB schema, algorithm, caching strategy, API design. Interviewer guides this.</div>
+      </div>
+      <div class="sd-step">
+        <div class="sd-step-num">Step 4 · 5 min</div>
+        <div class="sd-step-title">Scale + Trade-offs</div>
+        <div class="sd-step-desc">How does this handle 10x traffic? What breaks first? What are the trade-offs in your design choices?</div>
+      </div>
+    </div>
+
+    <div class="info-card sd">
+      <div class="info-title">💡 For freshers: don't try to design Netflix</div>
+      <div class="info-text">Interviewers at CRED/Razorpay/BrowserStack asking freshers for system design expect you to: know the building blocks (caching, load balancing, database types), apply them sensibly, and discuss trade-offs. They don't expect you to design Cassandra from scratch. Show structured thinking, not encyclopedic knowledge.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Design 1 — URL Shortener (most common fresher question)</div>
+    <div class="sd-box" id="sd1">
+      <div class="sd-q" onclick="toggleSD('sd1')">Design a URL shortener like bit.ly <span class="sd-arr">▼</span></div>
+      <div class="sd-a">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;">Requirements</div>
+            <ul class="feat-list">
+              <li><strong>Functional</strong>: Given a long URL, return a short URL. Given a short URL, redirect to long URL.</li>
+              <li><strong>Non-functional</strong>: 100M URLs, reads >> writes (100:1 ratio), low latency (&lt;100ms redirect), high availability</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;">DB Schema</div>
+            <ul class="feat-list">
+              <li><strong>urls table</strong>: id (PK), short_code (VARCHAR 7, unique index), long_url (TEXT), user_id (FK), created_at, expiry_at, click_count</li>
+              <li>Index on short_code for O(1) lookup</li>
+            </ul>
+          </div>
+        </div>
+        <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;">Key design decisions to discuss</div>
+        <ul class="feat-list" style="margin-bottom:12px;">
+          <li><strong>Short code generation</strong>: Base62 encode a counter (0-9, a-z, A-Z = 62 chars). 7 characters = 62^7 = 3.5 trillion URLs. Alternative: random hash (MD5, take first 7 chars) — risk of collision.</li>
+          <li><strong>Redirect type</strong>: 301 (permanent, browser caches — fewer server hits but can't track clicks) vs 302 (temporary, browser always hits server — can track clicks). Use 302 for analytics.</li>
+          <li><strong>Caching</strong>: Redis cache for hot URLs (reads are 100x writes). Cache short_code → long_url mapping. Cache eviction: LRU. TTL: 24 hours.</li>
+          <li><strong>Scaling</strong>: Read replicas for DB (most traffic is reads). Multiple app server instances behind load balancer. Redis cluster for cache.</li>
+          <li><strong>Custom slugs</strong>: Users can request custom short code (e.g., bit.ly/my-product-launch). Check availability, store as any other URL.</li>
+        </ul>
+        <div style="background:var(--s3);border-radius:8px;padding:12px;font-size:12px;color:var(--t2);">
+          <strong style="color:var(--t1);">Architecture diagram to draw:</strong> Client → Load Balancer → App Server (multiple) → [Redis Cache → PostgreSQL DB]. Write flow: App Server → DB (generate ID, base62 encode, store). Read flow: App Server → Redis (hit?) → if miss → DB → 302 redirect.
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-label">Design 2 — Notification System</div>
+    <div class="sd-box" id="sd2">
+      <div class="sd-q" onclick="toggleSD('sd2')">Design a notification system (like Swiggy order updates) <span class="sd-arr">▼</span></div>
+      <div class="sd-a">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;">Requirements</div>
+            <ul class="feat-list">
+              <li><strong>Channels</strong>: Push notification (mobile), SMS, email. User can set preferences.</li>
+              <li><strong>Scale</strong>: 10M notifications/day. Some are time-sensitive (order updates), some are not (promotional).</li>
+              <li><strong>Reliability</strong>: Notifications must be delivered at least once. Retry on failure.</li>
+            </ul>
+          </div>
+          <div>
+            <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;">Key components</div>
+            <ul class="feat-list">
+              <li><strong>Notification Service</strong>: Validates, routes to correct channel, enqueues</li>
+              <li><strong>Message Queue</strong>: Kafka or RabbitMQ. Decouple sender from delivery workers.</li>
+              <li><strong>Workers</strong>: Separate workers for push/SMS/email. Each reads from queue, calls 3rd party API.</li>
+              <li><strong>3rd party APIs</strong>: FCM (Firebase) for push, Twilio for SMS, SendGrid for email</li>
+            </ul>
+          </div>
+        </div>
+        <ul class="feat-list">
+          <li><strong>Message queue (why)</strong>: Order service publishes event → Notification service consumes. Decoupled, handles traffic spikes, retries on failure automatically.</li>
+          <li><strong>Priority queue</strong>: High-priority (order delivered) vs low-priority (promotional). Separate queues, workers process high-priority first.</li>
+          <li><strong>User preferences</strong>: Store in DB (user_id, channel, enabled). Check before sending — don't SMS a user who opted out.</li>
+          <li><strong>Retry logic</strong>: Dead letter queue for failed notifications. Retry 3 times with exponential backoff. Alert on repeated failures.</li>
+          <li><strong>Rate limiting</strong>: Don't send more than X notifications per user per day (spam prevention). Redis counter per user per day.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="sec-label">Design 3 — Rate Limiter</div>
+    <div class="sd-box" id="sd3">
+      <div class="sd-q" onclick="toggleSD('sd3')">Design a rate limiter for an API <span class="sd-arr">▼</span></div>
+      <div class="sd-a">
+        <ul class="feat-list" style="margin-bottom:12px;">
+          <li><strong>What it does</strong>: Limit requests per user/IP to N per time window. Return 429 when exceeded.</li>
+          <li><strong>Fixed window</strong>: Count requests per minute. Resets at minute boundary. Problem: burst at window boundary (100 at :59, 100 at :00 = 200 in 2 seconds).</li>
+          <li><strong>Sliding window log</strong>: Store timestamp of each request. Count within last 60 seconds. Accurate but memory-heavy (store all timestamps).</li>
+          <li><strong>Sliding window counter</strong>: Track current window count + fraction of previous window count. Approximate but memory-efficient. Most production choice.</li>
+          <li><strong>Token bucket</strong>: Bucket holds N tokens. Each request consumes 1 token. Tokens refill at fixed rate. Allows bursting up to bucket capacity.</li>
+          <li><strong>Redis implementation</strong>: For distributed rate limiting (across multiple servers): INCR key → if 1 (first request) set EXPIRE. If count exceeds limit → 429. Atomic operations.</li>
+        </ul>
+        <div class="code-wrap">
+          <div class="code-title">Redis rate limiter — sliding window counter</div>
+          <pre>
+<span class="ck">async function</span> <span class="cf">isRateLimited</span>(userId, limit = <span class="co">100</span>, windowMs = <span class="co">60000</span>) {
+    <span class="ck">const</span> key = <span class="cs">`rate:${userId}:${Math.floor(Date.now() / windowMs)}`</span>;
+    <span class="ck">const</span> count = <span class="ck">await</span> redis.<span class="cf">incr</span>(key);
+    <span class="ck">if</span> (count === <span class="co">1</span>) <span class="ck">await</span> redis.<span class="cf">expire</span>(key, windowMs / <span class="co">1000</span>);
+    <span class="ck">return</span> count > limit;  <span class="cm">// true = rate limited → return 429</span>
+}
+<span class="cm">// INCR is atomic — no race condition in distributed environment</span>
+<span class="cm">// Key includes time window — auto-expires, no cleanup needed</span></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">6 building blocks — know all of these</div>
+    <div class="concept-grid">
+      <div class="concept-card">
+        <div class="cc-icon">⚖️</div>
+        <div class="cc-title">Load Balancer</div>
+        <div class="cc-desc">Distributes traffic across multiple app servers. Round-robin, least-connections, or consistent hashing. Enables horizontal scaling. Health checks remove failed servers.</div>
+      </div>
+      <div class="concept-card">
+        <div class="cc-icon">⚡</div>
+        <div class="cc-title">Caching (Redis)</div>
+        <div class="cc-desc">Store frequently read data in memory (microseconds) instead of DB (milliseconds). Cache-aside pattern: check cache → if miss → read DB → write to cache. Eviction: LRU. TTL prevents stale data.</div>
+      </div>
+      <div class="concept-card">
+        <div class="cc-icon">🌐</div>
+        <div class="cc-title">CDN</div>
+        <div class="cc-desc">Content Delivery Network: serve static assets (images, JS, CSS) from edge servers close to users. Reduces latency from 200ms to 10ms for static content. CloudFront, Cloudflare.</div>
+      </div>
+      <div class="concept-card">
+        <div class="cc-icon">📨</div>
+        <div class="cc-title">Message Queue</div>
+        <div class="cc-desc">Decouple services: producer publishes, consumer processes asynchronously. Handles traffic spikes (queue absorbs burst). Retry on failure. Kafka for high-throughput, RabbitMQ for simpler use cases.</div>
+      </div>
+      <div class="concept-card">
+        <div class="cc-icon">🗄️</div>
+        <div class="cc-title">Database Sharding</div>
+        <div class="cc-desc">Split data across multiple DB instances (shards). Each shard holds a subset of data. Horizontal scaling for writes. Routing: hash of user_id → shard. Downside: cross-shard queries are expensive.</div>
+      </div>
+      <div class="concept-card">
+        <div class="cc-icon">📖</div>
+        <div class="cc-title">Read Replicas</div>
+        <div class="cc-desc">Primary DB handles writes. Replica DBs replicate data and serve reads. Most apps are read-heavy (10:1 ratio). Replicas scale reads without touching the primary. Small replication lag (eventual consistency for reads).</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Best resource for system design</div>
+    <div class="res-list">
+      <a class="res" href="https://github.com/donnemartin/system-design-primer" target="_blank">
+        <span class="res-icon">📚</span>
+        <div class="res-body">
+          <div class="res-name">System Design Primer — GitHub (donnemartin)</div>
+          <div class="res-what">The most comprehensive free system design resource. For Phase 3: read the "How to approach a system design interview" section + the 6 topics above (caching, load balancing, CDN, message queues, database scaling, read replicas). Don't try to read all 200 pages — that's Phase 4+.</div>
+          <div class="res-tags"><span class="rt free">free</span><span class="rt best">best SD resource</span></div>
+        </div>
+      </a>
+      <a class="res" href="https://www.youtube.com/@ByteByteGo" target="_blank">
+        <span class="res-icon">▶</span>
+        <div class="res-body">
+          <div class="res-name">ByteByteGo — System Design YouTube</div>
+          <div class="res-what">Watch: URL Shortener, Notification System, Rate Limiter, and Web Crawler videos. Each is 5–10 min with great visuals. Perfect for the 3 designs above.</div>
+          <div class="res-tags"><span class="rt free">free</span><span class="rt best">best videos</span></div>
+        </div>
+      </a>
+    </div>
+
+    <div style="margin-top:16px;">
+      <div class="sec-label">System design prep prompt</div>
+      <div class="prompt-block">
+        <button class="copy-btn" onclick="copyText(this)">copy</button>
+        <pre>I am a fresher preparing for system design rounds at Bangalore product companies (Swiggy, PhonePe, CRED level). I need fresher-level depth — not FAANG level.
+
+Design challenge: [SYSTEM NAME e.g. "URL Shortener" or "Notification System"]
+
+Guide me through the design with these steps:
+1. First, ask me the clarifying questions I should ask the interviewer
+2. After I answer, show me what the requirements should look like
+3. Walk me through the high-level architecture — what boxes to draw
+4. Deep dive into the most interesting component (you pick the most interview-relevant one)
+5. What trade-offs should I mention to impress the interviewer?
+6. Give me 3 follow-up questions the interviewer might ask + strong answers
+
+For each step: first tell me what to think about, then show the full answer. I want to learn the reasoning, not just memorize the answer.</pre>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DOCKER -->
+<div id="p-docker" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(36,150,237,0.15);">🐳</div>
+    <div>
+      <h2>Docker — Containerize Everything</h2>
+      <p>Docker packages your app and all its dependencies into a container that runs identically everywhere. "Works on my machine" stops being an excuse. Every project you build should have a Dockerfile. Interviewers at good companies expect this.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">What to learn — in order</div>
+
+    <div class="topic" id="dk-1">
+      <div class="topic-head" onclick="expand('dk-1')">
+        <div class="t-check" onclick="check(event,'dk-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Docker basics — images, containers, volumes, networks</div>
+          <div class="t-sub">What Docker solves, core concepts, essential CLI commands</div>
+        </div>
+        <span class="t-badge b-must">must · understand before Dockerfile</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Image</strong>: blueprint/template. Built from Dockerfile. Immutable. Like a class definition.</li>
+            <li><strong>Container</strong>: running instance of an image. Like an object from a class. Isolated process with own filesystem.</li>
+            <li><strong>Volume</strong>: persistent storage outside container lifecycle. Data survives container restarts. Used for DB data.</li>
+            <li><strong>Network</strong>: containers on same Docker network communicate by container name (not localhost).</li>
+            <li>Key commands: <code>docker build -t name .</code>, <code>docker run -p 3000:3000 name</code>, <code>docker ps</code>, <code>docker stop id</code>, <code>docker exec -it id sh</code>, <code>docker logs id</code></li>
+            <li><code>-p 8080:3000</code>: host port 8080 maps to container port 3000. Access via localhost:8080.</li>
+            <li><code>-e NODE_ENV=production</code>: pass environment variables to container. Never hardcode secrets in Dockerfile.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://docs.docker.com/get-started/" target="_blank">
+              <span class="res-icon">🐳</span>
+              <div class="res-body">
+                <div class="res-name">Docker official — Get Started guide</div>
+                <div class="res-what">Follow Part 1–4: containerize an app, run multi-container, use volumes. Takes 2 hours. Actually run the commands — don't just read.</div>
+                <div class="res-tags"><span class="rt free">free</span><span class="rt best">official + hands-on</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="dk-2">
+      <div class="topic-head" onclick="expand('dk-2')">
+        <div class="t-check" onclick="check(event,'dk-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Writing Dockerfiles — Node.js and Spring Boot</div>
+          <div class="t-sub">Multi-stage builds, .dockerignore, production vs development configs</div>
+        </div>
+        <span class="t-badge b-must">must · write these from memory</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Node.js Dockerfile — production-ready</div>
+          <div class="code-wrap">
+            <div class="code-title">Dockerfile — Node.js (multi-stage)</div>
+            <pre>
+<span class="cm"># Stage 1: Build (install all deps including devDependencies)</span>
+<span class="ck">FROM</span> node:<span class="co">20</span>-alpine <span class="ck">AS</span> builder
+<span class="ck">WORKDIR</span> /app
+<span class="ck">COPY</span> package*.json ./
+<span class="ck">RUN</span> npm ci                    <span class="cm"># ci = clean install, faster + reproducible</span>
+<span class="ck">COPY</span> . .
+<span class="ck">RUN</span> npm run build             <span class="cm"># compile TypeScript → dist/</span>
+
+<span class="cm"># Stage 2: Production (only runtime deps, smaller image)</span>
+<span class="ck">FROM</span> node:<span class="co">20</span>-alpine
+<span class="ck">WORKDIR</span> /app
+<span class="ck">COPY</span> package*.json ./
+<span class="ck">RUN</span> npm ci --omit=dev         <span class="cm"># only production dependencies</span>
+<span class="ck">COPY</span> --from=builder /app/dist ./dist
+<span class="ck">EXPOSE</span> <span class="co">3000</span>
+<span class="ck">CMD</span> [<span class="cs">"node"</span>, <span class="cs">"dist/server.js"</span>]
+
+<span class="cm"># .dockerignore (always create this!):</span>
+<span class="cm"># node_modules</span>
+<span class="cm"># .env</span>
+<span class="cm"># .git</span>
+<span class="cm"># *.md</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Spring Boot Dockerfile</div>
+          <div class="code-wrap">
+            <div class="code-title">Dockerfile — Spring Boot (multi-stage Maven build)</div>
+            <pre>
+<span class="cm"># Stage 1: Build with Maven</span>
+<span class="ck">FROM</span> maven:<span class="co">3</span>.<span class="co">9</span>-eclipse-temurin-21 <span class="ck">AS</span> builder
+<span class="ck">WORKDIR</span> /app
+<span class="ck">COPY</span> pom.xml .
+<span class="ck">RUN</span> mvn dependency:go-offline   <span class="cm"># cache dependencies layer</span>
+<span class="ck">COPY</span> src ./src
+<span class="ck">RUN</span> mvn package -DskipTests     <span class="cm"># build JAR, skip tests (tests run in CI)</span>
+
+<span class="cm"># Stage 2: Run with minimal JRE</span>
+<span class="ck">FROM</span> eclipse-temurin:<span class="co">21</span>-jre-alpine
+<span class="ck">WORKDIR</span> /app
+<span class="ck">COPY</span> --from=builder /app/target/*.jar app.jar
+<span class="ck">EXPOSE</span> <span class="co">8080</span>
+<span class="ck">ENTRYPOINT</span> [<span class="cs">"java"</span>, <span class="cs">"-jar"</span>, <span class="cs">"app.jar"</span>]</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="dk-3">
+      <div class="topic-head" onclick="expand('dk-3')">
+        <div class="t-check" onclick="check(event,'dk-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">docker-compose — multi-container apps</div>
+          <div class="t-sub">Define entire stack in one YAML file. One command to start everything.</div>
+        </div>
+        <span class="t-badge b-must">must · every project needs this</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">docker-compose for CollabDocs (Node + Redis + MongoDB)</div>
+          <div class="code-wrap">
+            <div class="code-title">docker-compose.yml — full stack</div>
+            <pre>
+version: <span class="cs">'3.9'</span>
+services:
+  backend:
+    build: .
+    ports:
+      - <span class="cs">"3000:3000"</span>
+    environment:
+      - NODE_ENV=production
+      - MONGO_URI=mongodb://mongo:27017/collabdocs  <span class="cm"># 'mongo' = service name</span>
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET=${JWT_SECRET}  <span class="cm"># from .env file</span>
+    depends_on:
+      - mongo
+      - redis
+    restart: unless-stopped
+
+  mongo:
+    image: mongo:7
+    volumes:
+      - mongo_data:/data/db  <span class="cm"># persist data across restarts</span>
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  mongo_data:
+  redis_data:
+
+<span class="cm"># Run: docker-compose up -d</span>
+<span class="cm"># Stop: docker-compose down</span>
+<span class="cm"># Logs: docker-compose logs -f backend</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Interview questions on Docker</div>
+          <ul class="learn-list">
+            <li><strong>"What is Docker and why use it?"</strong> Containerization: packages app + dependencies + runtime into isolated unit. Runs identically in dev, staging, production. Eliminates environment differences.</li>
+            <li><strong>"What's the difference between an image and a container?"</strong> Image = static blueprint (like a class). Container = running instance (like an object). Multiple containers can run from same image.</li>
+            <li><strong>"What is multi-stage build and why use it?"</strong> Build in one image (has compiler/build tools), copy artifacts to a smaller runtime image. Result: much smaller production image (800MB → 100MB).</li>
+            <li><strong>"How does docker-compose networking work?"</strong> Services on the same compose network communicate by service name (not localhost). Backend connects to MongoDB at <code>mongo:27017</code> where "mongo" is the service name.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DEPLOY -->
+<div id="p-deploy" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(255,153,0,0.15);">☁️</div>
+    <div>
+      <h2>Deployment — Live URLs on Your Resume</h2>
+      <p>A project without a live URL is half a project. Interviewers want to click a link and see it working. Deploy CollabDocs on EC2 (shows cloud knowledge), keep DevTracker on Render (simpler, always up). Use Neon or Railway for managed PostgreSQL.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Option A — Render / Railway (easiest, free, for DevTracker)</div>
+
+    <div class="topic" id="dep-1">
+      <div class="topic-head" onclick="expand('dep-1')">
+        <div class="t-check" onclick="check(event,'dep-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Deploy Node.js app to Render (free)</div>
+          <div class="t-sub">GitHub integration, environment variables, MongoDB Atlas free tier</div>
+        </div>
+        <span class="t-badge b-must">must · deploy DevTracker here</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Step-by-step</div>
+          <ul class="learn-list">
+            <li><strong>MongoDB Atlas</strong>: Create free cluster at atlas.mongodb.com. Get connection string: <code>mongodb+srv://user:pass@cluster.mongodb.net/dbname</code></li>
+            <li><strong>Render.com</strong>: Connect GitHub repo. Select "Web Service". Build command: <code>npm install && npm run build</code>. Start command: <code>npm start</code>.</li>
+            <li><strong>Environment variables</strong>: Add in Render dashboard — MONGO_URI, JWT_SECRET, REFRESH_TOKEN_SECRET, NODE_ENV=production, CLIENT_URL (for CORS).</li>
+            <li><strong>Frontend</strong>: Build React app (<code>npm run build</code>). Deploy dist/ folder to Render Static Site or Vercel. Add backend URL as environment variable: VITE_API_URL.</li>
+            <li>Free tier sleeps after 15 min inactivity — acceptable for portfolio projects. Add an "About" note in your README explaining this.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://render.com/docs/deploy-node-express-app" target="_blank">
+              <span class="res-icon">🚀</span>
+              <div class="res-body">
+                <div class="res-name">Render — Deploy Node Express App</div>
+                <div class="res-what">Follow this guide. 20 minutes from GitHub repo to live URL. Free tier is enough for portfolio projects.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+            <a class="res" href="https://vercel.com/docs/frameworks/vite" target="_blank">
+              <span class="res-icon">▲</span>
+              <div class="res-body">
+                <div class="res-name">Vercel — Deploy Vite/React App</div>
+                <div class="res-what">Import GitHub repo. Zero config for Vite. Add VITE_API_URL environment variable. Done in 5 minutes.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Option B — AWS EC2 + NGINX (for CollabDocs — shows cloud skills)</div>
+
+    <div class="topic" id="dep-2">
+      <div class="topic-head" onclick="expand('dep-2')">
+        <div class="t-check" onclick="check(event,'dep-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Deploy Docker app to EC2 with NGINX</div>
+          <div class="t-sub">Launch EC2, install Docker, pull and run containers, NGINX reverse proxy</div>
+        </div>
+        <span class="t-badge b-must">must · deploy CollabDocs here</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Step-by-step — the actual commands</div>
+          <div class="code-wrap">
+            <div class="code-title">EC2 deployment — all commands in order</div>
+            <pre>
+<span class="cm"># 1. Launch EC2 instance</span>
+<span class="cm"># AWS Console → EC2 → Launch → Ubuntu 22.04 → t3.micro (free tier) → open ports 22, 80, 443</span>
+
+<span class="cm"># 2. SSH in</span>
+ssh -i your-key.pem ubuntu@your-ec2-ip
+
+<span class="cm"># 3. Install Docker</span>
+sudo apt update
+sudo apt install -y docker.io docker-compose-v2
+sudo usermod -aG docker ubuntu  <span class="cm"># allow running docker without sudo</span>
+<span class="cm"># log out and log back in for group change to take effect</span>
+
+<span class="cm"># 4. Clone your repo and create .env file</span>
+git clone https://github.com/yourusername/collabdocs
+cd collabdocs
+nano .env  <span class="cm"># add JWT_SECRET, MONGO_URI etc.</span>
+
+<span class="cm"># 5. Run with docker-compose</span>
+docker compose up -d  <span class="cm"># -d = detached (background)</span>
+docker compose logs -f  <span class="cm"># watch logs</span>
+
+<span class="cm"># 6. Install NGINX as reverse proxy</span>
+sudo apt install -y nginx
+sudo nano /etc/nginx/sites-available/collabdocs</pre>
+          </div>
+          <div class="code-wrap">
+            <div class="code-title">NGINX config — reverse proxy + WebSocket support</div>
+            <pre>
+server {
+    listen 80;
+    server_name your-domain.com;  <span class="cm"># or EC2 public IP</span>
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;     <span class="cm"># WebSocket support</span>
+        proxy_set_header Connection <span class="cs">'upgrade'</span>;
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+<span class="cm"># Enable config:</span>
+<span class="cm"># sudo ln -s /etc/nginx/sites-available/collabdocs /etc/nginx/sites-enabled/</span>
+<span class="cm"># sudo nginx -t && sudo systemctl reload nginx</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">What to know for interviews about this setup</div>
+          <ul class="learn-list">
+            <li><strong>Why NGINX in front of Node?</strong> NGINX handles SSL termination, serves static files (10x faster than Node), can act as load balancer, and is battle-tested for production traffic.</li>
+            <li><strong>WebSocket in NGINX</strong>: the <code>Upgrade</code> and <code>Connection</code> headers tell NGINX to proxy the WebSocket protocol upgrade, not just HTTP.</li>
+            <li><strong>Security group (firewall)</strong>: EC2 security group controls which ports are open to the internet. Only 22 (SSH), 80 (HTTP), 443 (HTTPS) should be public. All other ports blocked.</li>
+            <li><strong>HTTPS</strong>: use Let's Encrypt (certbot) for free SSL certificate. <code>sudo certbot --nginx -d your-domain.com</code>. Auto-renews every 90 days.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://www.digitalocean.com/community/tutorials/how-to-install-nginx-on-ubuntu-22-04" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">DigitalOcean — NGINX on Ubuntu</div>
+                <div class="res-what">Best NGINX setup guide. Follow the full tutorial. Works on EC2 (same Ubuntu). Then add the reverse proxy config from above.</div>
+                <div class="res-tags"><span class="rt free">free</span><span class="rt best">best NGINX guide</span></div>
+              </div>
+            </a>
+            <a class="res" href="https://aws.amazon.com/ec2/getting-started/" target="_blank">
+              <span class="res-icon">☁️</span>
+              <div class="res-body">
+                <div class="res-name">AWS — EC2 Getting Started</div>
+                <div class="res-what">Launch your first EC2. Free tier: t3.micro, 750 hours/month. Use us-east-1 region. Download the .pem key — you need it to SSH in.</div>
+                <div class="res-tags"><span class="rt free">free tier</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="dep-3">
+      <div class="topic-head" onclick="expand('dep-3')">
+        <div class="t-check" onclick="check(event,'dep-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">PostgreSQL on Neon (managed, free)</div>
+          <div class="t-sub">For Spring Boot project — free managed PostgreSQL, no EC2 setup needed</div>
+        </div>
+        <span class="t-badge b-high">high value</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Why Neon over self-hosted PostgreSQL</div>
+          <ul class="learn-list">
+            <li><strong>Neon.tech</strong>: Serverless PostgreSQL. Free tier: 3GB storage, unlimited connections. Get a JDBC connection string immediately after signup.</li>
+            <li>Add connection string to Spring Boot's application.properties: <code>spring.datasource.url=jdbc:postgresql://ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require</code></li>
+            <li>Add <code>spring.jpa.hibernate.ddl-auto=update</code> for the first deploy — Hibernate creates tables automatically.</li>
+            <li>Alternative: Railway PostgreSQL (also free, slightly simpler setup)</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://neon.tech/docs/connect/connect-from-any-app" target="_blank">
+              <span class="res-icon">🐘</span>
+              <div class="res-body">
+                <div class="res-name">Neon.tech — Connect from Java/Spring</div>
+                <div class="res-what">Sign up, create DB, get JDBC URL. Follow the Java connection guide. 15 minutes to have a production Postgres running.</div>
+                <div class="res-tags"><span class="rt free">free tier</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PLAN -->
+<div id="p-plan" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(244,63,94,0.15);">📅</div>
+    <div>
+      <h2>5-Week Plan</h2>
+      <p>Projects run in parallel because building takes more time than learning — you'll finish one while another is in progress. System design runs throughout all 5 weeks (30 min daily). DSA continues at 2 problems/day.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Week-by-week breakdown</div>
+    <div class="week-row">
+      <div class="wr-week">WEEK 1</div>
+      <div class="wr-col"><strong>Project 1 (DevTracker)</strong>Setup + Auth + Job tracker CRUD. Commit daily.</div>
+      <div class="wr-col"><strong>System Design</strong>Read SD Primer intro. Watch ByteByteGo URL Shortener video. Learn the 4-step framework.</div>
+    </div>
+    <div class="week-row">
+      <div class="wr-week">WEEK 2</div>
+      <div class="wr-col"><strong>Project 1 — finish</strong>DSA tracker, dashboard, charts, deploy to Render. Write README with screenshots.</div>
+      <div class="wr-col"><strong>Project 2 (CollabDocs) — start</strong>Backend + Socket.io rooms. Real-time editing working in browser.</div>
+    </div>
+    <div class="week-row">
+      <div class="wr-week">WEEK 3</div>
+      <div class="wr-col"><strong>Project 2 — continue</strong>Redis session + rate limiting. Auto-save + version history. Frontend UI.</div>
+      <div class="wr-col"><strong>Project 3 (ShopFlow) — start</strong>Spring Boot setup, entities, product CRUD API, JPA relationships.</div>
+    </div>
+    <div class="week-row">
+      <div class="wr-week">WEEK 4</div>
+      <div class="wr-col"><strong>Project 2 — finish + Docker</strong>Dockerize CollabDocs (Node + Redis). Deploy to EC2 with NGINX. Live URL.</div>
+      <div class="wr-col"><strong>Project 3 — continue</strong>Auth (Spring Security + JWT), order system with transactions, exception handling.</div>
+    </div>
+    <div class="week-row">
+      <div class="wr-week">WEEK 5</div>
+      <div class="wr-col"><strong>Project 3 — finish</strong>Swagger docs, GitHub Actions CI, Dockerfile + docker-compose, Neon PostgreSQL deploy.</div>
+      <div class="wr-col"><strong>System Design review</strong>Practice all 3 designs out loud. 1 mock SD interview with AI. Fix weak spots.</div>
+    </div>
+
+    <div class="info-card good" style="margin-top:20px;">
+      <div class="info-title">✓ Daily non-negotiables — even during heavy project weeks</div>
+      <div class="info-text">2 DSA problems every morning (you've been doing this since Phase 1 — don't stop). 1 GitHub commit per day to at least one project (even a small fix counts). 30 min system design — read one concept, explain it back in your own words. These three habits compound. Skipping even one day breaks the streak and the habit.</div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Phase 3 done criteria — gate to Phase 4</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">All 3 projects have live URLs — accessible from any phone without running locally</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">Each project has a README with: what it does, tech stack, architecture diagram (even a text one), how to run with Docker, live demo link</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">You can demo each project in 3 minutes without stumbling — practice this out loud at least 3 times</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">You can answer the 5 follow-up questions listed under each project without notes</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">Design URL shortener on a whiteboard in 10 minutes using the 4-step framework — cover requirements, architecture, DB schema, caching, scale</span></div>
+      <div style="display:flex;align-items:flex-start;gap=10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">Explain what all 6 system design building blocks are and when to use each — caching, load balancer, CDN, message queue, sharding, read replicas</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">docker-compose up for CollabDocs and ShopFlow starts the full stack in one command — tested and working</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">The project deep-dive prep prompt</div>
+    <div class="prompt-block">
+      <button class="copy-btn" onclick="copyText(this)">copy</button>
+      <pre>/project-review
+
+Project: [Project name]
+Stack: [Your exact stack]
+GitHub: [Link or paste README]
+Live URL: [Link]
+
+What it does: [1-2 sentences]
+Features built: [list them]
+Biggest technical challenge: [what was hard and how you solved it]
+
+Review this across 5 dimensions:
+1. Architecture — is this how real companies build this? What's missing or wrong?
+2. Security — what vulnerabilities exist? What would you fix before a production launch?
+3. Scalability — what breaks first at 10x traffic? How would you fix it?
+4. Code quality — what should I clean up before showing an interviewer?
+5. Interview pitch — give me a 90-second pitch for this project that sounds impressive
+
+Then give me:
+- 7 follow-up questions the interviewer will ask about this specific project
+- Strong answers for each
+- One "wow factor" I can add in 1–2 days that makes this project more impressive</pre>
+    </div>
+  </div>
+</div>
+
+<script>
+function go(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('p-' + name).classList.add('on');
+  btn.classList.add('on');
+  window.scrollTo(0,0);
+}
+function expand(id) {
+  const t = document.getElementById(id);
+  if (!t.classList.contains('done')) t.classList.toggle('open');
+}
+function check(e, id) {
+  e.stopPropagation();
+  const t = document.getElementById(id);
+  t.classList.toggle('done');
+  if (t.classList.contains('done')) t.classList.remove('open');
+}
+function toggleSD(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+function copyText(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 2000);
+  });
+}
+</script>
+</body>
+</html>
