@@ -1,0 +1,1744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 2 — DSA Advanced + Full Stack</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+:root{
+  --bg:#09090b;--s1:#111113;--s2:#18181b;--s3:#27272a;--b1:#3f3f46;--b2:#52525b;
+  --t1:#fafafa;--t2:#a1a1aa;--t3:#52525b;
+  --mono:'Space Mono',monospace;--sans:'Space Grotesk',sans-serif;
+  --graph:#06b6d4;--dp:#f97316;--heap:#a855f7;--trie:#22c55e;--greedy:#eab308;
+  --react:#61dafb;--node:#68a063;--spring:#6db33f;--mongo:#47a248;--ts:#3178c6;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.6;}
+
+.topbar{padding:28px 32px 24px;border-bottom:1px solid var(--s3);}
+.topbar h1{font-size:22px;font-weight:700;margin-bottom:6px;}
+.topbar p{font-size:13px;color:var(--t2);max-width:640px;}
+.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.tag{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid var(--b1);color:var(--t2);}
+.tag.hi{border-color:#f97316;color:#f97316;}
+.tag.bl{border-color:#06b6d4;color:#06b6d4;}
+
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--s3);scrollbar-width:none;padding:0 32px;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{font-family:var(--mono);font-size:10px;padding:12px 16px;border:none;background:none;
+  color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;
+  display:flex;align-items:center;gap:6px;transition:color 0.15s;letter-spacing:0.04em;}
+.tab:hover{color:var(--t2);}
+.tab.on{color:var(--t1);border-bottom-color:currentColor;}
+.tdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+.panel{display:none;padding:32px;max-width:980px;}
+.panel.on{display:block;}
+
+.sh{display:flex;align-items:flex-start;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--s3);}
+.sh-badge{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.sh h2{font-size:20px;font-weight:700;margin-bottom:4px;}
+.sh p{font-size:12px;color:var(--t2);line-height:1.6;max-width:600px;}
+
+.section{margin-bottom:36px;}
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--s3);}
+
+.topic{background:var(--s1);border:1px solid var(--s3);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+.topic-head{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;cursor:pointer;}
+.topic-head:hover{background:var(--s2);}
+.t-check{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--b1);flex-shrink:0;display:flex;
+  align-items:center;justify-content:center;font-size:11px;color:transparent;margin-top:1px;cursor:pointer;transition:all 0.15s;}
+.topic.done .t-check{background:#16a34a;border-color:#16a34a;color:#fff;}
+.t-main{flex:1;}
+.t-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:3px;}
+.topic.done .t-name{color:var(--t3);text-decoration:line-through;}
+.t-sub{font-size:12px;color:var(--t2);}
+.topic.done .t-sub{color:var(--t3);}
+.t-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+.b-must{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+.b-high{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);}
+.b-dev{background:rgba(99,102,241,0.15);color:#a5b4fc;border:1px solid rgba(99,102,241,0.3);}
+
+.topic-body{display:none;padding:0 16px 16px 16px;border-top:1px solid var(--s3);}
+.topic.open .topic-body{display:block;}
+
+.tb-sec{margin-top:14px;}
+.tb-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+
+.learn-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.learn-list li{font-size:12px;color:var(--t2);padding-left:14px;position:relative;line-height:1.5;}
+.learn-list li::before{content:'→';position:absolute;left:0;color:var(--b2);font-size:11px;}
+.learn-list li strong{color:var(--t1);font-weight:500;}
+
+.prob-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:4px;}
+.prob-table th{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);text-align:left;padding:7px 10px;border-bottom:1px solid var(--s3);background:var(--s2);}
+.prob-table td{padding:8px 10px;border-bottom:1px solid var(--s3);color:var(--t2);vertical-align:top;}
+.prob-table tr:last-child td{border-bottom:none;}
+.diff{font-family:var(--mono);font-size:10px;padding:1px 6px;border-radius:3px;}
+.d-e{background:rgba(34,197,94,0.15);color:#4ade80;}
+.d-m{background:rgba(234,179,8,0.15);color:#fbbf24;}
+.d-h{background:rgba(239,68,68,0.15);color:#f87171;}
+.prob-link{color:var(--t2);text-decoration:none;font-size:11px;}
+.prob-link:hover{color:var(--t1);}
+
+.pattern-box{background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.2);border-radius:8px;padding:12px 14px;margin-top:8px;}
+.pat-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#c084fc;margin-bottom:6px;}
+.pat-text{font-size:12px;color:var(--t2);line-height:1.6;}
+.pat-text strong{color:var(--t1);}
+
+.gotcha{display:flex;gap:10px;padding:12px 14px;border-radius:8px;background:rgba(234,179,8,0.06);border:1px solid rgba(234,179,8,0.2);margin-top:8px;}
+.gotcha p{font-size:12px;color:#fef08a;line-height:1.5;}
+.gotcha p strong{color:#fde047;}
+
+.done-box{background:rgba(16,185,129,0.05);border:1px solid rgba(16,185,129,0.2);border-radius:8px;padding:12px 14px;margin-top:8px;}
+.done-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#34d399;margin-bottom:6px;}
+.done-list{list-style:none;}
+.done-list li{font-size:12px;color:var(--t2);padding:3px 0 3px 16px;position:relative;}
+.done-list li::before{content:'✓';position:absolute;left:0;color:#34d399;font-size:10px;}
+
+.res-list{display:flex;flex-direction:column;gap:6px;}
+.res{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--s2);border:1px solid var(--s3);border-radius:8px;text-decoration:none;color:inherit;transition:border-color 0.15s;}
+.res:hover{border-color:var(--b1);}
+.res-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.res-body{flex:1;}
+.res-name{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:2px;}
+.res-what{font-size:11px;color:var(--t2);line-height:1.4;}
+.res-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;}
+.rt{font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:3px;background:var(--s3);color:var(--t3);}
+.rt.free{background:rgba(34,197,94,0.1);color:#4ade80;}
+.rt.best{background:rgba(234,179,8,0.1);color:#fbbf24;}
+
+.code-wrap{background:#0d1117;border:1px solid var(--s3);border-radius:8px;margin-top:8px;overflow:hidden;}
+.code-title{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);padding:8px 14px;border-bottom:1px solid var(--s3);}
+.code-wrap pre{font-family:var(--mono);font-size:11px;line-height:1.8;padding:12px 14px;color:#c9d1d9;overflow-x:auto;white-space:pre;}
+.ck{color:#ff7b72;}.cs{color:#a5d6ff;}.cm{color:#8b949e;font-style:italic;}.cf{color:#d2a8ff;}.cn{color:#79c0ff;}.co{color:#ffa657;}
+
+.info-card{padding:14px 16px;background:var(--s1);border:1px solid var(--s3);border-radius:10px;margin-bottom:10px;}
+.info-card.warn{border-left:3px solid #fbbf24;}
+.info-card.good{border-left:3px solid #4ade80;}
+.info-card.info{border-left:3px solid #60a5fa;}
+.info-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.info-card.warn .info-title{color:#fbbf24;}
+.info-card.good .info-title{color:#4ade80;}
+.info-card.info .info-title{color:#60a5fa;}
+.info-text{font-size:12px;color:var(--t2);line-height:1.6;}
+
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-bottom:28px;}
+.ov-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:14px;cursor:pointer;transition:border-color 0.15s;}
+.ov-card:hover{border-color:var(--b1);}
+.ov-num{font-family:var(--mono);font-size:10px;color:var(--t3);margin-bottom:4px;}
+.ov-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.ov-meta{font-size:11px;color:var(--t2);}
+.ov-bar{height:3px;border-radius:2px;margin-top:10px;background:var(--s3);}
+
+.prompt-block{background:#0a1000;border:1px solid rgba(74,222,128,0.2);border-radius:10px;padding:18px;position:relative;}
+.prompt-block pre{font-family:var(--mono);font-size:11px;color:#86efac;line-height:1.8;white-space:pre-wrap;}
+.copy-btn{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:9px;padding:4px 10px;border:1px solid rgba(74,222,128,0.3);border-radius:4px;background:none;color:#4ade80;cursor:pointer;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:8px;}
+@media(max-width:640px){.two-col{grid-template-columns:1fr;}.topbar,.tabs,.panel{padding-left:16px;padding-right:16px;}}
+
+/* DP table */
+.dp-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:8px;}
+.dp-table th{font-family:var(--mono);font-size:9px;text-transform:uppercase;letter-spacing:0.08em;color:var(--t3);text-align:left;padding:6px 10px;border-bottom:1px solid var(--s3);background:var(--s2);}
+.dp-table td{padding:8px 10px;border-bottom:1px solid var(--s3);color:var(--t2);vertical-align:top;line-height:1.5;}
+.dp-table tr:last-child td{border-bottom:none;}
+.dp-table td:first-child{color:var(--t1);font-weight:600;white-space:nowrap;}
+
+/* dev pill */
+.dev-pill{display:inline-flex;align-items:center;gap:5px;font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:99px;margin-right:4px;margin-bottom:4px;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Phase 2 — DSA Advanced + Full Stack Deepening</h1>
+  <p>Two tracks run in parallel. DSA: Graphs, DP, Heaps, Tries, Greedy — the hard patterns that separate mid from senior. Dev: React advanced hooks, Node auth, Spring Boot backend, MongoDB aggregation. Both happen simultaneously, 6–7 weeks.</p>
+  <div class="tagrow">
+    <span class="tag hi">6–7 weeks · parallel tracks</span>
+    <span class="tag">DSA: ~130 problems</span>
+    <span class="tag bl">Dev: 5 deep topics</span>
+    <span class="tag">Morning DSA · Afternoon Dev</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="go('overview',this)"><span class="tdot" style="background:#888"></span>Overview</button>
+  <button class="tab" onclick="go('graph',this)"><span class="tdot" style="background:var(--graph)"></span>Graphs</button>
+  <button class="tab" onclick="go('dp',this)"><span class="tdot" style="background:var(--dp)"></span>DP</button>
+  <button class="tab" onclick="go('heap',this)"><span class="tdot" style="background:var(--heap)"></span>Heaps</button>
+  <button class="tab" onclick="go('trie',this)"><span class="tdot" style="background:var(--trie)"></span>Trie+Greedy</button>
+  <button class="tab" onclick="go('react',this)"><span class="tdot" style="background:var(--react)"></span>React Deep</button>
+  <button class="tab" onclick="go('node',this)"><span class="tdot" style="background:var(--node)"></span>Node Auth</button>
+  <button class="tab" onclick="go('spring',this)"><span class="tdot" style="background:var(--spring)"></span>Spring Boot</button>
+  <button class="tab" onclick="go('db',this)"><span class="tdot" style="background:var(--mongo)"></span>MongoDB+SQL</button>
+  <button class="tab" onclick="go('plan',this)"><span class="tdot" style="background:#f43f5e"></span>Daily Plan</button>
+</div>
+
+<!-- ===== OVERVIEW ===== -->
+<div id="p-overview" class="panel on">
+  <div class="info-card info">
+    <div class="info-title">📌 How Phase 2 works — two tracks, same day</div>
+    <div class="info-text">Morning (6–8 AM): 2 DSA problems on the advanced topics below. Afternoon (11 AM–2 PM): development work — build features, learn tech deeply. Evening: revisit failed DSA. You do BOTH every day. Don't pause dev to do DSA and vice versa — they reinforce each other.</div>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">DSA advanced — 5 patterns</div>
+  <div class="ov-grid">
+    <div class="ov-card" onclick="go('graph',document.querySelectorAll('.tab')[1])">
+      <div class="ov-num">01 · Week 1–2</div>
+      <div class="ov-title" style="color:var(--graph)">Graphs</div>
+      <div class="ov-meta">35 problems · BFS, DFS, topo sort, Dijkstra</div>
+      <div class="ov-bar" style="background:var(--graph)"></div>
+    </div>
+    <div class="ov-card" onclick="go('dp',document.querySelectorAll('.tab')[2])">
+      <div class="ov-num">02 · Week 3–4</div>
+      <div class="ov-title" style="color:var(--dp)">Dynamic Programming</div>
+      <div class="ov-meta">45 problems · 1D, 2D, knapsack, LCS, LIS</div>
+      <div class="ov-bar" style="background:var(--dp)"></div>
+    </div>
+    <div class="ov-card" onclick="go('heap',document.querySelectorAll('.tab')[3])">
+      <div class="ov-num">03 · Week 5</div>
+      <div class="ov-title" style="color:var(--heap)">Heaps + Priority Queue</div>
+      <div class="ov-meta">18 problems · top-K, median, merge K</div>
+      <div class="ov-bar" style="background:var(--heap)"></div>
+    </div>
+    <div class="ov-card" onclick="go('trie',document.querySelectorAll('.tab')[4])">
+      <div class="ov-num">04 · Week 5–6</div>
+      <div class="ov-title" style="color:var(--trie)">Trie + Greedy</div>
+      <div class="ov-meta">15 problems · prefix tree, interval problems</div>
+      <div class="ov-bar" style="background:var(--trie)"></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Full stack deepening — 4 tech areas</div>
+  <div class="ov-grid">
+    <div class="ov-card" onclick="go('react',document.querySelectorAll('.tab')[5])">
+      <div class="ov-num">Dev Track A</div>
+      <div class="ov-title" style="color:var(--react)">React Advanced</div>
+      <div class="ov-meta">useMemo, useCallback, context, custom hooks, performance</div>
+      <div class="ov-bar" style="background:var(--react)"></div>
+    </div>
+    <div class="ov-card" onclick="go('node',document.querySelectorAll('.tab')[6])">
+      <div class="ov-num">Dev Track B</div>
+      <div class="ov-title" style="color:var(--node)">Node.js Auth + API</div>
+      <div class="ov-meta">JWT, refresh tokens, rate limiting, validation, middleware</div>
+      <div class="ov-bar" style="background:var(--node)"></div>
+    </div>
+    <div class="ov-card" onclick="go('spring',document.querySelectorAll('.tab')[7])">
+      <div class="ov-num">Dev Track C</div>
+      <div class="ov-title" style="color:var(--spring)">Spring Boot Backend</div>
+      <div class="ov-meta">REST API, JPA, Spring Security, exception handling</div>
+      <div class="ov-bar" style="background:var(--spring)"></div>
+    </div>
+    <div class="ov-card" onclick="go('db',document.querySelectorAll('.tab')[8])">
+      <div class="ov-num">Dev Track D</div>
+      <div class="ov-title" style="color:var(--mongo)">MongoDB + PostgreSQL</div>
+      <div class="ov-meta">Aggregation pipeline, indexing, JPA queries, schema design</div>
+      <div class="ov-bar" style="background:var(--mongo)"></div>
+    </div>
+  </div>
+
+  <div class="info-card warn">
+    <div class="info-title">⚠️ The biggest Phase 2 mistake</div>
+    <div class="info-text">Spending 6 weeks doing only DP and skipping the dev work. Interviewers at Swiggy, PhonePe, CRED will ask you to design and code a real feature — not just solve LeetCode. The dev track is not optional. Build the auth system, connect Spring Boot to PostgreSQL, write aggregation queries. Do it while you learn it.</div>
+  </div>
+</div>
+
+<!-- ===== GRAPHS ===== -->
+<div id="p-graph" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(6,182,212,0.15);">🕸️</div>
+    <div>
+      <h2>Graphs</h2>
+      <p>Graphs = nodes + edges. Most real-world systems (social networks, maps, dependencies) are graphs. The core algorithms: BFS (shortest path, level by level), DFS (explore fully, detect cycles), topological sort (ordering with dependencies), Dijkstra (weighted shortest path).</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Graph representation + BFS/DFS first</div>
+
+    <div class="topic" id="g-1">
+      <div class="topic-head" onclick="expand('g-1')">
+        <div class="t-check" onclick="check(event,'g-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Graph representation + BFS template</div>
+          <div class="t-sub">Adjacency list, adjacency matrix, BFS for shortest path in unweighted graph</div>
+        </div>
+        <span class="t-badge b-must">must · foundation</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Adjacency list</strong>: Map/array where graph[node] = [list of neighbors]. Space: O(V+E). Use for sparse graphs.</li>
+            <li><strong>Adjacency matrix</strong>: 2D array graph[i][j] = 1 if edge. Space: O(V²). Use for dense graphs or when edge lookup needed in O(1).</li>
+            <li><strong>BFS pattern</strong>: queue + visited set. Process level by level. Gives shortest path in unweighted graphs.</li>
+            <li>Why BFS = shortest path: first time you reach a node is via the fewest hops (queue processes by distance)</li>
+            <li>Grid problems: treat each cell as a node, neighbors = up/down/left/right — same BFS/DFS patterns apply</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">BFS template — use for all graph BFS problems</div>
+          <div class="code-wrap">
+            <div class="code-title">BFS — shortest path template</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">bfs</span>(graph, start) {
+    <span class="ck">const</span> visited = <span class="ck">new</span> <span class="cn">Set</span>([start]);
+    <span class="ck">const</span> queue = [start];
+    <span class="ck">let</span> distance = <span class="co">0</span>;
+
+    <span class="ck">while</span> (queue.length) {
+        <span class="ck">const</span> levelSize = queue.length;  <span class="cm">// process one level at a time</span>
+        <span class="ck">for</span> (<span class="ck">let</span> i = <span class="co">0</span>; i < levelSize; i++) {
+            <span class="ck">const</span> node = queue.shift();
+            <span class="ck">if</span> (node === target) <span class="ck">return</span> distance;  <span class="cm">// found!</span>
+            <span class="ck">for</span> (<span class="ck">const</span> neighbor <span class="ck">of</span> graph[node]) {
+                <span class="ck">if</span> (!visited.has(neighbor)) {
+                    visited.add(neighbor);  <span class="cm">// mark BEFORE adding to queue</span>
+                    queue.push(neighbor);
+                }
+            }
+        }
+        distance++;
+    }
+    <span class="ck">return</span> -<span class="co">1</span>;  <span class="cm">// unreachable</span>
+}
+<span class="cm">// Critical: mark visited when ADDING to queue, not when processing</span>
+<span class="cm">// Otherwise same node gets added multiple times → wrong result</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/number-of-islands/" target="_blank">Number of Islands #200</a></td><td><span class="diff d-m">Med</span></td><td>BFS/DFS on grid. Mark visited by sinking (set to '0').</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/max-area-of-island/" target="_blank">Max Area of Island #695</a></td><td><span class="diff d-m">Med</span></td><td>DFS returns count of cells in island</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/clone-graph/" target="_blank">Clone Graph #133</a></td><td><span class="diff d-m">Med</span></td><td>HashMap: original → clone. BFS to discover neighbors.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/rotting-oranges/" target="_blank">Rotting Oranges #994</a></td><td><span class="diff d-m">Med</span></td><td>Multi-source BFS: start all rotten oranges in queue simultaneously</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/walls-and-gates/" target="_blank">Walls and Gates #286</a></td><td><span class="diff d-m">Med</span></td><td>Multi-source BFS from all gates simultaneously</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="g-2">
+      <div class="topic-head" onclick="expand('g-2')">
+        <div class="t-check" onclick="check(event,'g-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">DFS on graphs + Cycle detection</div>
+          <div class="t-sub">DFS template, detect cycle in directed/undirected graph, connected components</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>DFS: go as deep as possible before backtracking. Uses recursion (call stack) or explicit stack.</li>
+            <li><strong>Cycle in undirected graph</strong>: during DFS, if you visit a neighbor that's already visited AND it's not your parent → cycle.</li>
+            <li><strong>Cycle in directed graph</strong>: track three states — unvisited (0), in current path (1), done (2). Cycle if you visit a node with state 1 (currently in path).</li>
+            <li><strong>Connected components</strong>: count of DFS/BFS starts needed to visit all unvisited nodes = number of components</li>
+            <li>Union-Find (Disjoint Set Union): alternative to DFS for connected components. O(α(n)) per operation.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Cycle detection in directed graph (3 states)</div>
+          <div class="code-wrap">
+            <div class="code-title">Directed graph cycle detection</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">hasCycle</span>(graph, node, state) {
+    state[node] = <span class="co">1</span>;  <span class="cm">// in current DFS path</span>
+
+    <span class="ck">for</span> (<span class="ck">const</span> neighbor <span class="ck">of</span> graph[node]) {
+        <span class="ck">if</span> (state[neighbor] === <span class="co">1</span>) <span class="ck">return</span> <span class="ck">true</span>;   <span class="cm">// back edge = cycle</span>
+        <span class="ck">if</span> (state[neighbor] === <span class="co">0</span>) {
+            <span class="ck">if</span> (<span class="cf">hasCycle</span>(graph, neighbor, state)) <span class="ck">return</span> <span class="ck">true</span>;
+        }
+    }
+
+    state[node] = <span class="co">2</span>;  <span class="cm">// fully processed, safe</span>
+    <span class="ck">return</span> <span class="ck">false</span>;
+}
+<span class="cm">// State: 0=unvisited, 1=in current path, 2=fully done</span>
+<span class="cm">// This is same as Course Schedule solution</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/number-of-connected-components-in-an-undirected-graph/" target="_blank">Connected Components #323</a></td><td><span class="diff d-m">Med</span></td><td>Count DFS starts on unvisited nodes</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/pacific-atlantic-water-flow/" target="_blank">Pacific Atlantic Water Flow #417</a></td><td><span class="diff d-m">Med</span></td><td>Reverse: BFS from both oceans, find intersection</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/surrounded-regions/" target="_blank">Surrounded Regions #130</a></td><td><span class="diff d-m">Med</span></td><td>DFS from border 'O's, mark safe, flip rest</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/course-schedule/" target="_blank">Course Schedule #207</a></td><td><span class="diff d-m">Med</span></td><td>Directed cycle detection with 3-state DFS</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="g-3">
+      <div class="topic-head" onclick="expand('g-3')">
+        <div class="t-check" onclick="check(event,'g-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Topological Sort (BFS + DFS variants)</div>
+          <div class="t-sub">Kahn's algorithm (BFS in-degree), DFS-based, when to use</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Topological sort</strong>: linear ordering of nodes where all edges go from earlier to later. Only possible on DAGs (Directed Acyclic Graphs).</li>
+            <li><strong>Kahn's algorithm (BFS)</strong>: compute in-degree of all nodes. Start with nodes with in-degree 0. Process: add to result, decrement neighbors' in-degree, add neighbors with in-degree 0 to queue.</li>
+            <li>If result size < number of nodes → cycle exists (not all nodes could be processed)</li>
+            <li>Use case: course prerequisites, build systems, task scheduling</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Kahn's Algorithm template</div>
+          <div class="code-wrap">
+            <div class="code-title">Topological Sort — Kahn's BFS algorithm</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">topoSort</span>(n, prerequisites) {
+    <span class="ck">const</span> graph = <span class="cn">Array</span>.from({length: n}, () => []);
+    <span class="ck">const</span> inDegree = <span class="ck">new</span> <span class="cn">Array</span>(n).fill(<span class="co">0</span>);
+
+    <span class="ck">for</span> (<span class="ck">const</span> [a, b] <span class="ck">of</span> prerequisites) {
+        graph[b].push(a);   <span class="cm">// b → a (b must come before a)</span>
+        inDegree[a]++;
+    }
+
+    <span class="ck">const</span> queue = [];
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="co">0</span>; i < n; i++) <span class="ck">if</span> (inDegree[i] === <span class="co">0</span>) queue.push(i);
+
+    <span class="ck">const</span> order = [];
+    <span class="ck">while</span> (queue.length) {
+        <span class="ck">const</span> node = queue.shift();
+        order.push(node);
+        <span class="ck">for</span> (<span class="ck">const</span> next <span class="ck">of</span> graph[node]) {
+            inDegree[next]--;
+            <span class="ck">if</span> (inDegree[next] === <span class="co">0</span>) queue.push(next);
+        }
+    }
+    <span class="ck">return</span> order.length === n ? order : [];  <span class="cm">// [] = cycle detected</span>
+}</pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/course-schedule-ii/" target="_blank">Course Schedule II #210</a></td><td><span class="diff d-m">Med</span></td><td>Kahn's topo sort — return order, empty if cycle</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/alien-dictionary/" target="_blank">Alien Dictionary #269</a></td><td><span class="diff d-h">Hard</span></td><td>Build graph from adjacent word pairs, then topo sort</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/find-eventual-safe-states/" target="_blank">Find Eventual Safe States #802</a></td><td><span class="diff d-m">Med</span></td><td>Reverse graph + topo sort, or 3-state DFS</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="g-4">
+      <div class="topic-head" onclick="expand('g-4')">
+        <div class="t-check" onclick="check(event,'g-4')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Dijkstra's Algorithm + Union-Find</div>
+          <div class="t-sub">Weighted shortest path, minimum spanning tree, connected components efficiently</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Dijkstra</strong>: shortest path in weighted graph with non-negative weights. Uses min-heap (priority queue). O((V+E) log V)</li>
+            <li>Process: start from source (dist=0). Always process node with minimum current distance. Update neighbors if shorter path found.</li>
+            <li><strong>Why not BFS for weighted?</strong> BFS assumes all edges have weight 1. Dijkstra handles variable weights.</li>
+            <li><strong>Union-Find (DSU)</strong>: track which nodes belong to same component. Operations: find(x) returns root, union(x,y) merges components. With path compression + rank: nearly O(1) per operation.</li>
+            <li>Use Union-Find for: connected components, detecting cycles in undirected graphs, Kruskal's MST</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Dijkstra template</div>
+          <div class="code-wrap">
+            <div class="code-title">Dijkstra — min-heap shortest path</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">dijkstra</span>(n, edges, src) {
+    <span class="ck">const</span> graph = <span class="cn">Array</span>.from({length: n}, () => []);
+    <span class="ck">for</span> (<span class="ck">const</span> [u, v, w] <span class="ck">of</span> edges) graph[u].push([v, w]);
+
+    <span class="ck">const</span> dist = <span class="ck">new</span> <span class="cn">Array</span>(n).fill(<span class="cn">Infinity</span>);
+    dist[src] = <span class="co">0</span>;
+
+    <span class="cm">// JS has no built-in heap — use array sorted as min-heap or a library</span>
+    <span class="cm">// In interviews: use a simple priority queue simulation</span>
+    <span class="ck">const</span> pq = [[<span class="co">0</span>, src]];  <span class="cm">// [distance, node]</span>
+
+    <span class="ck">while</span> (pq.length) {
+        pq.sort((a,b) => a[<span class="co">0</span>] - b[<span class="co">0</span>]);  <span class="cm">// simulate min-heap (ok for interviews)</span>
+        <span class="ck">const</span> [d, node] = pq.shift();
+        <span class="ck">if</span> (d > dist[node]) <span class="ck">continue</span>;  <span class="cm">// stale entry, skip</span>
+
+        <span class="ck">for</span> (<span class="ck">const</span> [next, weight] <span class="ck">of</span> graph[node]) {
+            <span class="ck">const</span> newDist = dist[node] + weight;
+            <span class="ck">if</span> (newDist < dist[next]) {
+                dist[next] = newDist;
+                pq.push([newDist, next]);
+            }
+        }
+    }
+    <span class="ck">return</span> dist;
+}</pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/network-delay-time/" target="_blank">Network Delay Time #743</a></td><td><span class="diff d-m">Med</span></td><td>Dijkstra from source, return max distance</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/path-with-minimum-effort/" target="_blank">Path With Minimum Effort #1631</a></td><td><span class="diff d-m">Med</span></td><td>Dijkstra — minimize max effort on path</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/number-of-provinces/" target="_blank">Number of Provinces #547</a></td><td><span class="diff d-m">Med</span></td><td>Union-Find or DFS, count components</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/redundant-connection/" target="_blank">Redundant Connection #684</a></td><td><span class="diff d-m">Med</span></td><td>Union-Find: add edges, first edge that connects already-connected nodes = answer</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/word-ladder/" target="_blank">Word Ladder #127</a></td><td><span class="diff d-h">Hard</span></td><td>BFS on word graph. Each neighbor = 1 letter different.</td></tr>
+          </table>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when you can</div>
+          <ul class="done-list">
+            <li>Write BFS + DFS graph templates from memory</li>
+            <li>Implement Kahn's topological sort from scratch</li>
+            <li>Solve Number of Islands (BFS or DFS) in under 10 minutes</li>
+            <li>Explain why Dijkstra fails with negative weights (can't greedily pick minimum)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DP ===== -->
+<div id="p-dp" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(249,115,22,0.15);">📊</div>
+    <div>
+      <h2>Dynamic Programming</h2>
+      <p>DP = recursion + memoization, or bottom-up tabulation. The insight: overlapping subproblems — same sub-calculation needed many times. Cache it. The approach: always start with brute-force recursion, then add memoization, then convert to bottom-up table.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">The DP learning approach — follow this order every time</div>
+    <div class="info-card info">
+      <div class="info-title">3-step approach for every DP problem</div>
+      <div class="info-text">Step 1: Write the brute-force recursive solution first. Step 2: Add a memo object — cache the result for each unique input. Step 3 (optional): Convert to bottom-up DP table (tabulation). Never skip Step 1. If you can't write the recursion, you can't write the DP.</div>
+    </div>
+
+    <div class="topic" id="dp-1">
+      <div class="topic-head" onclick="expand('dp-1')">
+        <div class="t-check" onclick="check(event,'dp-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">1D DP — linear state problems</div>
+          <div class="t-sub">Climbing stairs, house robber, coin change, word break — the 5 core patterns</div>
+        </div>
+        <span class="t-badge b-must">must · start here</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">The DP mindset — what to ask for every problem</div>
+          <ul class="learn-list">
+            <li>What is the <strong>state</strong>? (What changes between subproblems?)</li>
+            <li>What is the <strong>recurrence relation</strong>? (How does dp[i] relate to dp[i-1], dp[i-2]?)</li>
+            <li>What is the <strong>base case</strong>? (Smallest input with known answer)</li>
+            <li>What is the <strong>final answer</strong>? (dp[n]? max(dp)? dp[n][m]?)</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">House Robber — the canonical 1D DP example</div>
+          <div class="code-wrap">
+            <div class="code-title">House Robber — brute force → memo → tabulation</div>
+            <pre>
+<span class="cm">// STEP 1: Brute force recursion</span>
+<span class="ck">function</span> <span class="cf">rob</span>(nums, i = <span class="co">0</span>) {
+    <span class="ck">if</span> (i >= nums.length) <span class="ck">return</span> <span class="co">0</span>;
+    <span class="cm">// At each house: rob it (skip next) OR skip it (consider next)</span>
+    <span class="ck">return</span> <span class="cn">Math</span>.max(
+        nums[i] + <span class="cf">rob</span>(nums, i + <span class="co">2</span>),  <span class="cm">// rob house i, skip i+1</span>
+        <span class="cf">rob</span>(nums, i + <span class="co">1</span>)                 <span class="cm">// skip house i</span>
+    );
+}  <span class="cm">// O(2^n) — exponential, too slow</span>
+
+<span class="cm">// STEP 2: Add memoization</span>
+<span class="ck">function</span> <span class="cf">rob</span>(nums) {
+    <span class="ck">const</span> memo = {};
+    <span class="ck">function</span> <span class="cf">dfs</span>(i) {
+        <span class="ck">if</span> (i >= nums.length) <span class="ck">return</span> <span class="co">0</span>;
+        <span class="ck">if</span> (memo[i] !== undefined) <span class="ck">return</span> memo[i];
+        memo[i] = <span class="cn">Math</span>.max(nums[i] + <span class="cf">dfs</span>(i+<span class="co">2</span>), <span class="cf">dfs</span>(i+<span class="co">1</span>));
+        <span class="ck">return</span> memo[i];
+    }
+    <span class="ck">return</span> <span class="cf">dfs</span>(<span class="co">0</span>);
+}  <span class="cm">// O(n) time, O(n) space</span>
+
+<span class="cm">// STEP 3: Bottom-up tabulation (no recursion)</span>
+<span class="ck">function</span> <span class="cf">rob</span>(nums) {
+    <span class="ck">let</span> prev2 = <span class="co">0</span>, prev1 = <span class="co">0</span>;
+    <span class="ck">for</span> (<span class="ck">const</span> n <span class="ck">of</span> nums) {
+        <span class="ck">const</span> curr = <span class="cn">Math</span>.max(prev2 + n, prev1);
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    <span class="ck">return</span> prev1;
+}  <span class="cm">// O(n) time, O(1) space — best solution</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">1D DP problems — in learning order</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Recurrence</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/climbing-stairs/" target="_blank">Climbing Stairs #70</a></td><td><span class="diff d-e">Easy</span></td><td>dp[i] = dp[i-1] + dp[i-2] (Fibonacci)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/house-robber/" target="_blank">House Robber #198</a></td><td><span class="diff d-m">Med</span></td><td>dp[i] = max(dp[i-2] + nums[i], dp[i-1])</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/house-robber-ii/" target="_blank">House Robber II #213</a></td><td><span class="diff d-m">Med</span></td><td>Run House Robber twice: [0..n-2] and [1..n-1], take max</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/coin-change/" target="_blank">Coin Change #322</a></td><td><span class="diff d-m">Med</span></td><td>dp[amount] = 1 + min(dp[amount-coin] for each coin)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/coin-change-ii/" target="_blank">Coin Change II #518</a></td><td><span class="diff d-m">Med</span></td><td>dp[amount] = sum of dp[amount-coin] (count combinations)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/word-break/" target="_blank">Word Break #139</a></td><td><span class="diff d-m">Med</span></td><td>dp[i] = true if any dp[j] is true and s[j..i] in dictionary</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/longest-increasing-subsequence/" target="_blank">Longest Increasing Subsequence #300</a></td><td><span class="diff d-m">Med</span></td><td>dp[i] = 1 + max(dp[j]) for all j < i where nums[j] < nums[i]</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/decode-ways/" target="_blank">Decode Ways #91</a></td><td><span class="diff d-m">Med</span></td><td>dp[i] = dp[i-1] (1 digit decode) + dp[i-2] (2 digit decode if valid)</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="dp-2">
+      <div class="topic-head" onclick="expand('dp-2')">
+        <div class="t-check" onclick="check(event,'dp-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">2D DP — two-variable state problems</div>
+          <div class="t-sub">LCS, edit distance, 0/1 knapsack, unique paths — when the state needs two dimensions</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">When do you need 2D DP?</div>
+          <ul class="learn-list">
+            <li>When the state requires TWO independent variables (e.g., position in two strings, row+col in grid, item index + remaining capacity)</li>
+            <li><strong>LCS (Longest Common Subsequence)</strong>: dp[i][j] = length of LCS of s1[0..i] and s2[0..j]</li>
+            <li><strong>Edit Distance</strong>: dp[i][j] = min operations to convert s1[0..i] to s2[0..j]</li>
+            <li><strong>0/1 Knapsack</strong>: dp[i][w] = max value using first i items with capacity w</li>
+            <li>Building 2D table: think about which cells you need to fill in what order</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">LCS — the canonical 2D DP</div>
+          <div class="code-wrap">
+            <div class="code-title">Longest Common Subsequence</div>
+            <pre>
+<span class="ck">function</span> <span class="cf">longestCommonSubsequence</span>(text1, text2) {
+    <span class="ck">const</span> m = text1.length, n = text2.length;
+    <span class="cm">// dp[i][j] = LCS of text1[0..i-1] and text2[0..j-1]</span>
+    <span class="ck">const</span> dp = <span class="cn">Array</span>.from({length: m+<span class="co">1</span>}, () => <span class="ck">new</span> <span class="cn">Array</span>(n+<span class="co">1</span>).fill(<span class="co">0</span>));
+
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="co">1</span>; i <= m; i++) {
+        <span class="ck">for</span> (<span class="ck">let</span> j = <span class="co">1</span>; j <= n; j++) {
+            <span class="ck">if</span> (text1[i-<span class="co">1</span>] === text2[j-<span class="co">1</span>]) {
+                dp[i][j] = <span class="co">1</span> + dp[i-<span class="co">1</span>][j-<span class="co">1</span>];   <span class="cm">// chars match: extend by 1</span>
+            } <span class="ck">else</span> {
+                dp[i][j] = <span class="cn">Math</span>.max(dp[i-<span class="co">1</span>][j], dp[i][j-<span class="co">1</span>]);  <span class="cm">// take best</span>
+            }
+        }
+    }
+    <span class="ck">return</span> dp[m][n];
+}</pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">2D DP problems — the essential ones</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>State + Recurrence</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/unique-paths/" target="_blank">Unique Paths #62</a></td><td><span class="diff d-m">Med</span></td><td>dp[i][j] = dp[i-1][j] + dp[i][j-1]</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/minimum-path-sum/" target="_blank">Minimum Path Sum #64</a></td><td><span class="diff d-m">Med</span></td><td>dp[i][j] = grid[i][j] + min(dp[i-1][j], dp[i][j-1])</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/longest-common-subsequence/" target="_blank">Longest Common Subsequence #1143</a></td><td><span class="diff d-m">Med</span></td><td>Match: dp[i-1][j-1]+1. Else: max(dp[i-1][j], dp[i][j-1])</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/edit-distance/" target="_blank">Edit Distance #72</a></td><td><span class="diff d-m">Med</span></td><td>Match: dp[i-1][j-1]. Else: 1 + min(insert, delete, replace)</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/maximal-square/" target="_blank">Maximal Square #221</a></td><td><span class="diff d-m">Med</span></td><td>dp[i][j] = 1 + min(dp[i-1][j], dp[i][j-1], dp[i-1][j-1])</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/distinct-subsequences/" target="_blank">Distinct Subsequences #115</a></td><td><span class="diff d-h">Hard</span></td><td>Count ways s matches t: match → dp[i-1][j-1]+dp[i-1][j], else dp[i-1][j]</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/interleaving-string/" target="_blank">Interleaving String #97</a></td><td><span class="diff d-h">Hard</span></td><td>dp[i][j]: s1[0..i]+s2[0..j] interleaves to s3[0..i+j]</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="dp-3">
+      <div class="topic-head" onclick="expand('dp-3')">
+        <div class="t-check" onclick="check(event,'dp-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">DP on strings + interval DP</div>
+          <div class="t-sub">Palindrome partition, burst balloons, matrix chain — DP over substrings/subarrays</div>
+        </div>
+        <span class="t-badge b-high">high value</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/palindromic-substrings/" target="_blank">Palindromic Substrings #647</a></td><td><span class="diff d-m">Med</span></td><td>dp[i][j] = is s[i..j] a palindrome? dp[i][j] = (s[i]==s[j]) && dp[i+1][j-1]</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/palindrome-partitioning-ii/" target="_blank">Palindrome Partitioning II #132</a></td><td><span class="diff d-h">Hard</span></td><td>dp[i] = min cuts for s[0..i], try all palindrome endings</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/burst-balloons/" target="_blank">Burst Balloons #312</a></td><td><span class="diff d-h">Hard</span></td><td>Interval DP: dp[l][r] = max coins from balloons in (l,r). Think: last balloon to burst.</td></tr>
+          </table>
+        </div>
+        <div class="done-box">
+          <div class="done-label">DP done when you can</div>
+          <ul class="done-list">
+            <li>Convert any recursive solution to memoized DP in under 5 minutes</li>
+            <li>Solve Coin Change from scratch — explain why it's 1D DP and not greedy</li>
+            <li>Solve LCS and Edit Distance from memory — build the 2D table correctly</li>
+            <li>Identify: "is this a DP problem?" within 2 minutes (overlapping subproblems + optimal substructure)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== HEAPS ===== -->
+<div id="p-heap" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(168,85,247,0.15);">⛰️</div>
+    <div>
+      <h2>Heaps + Priority Queue</h2>
+      <p>A heap gives you the min (or max) element in O(1), with insert and delete in O(log n). Signal: "find Kth largest/smallest", "merge K sorted lists", "stream median" → think heap.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Heap patterns — all use the same data structure</div>
+
+    <div class="topic" id="h-1">
+      <div class="topic-head" onclick="expand('h-1')">
+        <div class="t-check" onclick="check(event,'h-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Heap fundamentals + Top-K pattern</div>
+          <div class="t-sub">Min-heap vs max-heap, when to use each, the K-element heap trick</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Min-heap</strong>: smallest element always at top (root). Parent ≤ children.</li>
+            <li><strong>Max-heap</strong>: largest element at top. Parent ≥ children.</li>
+            <li>JS has no built-in heap — in interviews either implement one or simulate with sorted array. Implement a simple MinHeap class (push, pop, peek) — takes 5 min to write from memory.</li>
+            <li><strong>Top-K largest elements</strong>: maintain a min-heap of size K. When heap grows beyond K, pop (remove smallest). At end: heap contains K largest.</li>
+            <li><strong>Top-K smallest elements</strong>: use max-heap of size K. Pop when exceeds K.</li>
+            <li>Why K-size heap works: O(n log K) instead of O(n log n) sort — better when K &lt;&lt; n</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Simple MinHeap for interviews</div>
+          <div class="code-wrap">
+            <div class="code-title">MinHeap implementation — memorize this</div>
+            <pre>
+<span class="ck">class</span> <span class="cn">MinHeap</span> {
+    <span class="cf">constructor</span>() { <span class="ck">this</span>.heap = []; }
+
+    <span class="cf">push</span>(val) {
+        <span class="ck">this</span>.heap.push(val);
+        <span class="ck">this</span>.#<span class="cf">bubbleUp</span>();
+    }
+
+    <span class="cf">pop</span>() {
+        <span class="ck">const</span> top = <span class="ck">this</span>.heap[<span class="co">0</span>];
+        <span class="ck">const</span> last = <span class="ck">this</span>.heap.pop();
+        <span class="ck">if</span> (<span class="ck">this</span>.heap.length) { <span class="ck">this</span>.heap[<span class="co">0</span>] = last; <span class="ck">this</span>.#<span class="cf">sinkDown</span>(); }
+        <span class="ck">return</span> top;
+    }
+
+    <span class="cf">peek</span>() { <span class="ck">return</span> <span class="ck">this</span>.heap[<span class="co">0</span>]; }
+    <span class="cf">size</span>() { <span class="ck">return</span> <span class="ck">this</span>.heap.length; }
+
+    #<span class="cf">bubbleUp</span>() {
+        <span class="ck">let</span> i = <span class="ck">this</span>.heap.length - <span class="co">1</span>;
+        <span class="ck">while</span> (i > <span class="co">0</span>) {
+            <span class="ck">const</span> parent = <span class="cn">Math</span>.floor((i-<span class="co">1</span>)/<span class="co">2</span>);
+            <span class="ck">if</span> (<span class="ck">this</span>.heap[parent] <= <span class="ck">this</span>.heap[i]) <span class="ck">break</span>;
+            [<span class="ck">this</span>.heap[parent], <span class="ck">this</span>.heap[i]] = [<span class="ck">this</span>.heap[i], <span class="ck">this</span>.heap[parent]];
+            i = parent;
+        }
+    }
+    <span class="cm">// sinkDown: similar — swap with smaller child until heap property holds</span>
+}</pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Heap type + why</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/kth-largest-element-in-an-array/" target="_blank">Kth Largest Element #215</a></td><td><span class="diff d-m">Med</span></td><td>Min-heap of size K. Top = Kth largest.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/top-k-frequent-elements/" target="_blank">Top K Frequent Elements #347</a></td><td><span class="diff d-m">Med</span></td><td>Freq map + min-heap of (freq, element) pairs, size K</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/kth-largest-element-in-a-stream/" target="_blank">Kth Largest in Stream #703</a></td><td><span class="diff d-e">Easy</span></td><td>Maintain min-heap of size K. Peek = Kth largest.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/k-closest-points-to-origin/" target="_blank">K Closest Points to Origin #973</a></td><td><span class="diff d-m">Med</span></td><td>Max-heap of size K by distance. Or sort by distance O(n log n).</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/task-scheduler/" target="_blank">Task Scheduler #621</a></td><td><span class="diff d-m">Med</span></td><td>Max-heap by frequency. Greedy: always run most frequent task.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/find-median-from-data-stream/" target="_blank">Find Median from Data Stream #295</a></td><td><span class="diff d-h">Hard</span></td><td>Two heaps: max-heap (lower half) + min-heap (upper half). Median = top of one or avg of both tops.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/merge-k-sorted-lists/" target="_blank">Merge K Sorted Lists #23</a></td><td><span class="diff d-h">Hard</span></td><td>Min-heap of (value, list index, node). Always extract min.</td></tr>
+          </table>
+        </div>
+        <div class="pattern-box">
+          <div class="pat-label">🔑 Two-heap pattern for median</div>
+          <div class="pat-text">Keep a <strong>max-heap</strong> for the lower half and a <strong>min-heap</strong> for the upper half. Rebalance so sizes differ by at most 1. Median = top of the larger heap, or average of both tops if equal size. This is the hardest heap problem — know it well.</div>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when you can</div>
+          <ul class="done-list">
+            <li>Write MinHeap class from memory with push/pop/peek</li>
+            <li>Explain the K-size heap trick — why min-heap gives Kth largest</li>
+            <li>Solve Find Median from Data Stream — explain the two-heap approach</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TRIE + GREEDY ===== -->
+<div id="p-trie" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(34,197,94,0.15);">🌿</div>
+    <div>
+      <h2>Trie + Greedy</h2>
+      <p>Trie: prefix tree for fast string prefix operations. Greedy: make the locally optimal choice at each step — works when local optimal = global optimal (and doesn't always work — know when it fails).</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Trie (Prefix Tree)</div>
+
+    <div class="topic" id="t-1">
+      <div class="topic-head" onclick="expand('t-1')">
+        <div class="t-check" onclick="check(event,'t-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Trie — implementation + applications</div>
+          <div class="t-sub">Insert, search, startsWith from scratch. Auto-complete, prefix problems.</div>
+        </div>
+        <span class="t-badge b-must">must · implement from scratch</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Trie implementation — know this cold</div>
+          <div class="code-wrap">
+            <div class="code-title">Trie — insert, search, startsWith</div>
+            <pre>
+<span class="ck">class</span> <span class="cn">TrieNode</span> {
+    <span class="cf">constructor</span>() {
+        <span class="ck">this</span>.children = {};   <span class="cm">// char → TrieNode</span>
+        <span class="ck">this</span>.isEnd = <span class="ck">false</span>;   <span class="cm">// marks end of a word</span>
+    }
+}
+
+<span class="ck">class</span> <span class="cn">Trie</span> {
+    <span class="cf">constructor</span>() { <span class="ck">this</span>.root = <span class="ck">new</span> <span class="cn">TrieNode</span>(); }
+
+    <span class="cf">insert</span>(word) {
+        <span class="ck">let</span> node = <span class="ck">this</span>.root;
+        <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> word) {
+            <span class="ck">if</span> (!node.children[ch]) node.children[ch] = <span class="ck">new</span> <span class="cn">TrieNode</span>();
+            node = node.children[ch];
+        }
+        node.isEnd = <span class="ck">true</span>;
+    }
+
+    <span class="cf">search</span>(word) {
+        <span class="ck">let</span> node = <span class="ck">this</span>.root;
+        <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> word) {
+            <span class="ck">if</span> (!node.children[ch]) <span class="ck">return</span> <span class="ck">false</span>;
+            node = node.children[ch];
+        }
+        <span class="ck">return</span> node.isEnd;  <span class="cm">// must be end of a word</span>
+    }
+
+    <span class="cf">startsWith</span>(prefix) {
+        <span class="ck">let</span> node = <span class="ck">this</span>.root;
+        <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> prefix) {
+            <span class="ck">if</span> (!node.children[ch]) <span class="ck">return</span> <span class="ck">false</span>;
+            node = node.children[ch];
+        }
+        <span class="ck">return</span> <span class="ck">true</span>;  <span class="cm">// just need path to exist</span>
+    }
+}
+<span class="cm">// O(L) for insert/search/startsWith where L = word length</span>
+<span class="cm">// Space: O(total characters across all words)</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Key idea</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/implement-trie-prefix-tree/" target="_blank">Implement Trie #208</a></td><td><span class="diff d-m">Med</span></td><td>Build the Trie class above from scratch</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/design-add-and-search-words-data-structure/" target="_blank">Add and Search Words #211</a></td><td><span class="diff d-m">Med</span></td><td>Trie + DFS for wildcard '.' matching</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/word-search-ii/" target="_blank">Word Search II #212</a></td><td><span class="diff d-h">Hard</span></td><td>Build Trie from word list, DFS on grid matching Trie paths</td></tr>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="t-2">
+      <div class="topic-head" onclick="expand('t-2')">
+        <div class="t-check" onclick="check(event,'t-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Greedy — interval problems + classical greedy</div>
+          <div class="t-sub">Activity selection, jump game, meeting rooms, minimum platforms</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Greedy works when</strong>: the locally optimal choice at each step leads to the global optimum. Prove it or use intuition.</li>
+            <li><strong>Greedy fails when</strong>: local optimal traps you (Coin Change with arbitrary denominations — use DP)</li>
+            <li><strong>Interval problems</strong>: sort by start or end time. Most greedy interval problems need sorting first.</li>
+            <li>Activity selection: sort by end time, greedily pick intervals that don't overlap</li>
+            <li>Meeting rooms: sort by start, use min-heap of end times to track rooms in use</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Problems</div>
+          <table class="prob-table">
+            <tr><th>Problem</th><th>Diff</th><th>Greedy choice</th></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/jump-game/" target="_blank">Jump Game #55</a></td><td><span class="diff d-m">Med</span></td><td>Track maxReach. If i > maxReach: stuck. Update maxReach at each step.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/jump-game-ii/" target="_blank">Jump Game II #45</a></td><td><span class="diff d-m">Med</span></td><td>Track current level end + next level end. Jump count = levels.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/merge-intervals/" target="_blank">Merge Intervals #56</a></td><td><span class="diff d-m">Med</span></td><td>Sort by start. Merge if next.start ≤ prev.end.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/non-overlapping-intervals/" target="_blank">Non-overlapping Intervals #435</a></td><td><span class="diff d-m">Med</span></td><td>Sort by end. Greedily keep interval with earliest end.</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/meeting-rooms-ii/" target="_blank">Meeting Rooms II #253</a></td><td><span class="diff d-m">Med</span></td><td>Sort by start, min-heap of end times = rooms count</td></tr>
+            <tr><td><a class="prob-link" href="https://leetcode.com/problems/gas-station/" target="_blank">Gas Station #134</a></td><td><span class="diff d-m">Med</span></td><td>If total gas ≥ total cost: solution exists. Start where running sum goes negative.</td></tr>
+          </table>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Done when you can</div>
+          <ul class="done-list">
+            <li>Write Trie with insert/search/startsWith from memory in under 8 minutes</li>
+            <li>Explain when greedy works vs when DP is needed (overlapping subproblems)</li>
+            <li>Solve Merge Intervals from scratch — explain why sort-by-start is the greedy choice</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== REACT DEEP ===== -->
+<div id="p-react" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(97,218,251,0.15);">⚛️</div>
+    <div>
+      <h2>React — Advanced Patterns</h2>
+      <p>You know useState and useEffect. This phase: performance hooks (useMemo, useCallback), state management patterns (useReducer, Context), custom hooks, and code splitting. These are what product company frontend interviews test.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">All topics — build something with each one, don't just read</div>
+
+    <div class="topic" id="r-1">
+      <div class="topic-head" onclick="expand('r-1')">
+        <div class="t-check" onclick="check(event,'r-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">useReducer — complex state management</div>
+          <div class="t-sub">When useState is not enough, reducer pattern, action dispatching</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>When to use useReducer over useState</strong>: state has multiple sub-values, next state depends on previous state in complex ways, multiple actions that update state differently</li>
+            <li>Pattern: <code>const [state, dispatch] = useReducer(reducer, initialState)</code></li>
+            <li>Reducer: pure function — <code>(state, action) => newState</code>. Switch on <code>action.type</code>.</li>
+            <li>Actions: objects with <code>type</code> and optional <code>payload</code></li>
+            <li>Combine with Context: useReducer + Context = poor man's Redux (no extra library needed)</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn + build</div>
+          <div class="res-list">
+            <a class="res" href="https://react.dev/reference/react/useReducer" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">React official docs — useReducer</div>
+                <div class="res-what">Read the full page including examples and "Troubleshooting". Then build: a shopping cart with add/remove/clear actions using useReducer.</div>
+                <div class="res-tags"><span class="rt free">free</span><span class="rt best">build the cart</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="r-2">
+      <div class="topic-head" onclick="expand('r-2')">
+        <div class="t-check" onclick="check(event,'r-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">useContext — avoid prop drilling</div>
+          <div class="t-sub">Context provider, consumer, when NOT to use context, performance gotcha</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>Prop drilling problem: passing props through many levels of components that don't need them</li>
+            <li>Context solution: create context → wrap tree with Provider → any child uses useContext to access</li>
+            <li><strong>When NOT to use context</strong>: for frequently changing data (e.g., form state) — every context change re-renders all consumers. Use for: theme, auth user, language preference.</li>
+            <li><strong>Performance gotcha</strong>: split contexts — don't put everything in one context. <code>AuthContext</code>, <code>ThemeContext</code> separately.</li>
+            <li>Combine with useReducer: pass dispatch function through context so any component can dispatch actions</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Build: Auth Context</div>
+          <ul class="learn-list">
+            <li>Create <code>AuthContext</code> with user, login(), logout() functions</li>
+            <li>Wrap your app with <code>AuthProvider</code></li>
+            <li>Any component can call <code>useAuth()</code> to get current user or log out</li>
+            <li>Protect routes: if !user redirect to login</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://react.dev/reference/react/useContext" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">React official docs — useContext + Context</div>
+                <div class="res-what">Read useContext reference + "Passing Data Deeply with Context" guide. Build the auth context after.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="r-3">
+      <div class="topic-head" onclick="expand('r-3')">
+        <div class="t-check" onclick="check(event,'r-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">useMemo + useCallback — performance optimization</div>
+          <div class="t-sub">When to memoize, the real cost of premature optimization, React.memo</div>
+        </div>
+        <span class="t-badge b-must">must · interview favorite</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>useMemo</strong>: memoize the result of an expensive calculation. Recalculates only when dependencies change. <code>const result = useMemo(() => expensiveCalc(data), [data])</code></li>
+            <li><strong>useCallback</strong>: memoize a function reference. Useful when passing callbacks to optimized child components. <code>const fn = useCallback(() => doSomething(id), [id])</code></li>
+            <li><strong>React.memo</strong>: memoize a component — only re-render if props change. Must use with useCallback for the child's event handlers, otherwise new function reference every render = always re-renders.</li>
+            <li><strong>When to use</strong>: expensive calculations (sorting/filtering large lists), passing callbacks to deeply nested or React.memo'd children. NOT for every function — memo itself has a cost.</li>
+            <li>Interview question: "What's the difference between useMemo and useCallback?" — useMemo memoizes a VALUE, useCallback memoizes a FUNCTION.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://react.dev/reference/react/useMemo" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">React official docs — useMemo + useCallback</div>
+                <div class="res-what">Read both pages. Focus on "Should you add useMemo everywhere?" section — this is what interviewers ask. Build: a list component with expensive filter that uses useMemo correctly.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="r-4">
+      <div class="topic-head" onclick="expand('r-4')">
+        <div class="t-check" onclick="check(event,'r-4')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Custom Hooks — extracting reusable logic</div>
+          <div class="t-sub">useDebounce, useFetch, useLocalStorage, useClickOutside patterns</div>
+        </div>
+        <span class="t-badge b-must">must · shows you understand React deeply</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>Custom hooks = functions that start with "use" and call other hooks. Extract repeated logic.</li>
+            <li>Build <strong>useFetch</strong>: takes URL, returns {data, loading, error}. Uses useEffect + useState + AbortController for cleanup.</li>
+            <li>Build <strong>useDebounce</strong>: delays updating a value until user stops typing. Uses useState + useEffect with setTimeout + cleanup.</li>
+            <li>Build <strong>useLocalStorage</strong>: syncs state to localStorage automatically.</li>
+            <li>Build <strong>useClickOutside</strong>: calls callback when user clicks outside a ref element (for dropdowns/modals)</li>
+            <li>Test: can you explain WHY your custom hook needs cleanup in useEffect? (prevent memory leak, cancel in-flight requests)</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://react.dev/learn/reusing-logic-with-custom-hooks" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">React official docs — Reusing Logic with Custom Hooks</div>
+                <div class="res-what">Read fully. Then build all 4 custom hooks above from scratch. Put them in a /hooks folder in your DevTracker project.</div>
+                <div class="res-tags"><span class="rt free">free</span><span class="rt best">build all 4</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="r-5">
+      <div class="topic-head" onclick="expand('r-5')">
+        <div class="t-check" onclick="check(event,'r-5')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Code splitting + Lazy loading + Suspense</div>
+          <div class="t-sub">React.lazy, dynamic imports, Suspense fallback, bundle size optimization</div>
+        </div>
+        <span class="t-badge b-high">high value</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Problem</strong>: entire app bundled in one JS file — slow initial load. Large routes downloaded even if user never visits.</li>
+            <li><strong>Code splitting</strong>: split bundle by route or component. Each chunk downloaded only when needed.</li>
+            <li><code>const LazyComp = React.lazy(() => import('./HeavyComponent'))</code></li>
+            <li><code>&lt;Suspense fallback=&#123;&lt;Spinner /&gt;&#125;&gt;&lt;LazyComp /&gt;&lt;/Suspense&gt;</code></li>
+            <li>Route-based splitting: wrap each route's component with React.lazy. Most impactful optimization for large apps.</li>
+            <li>Interview question: "How do you optimize a slow React app?" — code splitting, memoization, virtualization (react-window for long lists), avoiding unnecessary re-renders.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://react.dev/reference/react/lazy" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">React docs — lazy + Suspense</div>
+                <div class="res-what">Read both pages. Then add route-based code splitting to your DevTracker project. Check the network tab — routes should load their JS chunk separately.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="done-box">
+          <div class="done-label">React advanced done when</div>
+          <ul class="done-list">
+            <li>Built auth context (useContext + useReducer) in your DevTracker project</li>
+            <li>Implemented useFetch and useDebounce custom hooks from scratch</li>
+            <li>Can explain the difference between useMemo and useCallback with a real example</li>
+            <li>Added route-based code splitting to at least one project</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== NODE AUTH ===== -->
+<div id="p-node" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(104,160,99,0.15);">🔐</div>
+    <div>
+      <h2>Node.js — Auth + Production API Patterns</h2>
+      <p>You know basic Express. This phase: production-grade auth (JWT + refresh tokens), middleware architecture, rate limiting, input validation, and error handling. By end of this: your API should handle auth the way real companies do.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Build this auth system — every topic is a piece of it</div>
+
+    <div class="topic" id="n-1">
+      <div class="topic-head" onclick="expand('n-1')">
+        <div class="t-check" onclick="check(event,'n-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">JWT Auth — Access token + Refresh token</div>
+          <div class="t-sub">Sign, verify, decode, expiry, refresh token rotation, storage strategy</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>JWT structure</strong>: header.payload.signature. Payload is base64 — NOT encrypted, just signed. Never put sensitive data in payload.</li>
+            <li><strong>Access token</strong>: short-lived (15 min). Sent in Authorization header: <code>Bearer [token]</code>. Stateless.</li>
+            <li><strong>Refresh token</strong>: long-lived (7 days). Stored in HttpOnly cookie. Used to get new access token. Can be revoked (store in Redis or DB).</li>
+            <li>Token refresh flow: access token expires → frontend automatically calls /auth/refresh → server checks refresh token → issues new access token → frontend retries original request.</li>
+            <li><strong>Refresh token rotation</strong>: every time refresh token is used, issue a new one and invalidate the old. Detects token theft.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Implementation to build</div>
+          <div class="code-wrap">
+            <div class="code-title">JWT auth — routes to implement</div>
+            <pre>
+<span class="cm">// POST /auth/register — hash password (bcrypt), create user, return tokens</span>
+<span class="cm">// POST /auth/login    — verify password, return access + refresh tokens</span>
+<span class="cm">// POST /auth/refresh  — verify refresh token, issue new access token</span>
+<span class="cm">// POST /auth/logout   — invalidate refresh token (delete from Redis/DB)</span>
+
+<span class="cm">// auth middleware — protects private routes</span>
+<span class="ck">function</span> <span class="cf">authenticate</span>(req, res, next) {
+    <span class="ck">const</span> token = req.headers.authorization?.split(<span class="cs">' '</span>)[<span class="co">1</span>];
+    <span class="ck">if</span> (!token) <span class="ck">return</span> res.status(<span class="co">401</span>).json({ error: <span class="cs">'No token'</span> });
+    <span class="ck">try</span> {
+        req.user = jwt.verify(token, process.env.JWT_SECRET);
+        next();
+    } <span class="ck">catch</span> (err) {
+        res.status(<span class="co">401</span>).json({ error: <span class="cs">'Invalid or expired token'</span> });
+    }
+}
+<span class="cm">// Packages: jsonwebtoken, bcryptjs, cookie-parser (for HttpOnly cookies)</span></pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://www.youtube.com/watch?v=mbsmsi7l3r4" target="_blank">
+              <span class="res-icon">▶</span>
+              <div class="res-body">
+                <div class="res-name">Web Dev Simplified — JWT Auth in Node.js (YouTube)</div>
+                <div class="res-what">The best JWT auth video. Watch fully, then build the refresh token system on top of what he shows. That's the gap between tutorial and production.</div>
+                <div class="res-tags"><span class="rt free">free</span><span class="rt best">best starting point</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="n-2">
+      <div class="topic-head" onclick="expand('n-2')">
+        <div class="t-check" onclick="check(event,'n-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Input Validation with Zod</div>
+          <div class="t-sub">Schema validation, parse vs safeParse, validation middleware, error formatting</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li>Why validate: TypeScript only catches errors at compile time. Zod catches invalid runtime data (from API requests).</li>
+            <li>Define schemas: <code>const userSchema = z.object(&#123; name: z.string().min(2), email: z.string().email() &#125;)</code></li>
+            <li><code>schema.parse(data)</code>: throws on invalid. <code>schema.safeParse(data)</code>: returns {success, data, error} — prefer this.</li>
+            <li>Validation middleware: create <code>validate(schema)</code> middleware. Call schema.safeParse(req.body), if error return 422 with formatted errors.</li>
+            <li>Zod also generates TypeScript types: <code>type User = z.infer&lt;typeof userSchema&gt;</code> — one source of truth.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://zod.dev/" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">Zod official docs</div>
+                <div class="res-what">Read: Basic usage, Strings, Objects, Error handling. 30 min. Then add Zod validation to every POST/PUT route in your project.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="n-3">
+      <div class="topic-head" onclick="expand('n-3')">
+        <div class="t-check" onclick="check(event,'n-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Error handling + Rate limiting + Middleware architecture</div>
+          <div class="t-sub">Global error handler, custom error classes, express-rate-limit, middleware ordering</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Global error handler</strong>: Express 4-argument middleware <code>(err, req, res, next)</code>. Catches errors from anywhere via <code>next(error)</code>.</li>
+            <li><strong>Custom error class</strong>: extend Error with statusCode field. Throw <code>new AppError('Not found', 404)</code> in any route handler.</li>
+            <li><strong>Middleware order matters</strong>: cors → json → rateLimit → routes → error handler. Error handler MUST be last.</li>
+            <li><strong>Rate limiting</strong>: express-rate-limit. 100 requests per 15 minutes per IP. Apply globally or per route (login route: stricter limit).</li>
+            <li>Async error handling: use a wrapper: <code>const asyncHandler = fn => (req,res,next) => Promise.resolve(fn(req,res,next)).catch(next)</code></li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://expressjs.com/en/guide/error-handling.html" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">Express docs — Error Handling</div>
+                <div class="res-what">Read fully. Then add a global error handler to your project. Every route that calls the DB should use asyncHandler or try/catch.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Node auth done when</div>
+          <ul class="done-list">
+            <li>Built complete auth: register, login, refresh, logout with JWT + HttpOnly refresh token cookie</li>
+            <li>Every POST/PUT route validates input with Zod middleware</li>
+            <li>Global error handler catches all errors — no unhandled promise rejections</li>
+            <li>Rate limiting on login route (5 requests per minute)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SPRING BOOT ===== -->
+<div id="p-spring" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(109,179,63,0.15);">🍃</div>
+    <div>
+      <h2>Spring Boot — REST API Backend</h2>
+      <p>Spring Boot is your Java full stack differentiator. Most freshers in Bangalore only know MERN. A solid Spring Boot backend makes you stand out. Build a real REST API with proper layers, JPA, and security.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">All topics — build a Spring Boot Order API as you learn each one</div>
+
+    <div class="topic" id="sb-1">
+      <div class="topic-head" onclick="expand('sb-1')">
+        <div class="t-check" onclick="check(event,'sb-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Spring Boot layers — Controller, Service, Repository</div>
+          <div class="t-sub">@RestController, @Service, @Repository, @Autowired, dependency injection</div>
+        </div>
+        <span class="t-badge b-must">must · understand the architecture</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>3-layer architecture</strong>: Controller (HTTP) → Service (business logic) → Repository (DB). Each layer only knows the one below it.</li>
+            <li><strong>@RestController</strong>: marks class as REST controller. All methods return response body directly.</li>
+            <li><strong>@RequestMapping, @GetMapping, @PostMapping, @PutMapping, @DeleteMapping</strong>: map HTTP routes.</li>
+            <li><strong>@Autowired</strong>: Spring injects dependencies automatically. Prefer constructor injection over field injection.</li>
+            <li><strong>@PathVariable</strong> vs <strong>@RequestParam</strong> vs <strong>@RequestBody</strong>: path /users/{id} vs query ?page=1 vs JSON body.</li>
+            <li><strong>ResponseEntity&lt;T&gt;</strong>: return HTTP status + body. <code>ResponseEntity.ok(data)</code>, <code>ResponseEntity.status(201).body(data)</code>.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://www.youtube.com/watch?v=9SGDpanrc8U" target="_blank">
+              <span class="res-icon">▶</span>
+              <div class="res-body">
+                <div class="res-name">Amigoscode — Spring Boot Tutorial (YouTube)</div>
+                <div class="res-what">Best Spring Boot tutorial for beginners. Watch the first 3 hours covering layers, REST endpoints, JPA. Build along with the video.</div>
+                <div class="res-tags"><span class="rt free">free</span><span class="rt best">best Spring Boot resource</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="sb-2">
+      <div class="topic-head" onclick="expand('sb-2')">
+        <div class="t-check" onclick="check(event,'sb-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">JPA + Hibernate — database interaction</div>
+          <div class="t-sub">@Entity, @Id, relationships (OneToMany, ManyToMany), JPQL queries, pagination</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>@Entity</strong>: marks class as DB table. <strong>@Id + @GeneratedValue</strong>: auto-increment primary key.</li>
+            <li><strong>JpaRepository&lt;Entity, ID&gt;</strong>: extends this to get save, findById, findAll, deleteById for free.</li>
+            <li><strong>Relationships</strong>: @OneToMany (user has many orders), @ManyToOne (order belongs to user), @ManyToMany (students and courses). Understand FetchType.LAZY vs EAGER.</li>
+            <li><strong>Custom queries</strong>: method name convention (<code>findByEmailAndStatus</code>) or @Query annotation with JPQL.</li>
+            <li><strong>N+1 problem</strong>: lazy loading in a loop causes N extra queries. Fix with JOIN FETCH or @EntityGraph.</li>
+            <li><strong>Pagination</strong>: <code>findAll(PageRequest.of(page, size, Sort.by("createdAt").descending()))</code></li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://www.baeldung.com/the-persistence-layer-with-spring-data-jpa" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">Baeldung — Spring Data JPA</div>
+                <div class="res-what">Best written JPA resource. Read: Spring Data JPA intro, relationships (OneToMany, ManyToMany), custom queries. Baeldung is the go-to Spring reference.</div>
+                <div class="res-tags"><span class="rt free">free</span><span class="rt best">best Spring reference</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="sb-3">
+      <div class="topic-head" onclick="expand('sb-3')">
+        <div class="t-check" onclick="check(event,'sb-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Exception handling + Validation</div>
+          <div class="t-sub">@ControllerAdvice, @ExceptionHandler, @Valid, custom error responses</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>@ControllerAdvice</strong>: global exception handler. All exceptions flow here.</li>
+            <li><strong>@ExceptionHandler(ExceptionType.class)</strong>: handles specific exception, returns proper HTTP status + error body.</li>
+            <li><strong>@Valid + Bean Validation</strong>: @NotNull, @NotBlank, @Email, @Min, @Max on DTO fields. Spring validates before calling controller method.</li>
+            <li><strong>Custom exceptions</strong>: create <code>ResourceNotFoundException extends RuntimeException</code>. Throw it in service layer. @ControllerAdvice catches it and returns 404.</li>
+            <li><strong>Standard error response</strong>: always return JSON with status, message, timestamp. Never expose stack traces in production.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://www.baeldung.com/exception-handling-for-rest-with-spring" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">Baeldung — Exception Handling for REST with Spring</div>
+                <div class="res-what">Read fully. This is the pattern your Spring Boot project must follow. After reading: add @ControllerAdvice to your project.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="sb-4">
+      <div class="topic-head" onclick="expand('sb-4')">
+        <div class="t-check" onclick="check(event,'sb-4')">✓</div>
+        <div class="t-main">
+          <div class="t-name">Spring Security — JWT authentication</div>
+          <div class="t-sub">Security filter chain, UserDetailsService, JWT filter, role-based authorization</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>SecurityFilterChain</strong>: configure which endpoints are public vs protected. Disable CSRF for REST APIs (stateless).</li>
+            <li><strong>JwtAuthFilter</strong>: extends OncePerRequestFilter. Extracts JWT from header, validates, sets SecurityContextHolder.</li>
+            <li><strong>UserDetailsService</strong>: loadUserByUsername — load user from DB for authentication.</li>
+            <li><strong>@PreAuthorize("hasRole('ADMIN')")</strong>: method-level authorization. Restrict endpoints by role.</li>
+            <li>Password encoding: always use BCryptPasswordEncoder. Never store plain text passwords.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://www.youtube.com/watch?v=KxqlJblhzfI" target="_blank">
+              <span class="res-icon">▶</span>
+              <div class="res-body">
+                <div class="res-name">Amigoscode — Spring Boot Security JWT (YouTube)</div>
+                <div class="res-what">Best Spring Security + JWT tutorial. Watch fully, build along. This is the hardest Spring topic — take 2 days if needed.</div>
+                <div class="res-tags"><span class="rt free">free</span><span class="rt best">must watch</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Spring Boot done when</div>
+          <ul class="done-list">
+            <li>Built a REST API with at least 3 entities and proper relationships in JPA</li>
+            <li>JWT authentication works — protected routes return 401 without valid token</li>
+            <li>@ControllerAdvice catches all exceptions — consistent error response format</li>
+            <li>Swagger/OpenAPI documentation generated automatically</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== MONGODB + SQL ===== -->
+<div id="p-db" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(71,162,72,0.15);">🗄️</div>
+    <div>
+      <h2>MongoDB Deep + PostgreSQL with JPA</h2>
+      <p>You know basic Mongoose. This phase: MongoDB aggregation pipeline, proper indexing, and connecting PostgreSQL to Spring Boot via JPA. Know both — one for Node projects, one for Java projects.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">MongoDB — aggregation pipeline</div>
+
+    <div class="topic" id="db-1">
+      <div class="topic-head" onclick="expand('db-1')">
+        <div class="t-check" onclick="check(event,'db-1')">✓</div>
+        <div class="t-main">
+          <div class="t-name">MongoDB Aggregation Pipeline</div>
+          <div class="t-sub">$match, $group, $sort, $project, $lookup, $unwind — the analytics queries</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Aggregation pipeline</strong>: array of stages, each transforms the documents flowing through</li>
+            <li><strong>$match</strong>: filter documents (like WHERE in SQL)</li>
+            <li><strong>$group</strong>: group by field and accumulate (like GROUP BY + aggregates in SQL). <code>_id: "$field"</code> is the group key.</li>
+            <li><strong>$sort, $limit, $skip</strong>: sort and paginate results</li>
+            <li><strong>$project</strong>: include/exclude fields, add computed fields (like SELECT with aliases)</li>
+            <li><strong>$lookup</strong>: join documents from another collection (like SQL JOIN)</li>
+            <li><strong>$unwind</strong>: deconstruct array field — each array element becomes a separate document</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Aggregation example — from your future Swiggy-like project</div>
+          <div class="code-wrap">
+            <div class="code-title">MongoDB aggregation — total revenue per restaurant this month</div>
+            <pre>
+db.orders.aggregate([
+    { $match: {
+        status: <span class="cs">"completed"</span>,
+        createdAt: { $gte: <span class="ck">new</span> <span class="cn">Date</span>(<span class="cs">"2025-01-01"</span>) }
+    }},
+    { $group: {
+        _id: <span class="cs">"$restaurantId"</span>,
+        totalRevenue: { $sum: <span class="cs">"$amount"</span> },
+        orderCount: { $sum: <span class="co">1</span> },
+        avgOrderValue: { $avg: <span class="cs">"$amount"</span> }
+    }},
+    { $sort: { totalRevenue: -<span class="co">1</span> }},
+    { $limit: <span class="co">10</span> },
+    { $lookup: {
+        from: <span class="cs">"restaurants"</span>,
+        localField: <span class="cs">"_id"</span>,
+        foreignField: <span class="cs">"_id"</span>,
+        as: <span class="cs">"restaurant"</span>
+    }},
+    { $unwind: <span class="cs">"$restaurant"</span> },
+    { $project: {
+        restaurantName: <span class="cs">"$restaurant.name"</span>,
+        totalRevenue: <span class="co">1</span>,
+        orderCount: <span class="co">1</span>
+    }}
+])</pre>
+          </div>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://www.mongodb.com/docs/manual/aggregation/" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">MongoDB official docs — Aggregation</div>
+                <div class="res-what">Read: Aggregation Pipeline overview + each stage reference. Then practice on MongoDB Atlas free tier — create a collection, write 5 aggregation queries.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+            <a class="res" href="https://www.youtube.com/watch?v=A3jvoE0jGdE" target="_blank">
+              <span class="res-icon">▶</span>
+              <div class="res-body">
+                <div class="res-name">Traversy Media — MongoDB Aggregation (YouTube)</div>
+                <div class="res-what">Code-along tutorial covering all major pipeline stages with real examples. Watch after reading docs.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="db-2">
+      <div class="topic-head" onclick="expand('db-2')">
+        <div class="t-check" onclick="check(event,'db-2')">✓</div>
+        <div class="t-main">
+          <div class="t-name">MongoDB Indexing + Schema Design</div>
+          <div class="t-sub">createIndex, compound indexes, text indexes, embedding vs referencing</div>
+        </div>
+        <span class="t-badge b-must">must</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>When to embed vs reference</strong>: embed when data is always accessed together, rarely changes, and doesn't have its own lifecycle (order items → embed in order). Reference when data is shared, large, or has independent lifecycle (products, users).</li>
+            <li><strong>createIndex</strong>: <code>db.collection.createIndex(&#123; field: 1 &#125;)</code>. 1 = ascending, -1 = descending.</li>
+            <li><strong>Compound index</strong>: <code>createIndex(&#123; userId: 1, createdAt: -1 &#125;)</code>. Supports queries filtering by userId OR userId+createdAt, NOT createdAt alone.</li>
+            <li><strong>Text index</strong>: for full-text search. <code>createIndex(&#123; name: "text", description: "text" &#125;)</code>. Then <code>$text: &#123; $search: "query" &#125;</code>.</li>
+            <li>Add indexes for: all foreign key references, any field in $match stages of aggregations, frequently queried fields</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://www.mongodb.com/docs/manual/indexes/" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">MongoDB docs — Indexes</div>
+                <div class="res-what">Read: Index intro, Single Field, Compound, Text indexes. Then run explain() on your aggregation queries to check if indexes are being used.</div>
+                <div class="res-tags"><span class="rt free">free</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="topic" id="db-3">
+      <div class="topic-head" onclick="expand('db-3')">
+        <div class="t-check" onclick="check(event,'db-3')">✓</div>
+        <div class="t-main">
+          <div class="t-name">PostgreSQL + Spring Boot JPA</div>
+          <div class="t-sub">Connect Postgres to Spring Boot, JPA entities, native queries, transactions</div>
+        </div>
+        <span class="t-badge b-must">must for Java full stack</span>
+      </div>
+      <div class="topic-body">
+        <div class="tb-sec">
+          <div class="tb-label">Exactly what to learn</div>
+          <ul class="learn-list">
+            <li><strong>Setup</strong>: add spring-boot-starter-data-jpa + postgresql driver dependencies. Configure application.yml with datasource URL, username, password.</li>
+            <li><strong>hibernate.ddl-auto</strong>: "create-drop" for dev (recreates schema on restart), "validate" for production (only validates schema, never changes it)</li>
+            <li><strong>@Transactional</strong>: wraps service method in a DB transaction. If any exception is thrown: rolls back all DB changes. Put on service methods, not repository.</li>
+            <li><strong>Native queries</strong>: <code>@Query(value="SELECT * FROM users WHERE ...", nativeQuery=true)</code>. For complex queries JPQL can't express.</li>
+            <li>Flyway or Liquibase: manage DB schema migrations. Create versioned SQL scripts — V1__create_users.sql, V2__add_orders.sql. Runs automatically on startup.</li>
+          </ul>
+        </div>
+        <div class="tb-sec">
+          <div class="tb-label">Where to learn</div>
+          <div class="res-list">
+            <a class="res" href="https://www.baeldung.com/spring-boot-postgresql-docker" target="_blank">
+              <span class="res-icon">📄</span>
+              <div class="res-body">
+                <div class="res-name">Baeldung — Spring Boot + PostgreSQL</div>
+                <div class="res-what">Complete guide: set up PostgreSQL with Docker, connect Spring Boot, JPA entities, test with Postman. Follow the whole guide for your capstone project backend.</div>
+                <div class="res-tags"><span class="rt free">free</span><span class="rt best">build-along</span></div>
+              </div>
+            </a>
+          </div>
+        </div>
+        <div class="done-box">
+          <div class="done-label">Database track done when</div>
+          <ul class="done-list">
+            <li>Written 5 MongoDB aggregation pipelines including $group, $lookup, $unwind</li>
+            <li>Added proper indexes to your MongoDB collections — verified with explain()</li>
+            <li>Connected PostgreSQL to Spring Boot project — entities, relationships, custom queries working</li>
+            <li>@Transactional on service methods that do multiple DB writes</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== DAILY PLAN ===== -->
+<div id="p-plan" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(244,63,94,0.15);">📅</div>
+    <div>
+      <h2>Daily Plan — 7 Weeks</h2>
+      <p>Two tracks simultaneously. Morning DSA, afternoon dev. The habit is the strategy.</p>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="sec-label">Daily structure — every weekday</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
+      <div style="display:grid;grid-template-columns:100px 1fr;gap:12px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;align-items:start;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--graph);">6–8 AM</span>
+        <div><div style="font-size:13px;font-weight:600;margin-bottom:3px;">DSA — 2 problems</div><div style="font-size:11px;color:var(--t2);">20 min attempt each (no hints). After both: watch NeetCode. Update failed problems list.</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:100px 1fr;gap:12px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;align-items:start;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--react);">9–10:30 AM</span>
+        <div><div style="font-size:13px;font-weight:600;margin-bottom:3px;">CS/theory — rotate daily</div><div style="font-size:11px;color:var(--t2);">Mon: React. Tue: Node. Wed: Spring Boot. Thu: MongoDB. Fri: SQL/DBMS review.</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:100px 1fr;gap:12px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;align-items:start;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--node);">11 AM–2 PM</span>
+        <div><div style="font-size:13px;font-weight:600;margin-bottom:3px;">Dev — build features</div><div style="font-size:11px;color:var(--t2);">Write code. Not watch tutorials. Build the auth system, build custom hooks, build the Spring Boot API. Commit to GitHub every day.</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:100px 1fr;gap:12px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;align-items:start;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--heap);">6–7:30 PM</span>
+        <div><div style="font-size:13px;font-weight:600;margin-bottom:3px;">Revision + failed problems</div><div style="font-size:11px;color:var(--t2);">Retry failed DSA problems from your list. AI quiz on today's dev topic. 1 mock interview question.</div></div>
+      </div>
+    </div>
+
+    <div class="sec-label">Week-by-week DSA + dev alignment</div>
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px;">
+      <div style="padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;display:grid;grid-template-columns:120px 1fr 1fr;gap:12px;font-size:12px;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--t3);">WEEK 1–2</span>
+        <span><strong style="color:var(--graph)">DSA:</strong> Graphs — BFS, DFS, topo sort, Dijkstra (35 problems)</span>
+        <span><strong style="color:var(--react)">Dev:</strong> React advanced hooks — build auth context + custom hooks</span>
+      </div>
+      <div style="padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;display:grid;grid-template-columns:120px 1fr 1fr;gap:12px;font-size:12px;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--t3);">WEEK 3–4</span>
+        <span><strong style="color:var(--dp)">DSA:</strong> Dynamic Programming — 1D then 2D DP (45 problems)</span>
+        <span><strong style="color:var(--node)">Dev:</strong> Node auth system — JWT + refresh tokens + validation</span>
+      </div>
+      <div style="padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;display:grid;grid-template-columns:120px 1fr 1fr;gap:12px;font-size:12px;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--t3);">WEEK 5</span>
+        <span><strong style="color:var(--heap)">DSA:</strong> Heaps + Priority Queue (18 problems)</span>
+        <span><strong style="color:var(--spring)">Dev:</strong> Spring Boot — layers, JPA, relationships, exceptions</span>
+      </div>
+      <div style="padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;display:grid;grid-template-columns:120px 1fr 1fr;gap:12px;font-size:12px;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--t3);">WEEK 6</span>
+        <span><strong style="color:var(--trie)">DSA:</strong> Trie + Greedy (15 problems)</span>
+        <span><strong style="color:var(--spring)">Dev:</strong> Spring Security + JWT. PostgreSQL integration.</span>
+      </div>
+      <div style="padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;display:grid;grid-template-columns:120px 1fr 1fr;gap:12px;font-size:12px;">
+        <span style="font-family:var(--mono);font-size:10px;color:var(--t3);">WEEK 7</span>
+        <span><strong style="color:#888">DSA:</strong> Review + mixed mock sessions. Fix weak patterns.</span>
+        <span><strong style="color:var(--mongo)">Dev:</strong> MongoDB aggregation + indexing. Connect all pieces.</span>
+      </div>
+    </div>
+
+    <div class="sec-label">Phase 2 done criteria — before moving to Phase 3</div>
+    <div style="display:flex;flex-direction:column;gap:8px;">
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">Solve Graph BFS/DFS problems without hints. Implement topological sort from memory.</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">Solve at least 15 DP problems. Always explain: state, recurrence, base case.</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">Write MinHeap class from memory. Solve Find Median from Data Stream.</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">Built complete JWT auth in Node.js — register, login, refresh, logout working.</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">Built Spring Boot REST API with JPA, relationships, Spring Security JWT, exception handling.</span></div>
+      <div style="display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;"><span style="color:#4ade80;font-size:12px;flex-shrink:0;margin-top:1px;">✓</span><span style="font-size:12px;color:var(--t2);">Written at least 3 non-trivial MongoDB aggregation pipelines with $group + $lookup.</span></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function go(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('p-' + name).classList.add('on');
+  btn.classList.add('on');
+  window.scrollTo(0,0);
+}
+function expand(id) {
+  const t = document.getElementById(id);
+  if (!t.classList.contains('done')) t.classList.toggle('open');
+}
+function check(e, id) {
+  e.stopPropagation();
+  const t = document.getElementById(id);
+  t.classList.toggle('done');
+  if (t.classList.contains('done')) t.classList.remove('open');
+}
+function copyText(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 2000);
+  });
+}
+</script>
+</body>
+</html>
