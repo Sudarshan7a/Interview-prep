@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 5 — After the Offer + Full Roadmap</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap');
+:root{
+  --bg:#09090b;--s1:#111113;--s2:#18181b;--s3:#27272a;--b1:#3f3f46;--b2:#52525b;
+  --t1:#fafafa;--t2:#a1a1aa;--t3:#52525b;
+  --mono:'Space Mono',monospace;--sans:'Space Grotesk',sans-serif;
+  --p0:#888;--p1:#c8ff00;--p2:#00d4ff;--p3:#ff6b35;--p4:#a855f7;--p5:#f43f5e;
+  --gold:#fbbf24;--green:#4ade80;--blue:#60a5fa;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.6;}
+
+.topbar{padding:28px 32px 24px;border-bottom:1px solid var(--s3);}
+.topbar h1{font-size:22px;font-weight:700;margin-bottom:6px;}
+.topbar p{font-size:13px;color:var(--t2);max-width:640px;}
+.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.tag{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid var(--b1);color:var(--t2);}
+.tag.hi{border-color:var(--p5);color:var(--p5);}
+
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--s3);scrollbar-width:none;padding:0 32px;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{font-family:var(--mono);font-size:10px;padding:12px 16px;border:none;background:none;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:color 0.15s;letter-spacing:0.04em;}
+.tab:hover{color:var(--t2);}
+.tab.on{color:var(--t1);border-bottom-color:currentColor;}
+.tdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+.panel{display:none;padding:32px;max-width:980px;}
+.panel.on{display:block;}
+
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--s3);}
+
+.sh{display:flex;align-items:flex-start;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--s3);}
+.sh-badge{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.sh h2{font-size:20px;font-weight:700;margin-bottom:4px;}
+.sh p{font-size:12px;color:var(--t2);line-height:1.6;max-width:600px;}
+
+.info-card{padding:14px 16px;background:var(--s1);border:1px solid var(--s3);border-radius:10px;margin-bottom:10px;}
+.info-card.warn{border-left:3px solid var(--gold);}
+.info-card.good{border-left:3px solid var(--green);}
+.info-card.info{border-left:3px solid var(--blue);}
+.info-card.red{border-left:3px solid var(--p5);}
+.info-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.info-card.warn .info-title{color:var(--gold);}
+.info-card.good .info-title{color:var(--green);}
+.info-card.info .info-title{color:var(--blue);}
+.info-card.red .info-title{color:var(--p5);}
+.info-text{font-size:12px;color:var(--t2);line-height:1.6;}
+
+.learn-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.learn-list li{font-size:12px;color:var(--t2);padding-left:14px;position:relative;line-height:1.5;}
+.learn-list li::before{content:'→';position:absolute;left:0;color:var(--b2);font-size:11px;}
+.learn-list li strong{color:var(--t1);font-weight:500;}
+
+/* ROADMAP OVERVIEW */
+.phase-timeline{display:flex;flex-direction:column;gap:2px;margin-bottom:32px;}
+.phase-row{display:grid;grid-template-columns:120px 1fr auto;gap:16px;align-items:center;padding:14px 16px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;transition:border-color 0.15s;cursor:pointer;}
+.phase-row:hover{border-color:var(--b1);}
+.phase-badge{font-family:var(--mono);font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;text-align:center;white-space:nowrap;}
+.phase-info h3{font-size:13px;font-weight:600;margin-bottom:2px;}
+.phase-info p{font-size:11px;color:var(--t2);}
+.phase-dur{font-family:var(--mono);font-size:10px;color:var(--t3);white-space:nowrap;}
+
+/* 90 day plan */
+.day-block{background:var(--s1);border:1px solid var(--s3);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+.day-header{padding:14px 16px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.day-header:hover{background:var(--s2);}
+.day-range{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;padding:3px 10px;border-radius:99px;flex-shrink:0;}
+.day-title{font-size:13px;font-weight:600;flex:1;}
+.day-arr{color:var(--t3);font-size:10px;transition:transform 0.2s;}
+.day-block.open .day-arr{transform:rotate(180deg);}
+.day-body{display:none;padding:0 16px 16px;border-top:1px solid var(--s3);}
+.day-block.open .day-body{display:block;}
+
+/* checklist */
+.check-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--s3);cursor:pointer;}
+.check-item:last-child{border-bottom:none;}
+.ci-box{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--b1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;margin-top:2px;transition:all 0.15s;}
+.check-item.done .ci-box{background:#16a34a;border-color:#16a34a;color:#fff;}
+.ci-text{font-size:12px;color:var(--t2);line-height:1.5;flex:1;}
+.check-item.done .ci-text{color:var(--t3);text-decoration:line-through;}
+
+/* growth path */
+.level-card{background:var(--s1);border:1px solid var(--s3);border-radius:12px;padding:20px;margin-bottom:12px;position:relative;overflow:hidden;}
+.level-card::before{content:attr(data-level);position:absolute;top:12px;right:16px;font-family:var(--mono);font-size:60px;font-weight:700;color:rgba(255,255,255,0.03);line-height:1;}
+.level-badge{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;padding:3px 10px;border-radius:4px;margin-bottom:10px;display:inline-block;}
+.level-title{font-size:17px;font-weight:700;margin-bottom:4px;}
+.level-sal{font-family:var(--mono);font-size:12px;color:var(--green);margin-bottom:12px;}
+.level-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:640px){.level-grid{grid-template-columns:1fr;}.topbar,.tabs,.panel{padding-left:16px;padding-right:16px;}}
+.level-col-title{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+
+/* habits */
+.habit-row{display:flex;gap:14px;align-items:flex-start;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;margin-bottom:8px;}
+.habit-icon{font-size:18px;flex-shrink:0;}
+.habit-title{font-size:13px;font-weight:600;margin-bottom:3px;}
+.habit-text{font-size:12px;color:var(--t2);line-height:1.5;}
+
+/* prompt */
+.prompt-block{background:#0a1000;border:1px solid rgba(74,222,128,0.2);border-radius:10px;padding:18px;position:relative;margin-top:8px;}
+.prompt-block pre{font-family:var(--mono);font-size:11px;color:#86efac;line-height:1.8;white-space:pre-wrap;}
+.copy-btn{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:9px;padding:4px 10px;border:1px solid rgba(74,222,128,0.3);border-radius:4px;background:none;color:#4ade80;cursor:pointer;}
+
+/* master prompt */
+.master-prompt{background:linear-gradient(135deg,#0a1000 0%,#001a10 100%);border:1px solid rgba(200,255,0,0.25);border-radius:14px;padding:24px;position:relative;margin-bottom:20px;}
+.mp-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--p1);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.mp-label::after{content:'';flex:1;height:1px;background:rgba(200,255,0,0.15);}
+.master-prompt pre{font-family:var(--mono);font-size:11px;color:#c8ff9a;line-height:1.8;white-space:pre-wrap;}
+
+/* resource cards */
+.res{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;background:var(--s2);border:1px solid var(--s3);border-radius:8px;text-decoration:none;color:inherit;margin-bottom:6px;transition:border-color 0.15s;}
+.res:hover{border-color:var(--b1);}
+.res-icon{font-size:14px;flex-shrink:0;margin-top:1px;}
+.res-body{flex:1;}
+.res-name{font-size:12px;font-weight:600;color:var(--t1);margin-bottom:2px;}
+.res-what{font-size:11px;color:var(--t2);line-height:1.4;}
+.res-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:5px;}
+.rt{font-family:var(--mono);font-size:9px;padding:1px 6px;border-radius:3px;background:var(--s3);color:var(--t3);}
+.rt.free{background:rgba(34,197,94,0.1);color:#4ade80;}
+.rt.best{background:rgba(234,179,8,0.1);color:#fbbf24;}
+
+/* week header */
+.week-header{font-family:var(--mono);font-size:11px;color:var(--t3);margin:20px 0 8px;letter-spacing:0.06em;}
+
+/* two col */
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:600px){.two-col{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Phase 5 — After the Offer + Full Roadmap Summary</h1>
+  <p>Most guides stop at "get the job." This is what happens after. Your first 90 days determine your trajectory. The habits that got you hired must continue to grow you. Plus: the complete 6-phase roadmap in one view.</p>
+  <div class="tagrow">
+    <span class="tag hi">ongoing · no end date</span>
+    <span class="tag">first 90 days plan</span>
+    <span class="tag">fresher → mid-level path</span>
+    <span class="tag">long-term habits</span>
+    <span class="tag">complete roadmap view</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="go('roadmap',this)"><span class="tdot" style="background:#888"></span>Full Roadmap</button>
+  <button class="tab" onclick="go('day30',this)"><span class="tdot" style="background:var(--p5)"></span>First 30 Days</button>
+  <button class="tab" onclick="go('day90',this)"><span class="tdot" style="background:var(--p3)"></span>Days 31–90</button>
+  <button class="tab" onclick="go('growth',this)"><span class="tdot" style="background:var(--p1)"></span>Fresher → Mid</button>
+  <button class="tab" onclick="go('habits',this)"><span class="tdot" style="background:var(--p2)"></span>Long-term Habits</button>
+  <button class="tab" onclick="go('prompts',this)"><span class="tdot" style="background:var(--green)"></span>All Prompts</button>
+</div>
+
+<!-- FULL ROADMAP -->
+<div id="p-roadmap" class="panel on">
+  <div class="sec-label">The complete journey — all 6 phases</div>
+
+  <div class="phase-timeline">
+    <div class="phase-row" onclick="window.open('phase0_map.html','_blank')">
+      <div>
+        <span class="phase-badge" style="background:rgba(136,136,136,0.15);color:#aaa;">PHASE 0</span>
+      </div>
+      <div class="phase-info">
+        <h3>CS Fundamentals + TypeScript + SQL</h3>
+        <p>OOP · Operating Systems · DBMS · Networks · TypeScript · SQL — the theory that rounds 2-3 test</p>
+      </div>
+      <span class="phase-dur">3–4 weeks</span>
+    </div>
+
+    <div class="phase-row" onclick="window.open('phase1_dsa.html','_blank')">
+      <div>
+        <span class="phase-badge" style="background:rgba(200,255,0,0.12);color:var(--p1);">PHASE 1</span>
+      </div>
+      <div class="phase-info">
+        <h3>DSA Core — Arrays to Binary Trees</h3>
+        <p>8 patterns · ~260 problems · Arrays, 2 Pointers, Sliding Window, Strings, LL, Stack, Binary Search, Recursion, Trees</p>
+      </div>
+      <span class="phase-dur">6–7 weeks</span>
+    </div>
+
+    <div class="phase-row" onclick="window.open('phase2.html','_blank')">
+      <div>
+        <span class="phase-badge" style="background:rgba(0,212,255,0.12);color:var(--p2);">PHASE 2</span>
+      </div>
+      <div class="phase-info">
+        <h3>DSA Advanced + Full Stack Deepening</h3>
+        <p>Graphs · DP · Heaps · Tries · Greedy + React advanced · Node auth · Spring Boot · MongoDB</p>
+      </div>
+      <span class="phase-dur">6–7 weeks</span>
+    </div>
+
+    <div class="phase-row" onclick="window.open('phase3.html','_blank')">
+      <div>
+        <span class="phase-badge" style="background:rgba(255,107,53,0.12);color:var(--p3);">PHASE 3</span>
+      </div>
+      <div class="phase-info">
+        <h3>Projects + System Design + Docker + Deploy</h3>
+        <p>DevTracker · CollabDocs · ShopFlow · System design basics · EC2 + NGINX deployment</p>
+      </div>
+      <span class="phase-dur">5–6 weeks</span>
+    </div>
+
+    <div class="phase-row" onclick="window.open('phase4.html','_blank')">
+      <div>
+        <span class="phase-badge" style="background:rgba(168,85,247,0.12);color:var(--p4);">PHASE 4</span>
+      </div>
+      <div class="phase-info">
+        <h3>Interview Prep + Active Job Hunt</h3>
+        <p>Mock interviews · CS Q&amp;A · Behavioral STAR stories · Resume · Company targeting · Salary negotiation</p>
+      </div>
+      <span class="phase-dur">3–4 weeks</span>
+    </div>
+
+    <div class="phase-row" style="border-color:rgba(244,63,94,0.3);">
+      <div>
+        <span class="phase-badge" style="background:rgba(244,63,94,0.2);color:var(--p5);border:1px solid rgba(244,63,94,0.4);">PHASE 5</span>
+      </div>
+      <div class="phase-info">
+        <h3>After the Offer — First 90 Days + Growth</h3>
+        <p>Onboarding strategy · Prove yourself fast · Habits for continuous growth · Fresher → mid-level path</p>
+      </div>
+      <span class="phase-dur">Ongoing</span>
+    </div>
+  </div>
+
+  <div class="sec-label">Total timeline — realistic estimate</div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin-bottom:28px;">
+    <div style="background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:14px;text-align:center;">
+      <div style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--p1);">23</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:4px;">weeks total</div>
+    </div>
+    <div style="background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:14px;text-align:center;">
+      <div style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--p2);">260+</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:4px;">DSA problems</div>
+    </div>
+    <div style="background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:14px;text-align:center;">
+      <div style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--p3);">3</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:4px;">deployed projects</div>
+    </div>
+    <div style="background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:14px;text-align:center;">
+      <div style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--p4);">6-8</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:4px;">hrs/day practice</div>
+    </div>
+    <div style="background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:14px;text-align:center;">
+      <div style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--green);">₹8–20L</div>
+      <div style="font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:4px;">target range</div>
+    </div>
+  </div>
+
+  <div class="info-card good">
+    <div class="info-title">✓ The single most important rule across all 5 phases</div>
+    <div class="info-text">Consistency beats intensity. Six hours every day for 23 weeks beats sixteen hours for two weeks then burning out. The engineers who land offers aren't the ones who crammed the hardest — they're the ones who showed up every single day, tracked their progress, fixed their gaps, and didn't quit when it got slow. Build the daily routine in Phase 0, protect it through all 5 phases.</div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">The master AI mentor prompt — paste at the start of every session</div>
+  <div class="master-prompt">
+    <div class="mp-label">MENTOR.md — paste this at the start of every AI study session</div>
+    <pre>You are my senior technical mentor and career coach. I am a fresher full stack developer in Bangalore targeting high-paying software engineering roles (₹8–20 LPA range).
+
+MY PROFILE:
+- Skills: MERN stack (MongoDB, Express, React, Node.js) + Java Full Stack (Spring Boot, Hibernate)
+- TypeScript: intermediate. DSA: LeetCode medium level. System design: basics.
+- Projects: DevTracker (MERN+TS+Auth), CollabDocs (Socket.io+Redis+Docker), ShopFlow (Spring Boot+PostgreSQL+JWT)
+- Target companies: Swiggy, PhonePe, CRED, Razorpay, Zepto (Tier 1), BrowserStack, Juspay, Chargebee (Tier 2)
+
+CURRENT PHASE: [WRITE PHASE NUMBER + TOPIC e.g. "Phase 1 · Sliding Window"]
+
+SESSION GOALS: [WRITE WHAT YOU WANT TO ACCOMPLISH TODAY]
+
+RULES FOR THIS SESSION:
+- Connect everything to my actual projects and Bangalore job market context
+- When I share code: critique it honestly — correctness, edge cases, complexity, readability
+- When I answer a question: tell me if my answer would satisfy a Swiggy/PhonePe interviewer
+- Flag anything I should stop doing that wastes time
+- Be direct. Skip filler. Go deep on what matters.
+
+Begin.</pre>
+  </div>
+</div>
+
+<!-- FIRST 30 DAYS -->
+<div id="p-day30" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(244,63,94,0.15);">🚀</div>
+    <div>
+      <h2>First 30 Days — Prove Yourself Fast</h2>
+      <p>The first month sets your reputation for the next 2 years. Engineers who are visible, proactive, and deliver early get the interesting projects. The ones who stay quiet and wait for direction stay junior longer.</p>
+    </div>
+  </div>
+
+  <div class="info-card warn">
+    <div class="info-title">⚠️ The biggest mistake new engineers make in week 1</div>
+    <div class="info-text">Trying to impress everyone by showing off everything you know. The engineers who advance fastest are the ones who listen 80% of the time in the first month, ask smart questions, and deliver the small things perfectly. One clean PR merged on day 5 is worth more than 10 PRs that need 3 rounds of review each.</div>
+  </div>
+
+  <div class="sec-label">Week 1 — Orientation and understanding</div>
+
+  <div class="day-block" id="d30-1">
+    <div class="day-header" onclick="toggleDay('d30-1')">
+      <span class="day-range" style="background:rgba(244,63,94,0.15);color:var(--p5);">Day 1–7</span>
+      <span class="day-title">Learn the codebase, team, and processes</span>
+      <span class="day-arr">▼</span>
+    </div>
+    <div class="day-body">
+      <div style="margin-top:12px;">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Set up your development environment</strong> completely on day 1. Don't spend 3 days on this. Ask a teammate to pair with you for 30 min. Write down every step — you might onboard someone later.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Read the codebase README and architecture docs</strong> before writing a single line of code. Understand: what does this service do? What does it talk to? What does it store?</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Trace one user request end-to-end</strong> through the codebase. Frontend → API → service layer → DB → response. This is the fastest way to understand a new codebase. Add console.log/breakpoints as you go.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Understand the git workflow</strong>: how do PRs work? What's the branch naming convention? Who reviews? How long does review take? What does "done" mean here?</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Learn the deployment process</strong>: how does code get to production? CI/CD pipeline? Staging environment? Manual or automatic deploys?</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Meet your team</strong>: 1:1 coffee chats with each teammate. Ask: "What are you working on? What's the biggest challenge right now? Is there anything I can help with?" — people remember who showed genuine interest.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Find a bug or doc improvement</strong> and raise a tiny PR. Even one typo fix. This shows you read the code, you understand the git workflow, and you're not waiting to be told what to do.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Week 2–3 — Deliver your first real contribution</div>
+
+  <div class="day-block" id="d30-2">
+    <div class="day-header" onclick="toggleDay('d30-2')">
+      <span class="day-range" style="background:rgba(255,107,53,0.15);color:var(--p3);">Day 8–21</span>
+      <span class="day-title">First feature or bug fix — done properly</span>
+      <span class="day-arr">▼</span>
+    </div>
+    <div class="day-body">
+      <div style="margin-top:12px;">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Pick a clearly scoped task</strong>, not the largest open issue. First delivery should be something you can complete in 3–5 days. Size up before committing — "I think this is 2–3 days of work, does that align with expectations?"</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Ask clarifying questions before coding</strong>, not during review. "What should happen if the user passes an invalid ID? Should it return 404 or an empty list?" — saves 2 review cycles.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Write tests for your code</strong> even if the team doesn't always. It shows you understand testing and dramatically reduces review feedback. Ask: "What testing patterns does this team use?"</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>PR description matters</strong>: write what changed, why, how to test it, any edge cases considered. Reviewers who understand your thinking give faster, better feedback.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Respond to review comments same day</strong>. Slow PR cycles frustrate senior engineers. If a comment is unclear: ask, don't assume. If you disagree: explain your reasoning and ask for their input — don't silently change it back.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>After your PR merges</strong>: verify it in staging. Watch logs after production deploy. If you broke something, own it immediately — say in Slack: "I think my PR caused this — I'm looking at it now." This builds trust faster than never breaking anything.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Week 4 — Solidify your presence</div>
+
+  <div class="day-block" id="d30-3">
+    <div class="day-header" onclick="toggleDay('d30-3')">
+      <span class="day-range" style="background:rgba(0,212,255,0.15);color:var(--p2);">Day 22–30</span>
+      <span class="day-title">Build habits and relationships that last</span>
+      <span class="day-arr">▼</span>
+    </div>
+    <div class="day-body">
+      <div style="margin-top:12px;">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Schedule a 1:1 with your manager</strong> in week 3. Ask: "What are the top 2–3 things I should focus on in my first 3 months? What does success look like for someone in my role?" This sets explicit expectations — removes ambiguity about what "good" means.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Find a technical mentor</strong> on the team — a senior engineer who's willing to answer questions. Ask them 1 technical question per week. Don't bombard them — come prepared with what you tried first.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Start a work journal</strong> (private). Write daily: what did I do, what did I learn, what blocked me, what would I do differently? After 90 days this becomes your performance review evidence. Concrete wins, not vague feelings.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Don't stop DSA practice</strong>. 1 LeetCode problem per day, 3 days per week minimum. The engineers who stop practicing after getting hired fall behind fast. Your next role's interview is happening in 2–3 years — don't lose the skill.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Read code you didn't write</strong>. Spend 30 min per day reading existing codebase — not for a task, just to understand how senior engineers structure solutions. This is the fastest way to level up your code quality.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-card good" style="margin-top:20px;">
+    <div class="info-title">✓ The question to ask every 2 weeks</div>
+    <div class="info-text">Ask your manager or a senior teammate: "Is there anything I'm doing that I should do differently? Anything I'm not doing that I should be?" Most people wait for a 6-month review to get this feedback. Getting it on week 2 and week 4 means you fix small issues before they become patterns. Engineers who ask for feedback early advance faster than those who wait.</div>
+  </div>
+</div>
+
+<!-- DAYS 31–90 -->
+<div id="p-day90" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(255,107,53,0.15);">📈</div>
+    <div>
+      <h2>Days 31–90 — From Surviving to Thriving</h2>
+      <p>Month 2–3 is when you shift from "figuring things out" to "making things happen." This is when you start proposing improvements, not just implementing assigned tasks. Your reputation solidifies here.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">Month 2 — Go deeper on your stack</div>
+
+  <div class="day-block" id="d90-1">
+    <div class="day-header" onclick="toggleDay('d90-1')">
+      <span class="day-range" style="background:rgba(255,107,53,0.15);color:var(--p3);">Day 31–60</span>
+      <span class="day-title">Own a feature end-to-end for the first time</span>
+      <span class="day-arr">▼</span>
+    </div>
+    <div class="day-body">
+      <div style="margin-top:12px;">
+        <ul class="learn-list">
+          <li><strong>Own a full feature</strong>: frontend, backend, DB, tests, deployment. Not just a piece — the whole thing. This is what separates "implementer" from "engineer."</li>
+          <li><strong>Write the tech spec first</strong>: a 1-page doc explaining what you're building, why, the approach, and trade-offs considered. Get feedback before writing code. This habit alone makes you a better engineer than 80% of freshers.</li>
+          <li><strong>Observe production</strong>: watch your feature's metrics after release. API response times, error rates, user behavior. Connect your code to real-world impact.</li>
+          <li><strong>Read post-mortems</strong>: when incidents happen (and they will), read the post-mortem docs carefully. This teaches you what production-scale systems actually break on — no textbook covers this.</li>
+          <li><strong>Attend design discussions</strong>: even if you're not presenting. Listen to how senior engineers think through trade-offs. Take notes. Ask 1 good question per session.</li>
+        </ul>
+
+        <div style="background:var(--s2);border-radius:8px;padding:14px;margin-top:14px;">
+          <div style="font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--p3);margin-bottom:8px;">Tech spec template — use for every non-trivial feature</div>
+          <ul class="learn-list">
+            <li><strong>Problem</strong>: What problem are we solving? For whom?</li>
+            <li><strong>Proposed solution</strong>: What are we building? High-level approach.</li>
+            <li><strong>Alternatives considered</strong>: What else could we do? Why this approach?</li>
+            <li><strong>API changes</strong>: New endpoints, changed contracts, breaking vs non-breaking.</li>
+            <li><strong>Database changes</strong>: Schema migrations, indexes, data migration plan.</li>
+            <li><strong>Risk &amp; rollback</strong>: What could go wrong? How do we revert if needed?</li>
+            <li><strong>Testing plan</strong>: Unit tests, integration tests, manual testing steps.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label">Month 3 — Contribute beyond your assigned tickets</div>
+
+  <div class="day-block" id="d90-2">
+    <div class="day-header" onclick="toggleDay('d90-2')">
+      <span class="day-range" style="background:rgba(200,255,0,0.15);color:var(--p1);">Day 61–90</span>
+      <span class="day-title">Become someone the team relies on</span>
+      <span class="day-arr">▼</span>
+    </div>
+    <div class="day-body">
+      <div style="margin-top:12px;">
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Review other people's PRs</strong>. Even as a fresher, you can catch logic errors, suggest cleaner patterns, ask clarifying questions. This is how you build influence without authority.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Fix something nobody asked you to fix</strong>. A recurring bug. A flaky test. Slow query. Unclear error message. Propose it first: "I noticed X causes Y — I'd like to fix it this sprint, takes about 2 hours." Small unprompted improvements make you memorable.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Document something that isn't documented</strong>. The onboarding flow, a complex service, a tricky API. Good documentation is rare and valued. The person who writes good docs is trusted with more complex work.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>Propose at least 1 technical improvement</strong>. Add an index that speeds up a slow query. Suggest a caching layer for a repeatedly fetched resource. Even if it doesn't get accepted, proposing shows you think beyond your ticket scope.</div></div>
+        <div class="check-item" onclick="toggleCheck(this)"><div class="ci-box">✓</div><div class="ci-text"><strong>By day 90: you should know</strong> the system you work on well enough to explain it to a new joiner. If you can't explain it clearly, you don't understand it deeply enough yet.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-card info" style="margin-top:20px;">
+    <div class="info-title">📌 The 90-day self-evaluation</div>
+    <div class="info-text">At day 90, sit down and honestly evaluate: Can I explain our system architecture to someone new? Do I know what breaks under load? Do I understand the business context for what I'm building? Am I someone my team trusts to take a task and see it through? If the answer to any of these is no — that's your next 90-day goal. Write it down and work toward it systematically.</div>
+  </div>
+</div>
+
+<!-- GROWTH PATH -->
+<div id="p-growth" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(200,255,0,0.12);">📊</div>
+    <div>
+      <h2>Fresher → Mid-Level Engineer</h2>
+      <p>In India's product company market, moving from SDE-1 to SDE-2 typically takes 1.5–3 years. The fastest path is deliberate: understand what the next level looks like, and work toward those specific criteria. Don't wait to be promoted — work at the level above and the promotion follows.</p>
+    </div>
+  </div>
+
+  <div class="level-card" data-level="1">
+    <span class="level-badge" style="background:rgba(168,85,247,0.15);color:#c084fc;">SDE-1 / Junior</span>
+    <div class="level-title">Where you start</div>
+    <div class="level-sal">₹8–18 LPA in Bangalore</div>
+    <div class="level-grid">
+      <div>
+        <div class="level-col-title">Technical expectations</div>
+        <ul class="learn-list">
+          <li>Implements well-defined tasks with guidance</li>
+          <li>Writes code that works and passes review</li>
+          <li>Understands the immediate system you work in</li>
+          <li>Moderate DSA — LeetCode medium in interviews</li>
+          <li>Asks good clarifying questions before coding</li>
+        </ul>
+      </div>
+      <div>
+        <div class="level-col-title">Behavioral expectations</div>
+        <ul class="learn-list">
+          <li>Completes tasks on time with minimal hand-holding</li>
+          <li>Communicates blockers early</li>
+          <li>Reviews code, gives useful feedback</li>
+          <li>Shows initiative on small improvements</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="level-card" data-level="2" style="border-color:rgba(200,255,0,0.2);">
+    <span class="level-badge" style="background:rgba(200,255,0,0.12);color:var(--p1);">SDE-2 / Mid-Level</span>
+    <div class="level-title">Where you want to be in 2 years</div>
+    <div class="level-sal">₹20–40 LPA in Bangalore · competitive to join directly from companies</div>
+    <div class="level-grid">
+      <div>
+        <div class="level-col-title">Technical expectations</div>
+        <ul class="learn-list">
+          <li><strong>Designs and implements features end-to-end</strong> without guidance</li>
+          <li>Writes tech specs. Identifies risks before they become incidents.</li>
+          <li>Understands multiple services and their interactions (distributed systems thinking)</li>
+          <li>Makes good trade-off decisions — knows when to use SQL vs NoSQL, when to cache, when to queue</li>
+          <li>Mentors juniors effectively. Reviews code with constructive, specific feedback.</li>
+          <li>Strong DSA — can solve hard LeetCode in interviews for the next role</li>
+        </ul>
+      </div>
+      <div>
+        <div class="level-col-title">How to get there from SDE-1</div>
+        <ul class="learn-list">
+          <li><strong>Own systems, not tickets</strong>. Proactively improve things nobody asked you to.</li>
+          <li><strong>Develop technical breadth</strong>: understand infra, monitoring, databases, not just your service</li>
+          <li><strong>Communicate upward</strong>: make your work visible. Write weekly updates. Present in team meetings.</li>
+          <li><strong>Get a competing offer</strong>: often the fastest way to get a promotion. Market rate &gt; internal rate at most companies.</li>
+          <li><strong>Build expertise in 1–2 areas</strong> where you become the go-to person on the team</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:28px;">The 24-month learning plan — what to add on the job</div>
+
+  <div class="two-col">
+    <div>
+      <div class="week-header">Months 1–6 · Execution excellence</div>
+      <ul class="learn-list">
+        <li><strong>Deep expertise</strong> in your team's main tech stack. You should be the fastest person to debug issues in the services you own.</li>
+        <li><strong>Testing discipline</strong>: write tests habitually. Learn your team's testing patterns and become someone who raises the quality bar.</li>
+        <li><strong>Production awareness</strong>: learn monitoring tools (Datadog, Grafana, CloudWatch). Know your service's SLAs. Know what alerts fire and why.</li>
+        <li><strong>Git mastery</strong>: clean commits, good PRs, rebasing, cherry-picking. Your git history should tell a clear story.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="week-header">Months 7–12 · Scope expansion</div>
+      <ul class="learn-list">
+        <li><strong>Read system design books</strong>: "Designing Data-Intensive Applications" (DDIA) by Kleppmann. The best engineering book for SDE-1 → SDE-2. 1 chapter per week.</li>
+        <li><strong>Understand adjacent services</strong>: how does your service fit into the larger system? What happens upstream and downstream?</li>
+        <li><strong>Cloud/infra basics</strong>: Kubernetes basics, what happens when your pod gets restarted, how load balancers work at your company's scale.</li>
+        <li><strong>Contribute to cross-team work</strong>: join a working group, contribute to platform improvements, write internal blog posts about your learnings.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="week-header">Months 13–18 · Leadership signals</div>
+      <ul class="learn-list">
+        <li><strong>Lead a feature from start to finish</strong>: you write the spec, you coordinate with stakeholders, you run the sprint, you monitor after launch.</li>
+        <li><strong>Onboard a new engineer</strong>: become the person who mentors the next fresher. Teaching forces you to articulate what you know implicitly.</li>
+        <li><strong>Interview candidates</strong>: companies invite high performers to interview candidates. This is a signal of trust and accelerates your promotion case.</li>
+        <li><strong>Prepare for interviews at other companies</strong>: keep your DSA sharp, update your projects, get 1–2 competing offers as salary calibration even if you don't want to leave.</li>
+      </ul>
+    </div>
+    <div>
+      <div class="week-header">Months 19–24 · Promotion or move</div>
+      <ul class="learn-list">
+        <li><strong>Build your promotion case proactively</strong>: document your contributions, impact, and scope expansion. Share with your manager 3 months before you want the promotion.</li>
+        <li><strong>Have the compensation conversation</strong>: "I've been working at SDE-2 scope for 6 months. I'd like to discuss the path to SDE-2 title and compensation." Be direct.</li>
+        <li><strong>If promotion isn't coming</strong>: use external offers. Most engineers get their biggest raises by switching companies. 40–60% jumps are common at the SDE-1 → SDE-2 level.</li>
+        <li><strong>Your DSA should be strong enough</strong> to pass Tier-1 company interviews (CRED, Razorpay, Swiggy) as an experienced hire by this point.</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- LONG-TERM HABITS -->
+<div id="p-habits" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(0,212,255,0.15);">🧘</div>
+    <div>
+      <h2>Long-term Habits — What Separates Good from Great</h2>
+      <p>These aren't study habits — they're career habits. The engineers who consistently grow are not smarter than average. They're more deliberate. They track their learning, build in public, and never stop improving their craft.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">Technical habits — maintain these always</div>
+
+  <div class="habit-row">
+    <span class="habit-icon">🧩</span>
+    <div>
+      <div class="habit-title">2 DSA problems per week — forever</div>
+      <div class="habit-text">Not 2 per day like during prep — but 2 per week is non-negotiable. Set a recurring calendar block: Saturday morning, 45 minutes, 2 medium problems. Your next job's interview is 2–3 years away. Don't let the skill atrophy. Engineers who stay sharp on DSA are comfortable with the idea of switching — which gives them leverage in compensation conversations too.</div>
+    </div>
+  </div>
+
+  <div class="habit-row">
+    <span class="habit-icon">📖</span>
+    <div>
+      <div class="habit-title">Read 1 engineering blog post per day</div>
+      <div class="habit-text">Subscribe to: Swiggy Engineering, PhonePe Engineering, Grab Tech, Netflix TechBlog, Uber Engineering, Martin Fowler's blog. Read for 15 minutes each morning before Slack. Over 2 years this compounds into a huge advantage — you'll understand distributed systems, database internals, and scale from people who've actually built them at scale.</div>
+    </div>
+  </div>
+
+  <div class="habit-row">
+    <span class="habit-icon">🔨</span>
+    <div>
+      <div class="habit-title">Build 1 small side project per quarter</div>
+      <div class="habit-text">Not a full application — a proof-of-concept, a utility tool, a CLI, a library. Something new that forces you to learn a technology you don't use at work. After 2 years: 8 small projects. Your creativity, breadth, and ability to ship independently compound. Many engineers use side projects to explore the technology of a company they want to join before interviewing there.</div>
+    </div>
+  </div>
+
+  <div class="habit-row">
+    <span class="habit-icon">✍️</span>
+    <div>
+      <div class="habit-title">Write about what you learn — even briefly</div>
+      <div class="habit-text">LinkedIn post, internal wiki, personal blog, doesn't matter. The act of writing forces clarity. "I know it" and "I can explain it clearly in writing" are different things. 1 post per week about something you learned or built. After 2 years: 100 posts. Your professional brand becomes real. Recruiters from Tier-1 companies will find you.</div>
+    </div>
+  </div>
+
+  <div class="habit-row">
+    <span class="habit-icon">📊</span>
+    <div>
+      <div class="habit-title">Track your market value every 6 months</div>
+      <div class="habit-text">Check levels.fyi, Glassdoor, LinkedIn Salary. Talk to friends at other companies. Do 1 exploratory interview at a company you're not sure about — just to understand the market. Know what you're worth. Engineers who never check their market value are systematically underpaid. Information is leverage.</div>
+    </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">Mental habits — what nobody talks about</div>
+
+  <div class="habit-row">
+    <span class="habit-icon">🐢</span>
+    <div>
+      <div class="habit-title">Embrace being slow before being fast</div>
+      <div class="habit-text">New engineers try to look fast by typing quickly and asking few questions. Senior engineers look fast because they ask the right questions upfront and rarely do rework. The engineer who spends 20 minutes understanding the problem before writing a line of code delivers faster than the one who spends 2 hours writing the wrong thing. Slow down in the first 20 minutes. Speed up in the last 20.</div>
+    </div>
+  </div>
+
+  <div class="habit-row">
+    <span class="habit-icon">🔍</span>
+    <div>
+      <div class="habit-title">Debug systematically, not randomly</div>
+      <div class="habit-text">Most junior engineers debug by changing random things until it works. This is the slowest possible approach. The scientific method for debugging: form a hypothesis → test it specifically → eliminate or confirm → next hypothesis. "I think the issue is in the middleware layer because the request reaches the controller but the response is wrong." Test that. Don't change 5 things at once.</div>
+    </div>
+  </div>
+
+  <div class="habit-row">
+    <span class="habit-icon">🤝</span>
+    <div>
+      <div class="habit-title">Build relationships deliberately</div>
+      <div class="habit-text">The engineer who gets the interesting project, the promotion, the referral to the next company — it's almost always the one with good relationships. This doesn't mean being political. It means being genuinely curious about your colleagues' work, helping without being asked, and being someone people enjoy working with. Your network is your most durable career asset.</div>
+    </div>
+  </div>
+
+  <div class="info-card good" style="margin-top:20px;">
+    <div class="info-title">✓ The career compounding principle</div>
+    <div class="info-text">The difference between a good engineer and a great one after 5 years is not talent — it's consistent, deliberate practice compounded. 2 DSA problems per week = 500 problems over 5 years. 1 blog post per week = 260 posts. 1 book per quarter = 20 technical books. These numbers seem small weekly. They're enormous compounded. Start now, even if slowly. Never completely stop.</div>
+  </div>
+</div>
+
+<!-- ALL PROMPTS -->
+<div id="p-prompts" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(74,222,128,0.12);">🤖</div>
+    <div>
+      <h2>All Prompts — Complete Collection</h2>
+      <p>Every AI prompt from all 5 phases in one place. Copy and use. The master prompt at the top should be pasted at the start of every session to give the AI full context about who you are.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">Master prompt — start every session with this</div>
+  <div class="master-prompt">
+    <div class="mp-label">MENTOR.md · paste at start of every session</div>
+    <pre>You are my senior technical mentor. I am a fresher full stack developer in Bangalore targeting ₹8–20 LPA SWE roles.
+
+Profile: MERN + Java/Spring Boot. TypeScript intermediate. LeetCode medium. System design basics.
+Projects: DevTracker (MERN+TS), CollabDocs (Socket.io+Redis+Docker), ShopFlow (Spring Boot+PostgreSQL).
+Target: Swiggy, PhonePe, CRED, Razorpay (Tier 1). BrowserStack, Juspay, Chargebee (Tier 2).
+Current phase: [PHASE + TOPIC]
+
+Be direct. Connect everything to my projects and Bangalore job market. Flag time-wasters. Go deep on what matters.</pre>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">Phase 0 — CS Fundamentals</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>You are a technical interviewer at a Bangalore product company (Swiggy/PhonePe/CRED level) conducting a CS fundamentals round for a fresher full stack role.
+
+Topic I just studied: [TOPIC — e.g. "Database Indexing" / "OS Deadlocks" / "OOP Polymorphism"]
+
+Quiz me: one question at a time. Wait for my answer. Then: what was correct, what was missing, what the full answer should be. Mix types: definition, explain-with-example, compare-contrast, apply-to-real-scenario. After 5 questions: score me and list what to review again.
+
+Start easy, increase difficulty. Go.</pre>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">Phase 1 — DSA Practice</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>I am practicing DSA for Bangalore product company interviews. Language: JavaScript. Platform: LeetCode.
+Current topic: [PATTERN — e.g. "Sliding Window" / "Binary Search" / "BFS on Graphs"]
+
+Session:
+1. Give me a warm-up Easy problem — wait for my attempt
+2. Critique: correctness, edge cases, time/space complexity
+3. Give me a Medium — same process
+4. Show optimal approach only after I attempt
+5. After both: the 3 signals that tell me "this problem uses [PATTERN]"
+
+Rules: no solution unless I ask. Hint only approach (not code) if stuck. Always ask complexity before you confirm it.</pre>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">Phase 2 — Full Stack / Dev Learning</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>Tech I'm learning: [e.g. "React useMemo and useCallback" / "Spring Boot JPA relationships" / "MongoDB aggregation pipeline"]
+
+Teach this to me as if I'll be asked about it in an interview at a Bangalore product company in 2 weeks.
+
+Structure:
+1. What is it, why does it exist (practical reason, not textbook definition)
+2. How it works under the hood (enough to answer follow-ups)
+3. Real-world example from a product like Swiggy or PhonePe
+4. Code example I can adapt for my project ([PROJECT NAME])
+5. 4 interview questions on this + strong answers
+6. Common mistake freshers make with this — the one that kills interviews
+
+After explaining: quiz me on it once to check I actually understood.</pre>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">Phase 3 — Project Review</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>/project-review
+
+Project: [Name]
+Stack: [Exact tech stack]
+GitHub: [Link or describe features]
+Live URL: [Link if deployed]
+
+Review across 5 dimensions:
+1. Architecture — how a senior engineer at Swiggy would rate this structure
+2. Security — real vulnerabilities in production
+3. Scalability — what breaks first at 10x traffic
+4. Code quality — what to fix before an interview demo
+5. Interview pitch — 90-second pitch that sounds impressive to a CTO
+
+Then: 7 follow-up questions the interviewer will ask + strong answers for each. Plus: 1 feature I can add in 2 days that makes this meaningfully more impressive.
+
+Be honest. Don't sugarcoat weak parts.</pre>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">Phase 3 — System Design</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>I am a fresher preparing for system design rounds at Bangalore product companies. I need fresher-level depth — not FAANG level.
+
+Design challenge: [SYSTEM — e.g. "URL Shortener" / "Notification System" / "Ride-sharing app"]
+
+Guide me:
+1. What clarifying questions should I ask the interviewer?
+2. Show me what the requirements should look like (functional + non-functional)
+3. Walk through the high-level architecture — what boxes to draw
+4. Deep dive on the most interview-relevant component
+5. What trade-offs should I mention to impress the interviewer?
+6. 3 likely follow-up questions + strong answers
+
+For each step: tell me what to think about, then show the full answer. I want to learn the reasoning, not memorize the answer.</pre>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">Phase 4 — Mock Interview (DSA)</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>Simulate a DSA interview at a Bangalore product company (CRED/PhonePe/Swiggy level) for a fresher full stack role. Language: JavaScript.
+
+2 problems, 45 minutes (25 min each). Mix: 1 medium + 1 medium-hard. Any topic from: arrays, graphs, trees, DP, sliding window, binary search.
+
+Rules:
+- Give me the problem, wait for my clarifying questions
+- I'll state approach before coding — tell me if it's right track
+- After my solution: correctness (0–10), complexity check, edge cases missed, cleaner approach
+- Final: overall rating + "would you advance this candidate?" with reasoning
+
+Start with problem 1.</pre>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">Phase 4 — Full Mock Interview Loop</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>Simulate a complete interview loop at a Bangalore product company (like Juspay, BrowserStack, or Chargebee) for a Fresher Full Stack Engineer.
+
+My profile: MERN + Spring Boot, 3 projects (DevTracker, CollabDocs, ShopFlow), LeetCode medium level, 0 work experience.
+
+Rounds:
+1. DSA — 1 medium problem (20 min)
+2. CS theory — 5 questions: OOP, OS, DBMS mix (20 min)
+3. Project deep-dive on CollabDocs (20 min)
+4. Behavioral — 2 STAR questions (15 min)
+5. "Do you have questions for us?" (5 min)
+
+One round at a time. Score each 1–5 after I complete it. Say "next round" to proceed. End with: overall hiring decision (Strong Yes/Yes/No) + detailed reasoning.
+
+Begin Round 1.</pre>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">Phase 5 — On the job learning</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>I just joined [COMPANY TYPE — e.g. "mid-size fintech startup"] as a Junior Full Stack Engineer. I'm [X weeks] into the job.
+
+Here's my situation:
+- Tech stack I'm working with: [stack]
+- Main thing I'm confused about: [specific technical concept or codebase pattern]
+- What I've tried to understand it: [what you did]
+
+Help me:
+1. Understand this concept at the level needed to work with it confidently
+2. Connect it to what I already know from my projects
+3. Tell me what questions I should ask my senior engineer (that make me look thoughtful, not clueless)
+4. What I should read or watch to go deeper independently
+
+Focus on practical understanding, not textbook depth.</pre>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">Weekly review prompt — every Sunday</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>Weekly check-in. Review my progress and give me a focused plan for next week.
+
+Current phase: [PHASE + WEEK NUMBER]
+DSA solved this week: [number + topics]
+Dev work done: [what you built/learned]
+CS studied: [topics]
+Mock interviews done: [how many + scores]
+
+Things that went well:
+- [list]
+
+Things I struggled with:
+- [list]
+
+Questions I couldn't answer in mock interviews:
+- [list]
+
+Give me:
+1. Honest assessment: on track / behind / ahead — and by how much
+2. Top 3 priorities for next week based on my gaps
+3. 1 thing I should stop doing that's wasting time
+4. 1 specific problem or resource to fix my weakest area this week
+5. What the next major milestone looks like and how far I am from it</pre>
+  </div>
+
+  <div class="info-card good" style="margin-top:20px;">
+    <div class="info-title">✓ How to get the most out of AI mentoring</div>
+    <div class="info-text">The quality of your AI session depends on the quality of your input. Vague questions get vague answers. "Explain React" gets a generic tutorial. "Explain why useMemo didn't fix my re-render problem in this specific component" gets a targeted, useful answer. Always: (1) give context about your current phase and target, (2) describe what you already tried, (3) ask for connection to your specific projects. The more specific your question, the better the answer.</div>
+  </div>
+</div>
+
+<script>
+function go(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('p-' + name).classList.add('on');
+  btn.classList.add('on');
+  window.scrollTo(0, 0);
+}
+function toggleDay(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+function toggleCheck(el) {
+  el.classList.toggle('done');
+}
+function copyText(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 2000);
+  });
+}
+</script>
+</body>
+</html>
