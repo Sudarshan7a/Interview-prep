@@ -1,0 +1,1623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 0 · OOP — Complete Teaching Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+:root{
+  --bg:#faf9f6;--ink:#1c1a17;--ink2:#4a4640;--ink3:#8c887f;
+  --paper:#fff;--rule:#e0ddd6;--rule2:#ccc9c0;
+  --hl:#1c1a17;--mono:'IBM Plex Mono',monospace;--head:'Syne',sans-serif;--body:'Inter',sans-serif;
+  --java-bg:#fff8e8;--java-b:#f0d890;--java-t:#3a2a00;
+  --js-bg:#e8f4ff;--js-b:#90c8f0;--js-t:#001a3a;
+  --int-bg:#f0fff4;--int-b:#90e0a8;--int-t:#00280e;
+  --warn-bg:#fff0e8;--warn-b:#f0c890;--warn-t:#3a1a00;
+  --key-bg:#f5f0ff;--key-b:#c8a8f0;--key-t:#1a0040;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.75;max-width:860px;margin:0 auto;padding:0;}
+
+/* NAV */
+.top-nav{background:var(--ink);color:#fff;padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:100;}
+.nav-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);}
+.nav-pills{display:flex;gap:6px;flex-wrap:wrap;}
+.nav-pill{font-family:var(--mono);font-size:9px;padding:3px 10px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);cursor:pointer;text-decoration:none;transition:all 0.15s;}
+.nav-pill:hover,.nav-pill.active{border-color:rgba(255,255,255,0.7);color:#fff;}
+
+/* HERO */
+.hero{padding:52px 40px 40px;border-bottom:2px solid var(--ink);}
+.hero-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--ink3);margin-bottom:12px;}
+.hero h1{font-family:var(--head);font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:14px;}
+.hero h1 em{font-style:normal;-webkit-text-stroke:1.5px var(--ink);color:transparent;}
+.hero-desc{font-size:14px;color:var(--ink2);max-width:520px;line-height:1.7;}
+.hero-meta{display:flex;gap:12px;flex-wrap:wrap;margin-top:20px;}
+.meta-chip{font-family:var(--mono);font-size:10px;padding:4px 12px;border-radius:6px;border:1px solid var(--rule2);color:var(--ink2);}
+.meta-chip.hi{border-color:var(--ink);color:var(--ink);font-weight:700;}
+
+/* CONCEPT BLOCKS */
+.concept{padding:40px;border-bottom:1px solid var(--rule);}
+.concept:last-child{border-bottom:none;}
+.concept-num{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;}
+.concept h2{font-family:var(--head);font-size:26px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;}
+.concept-sub{font-size:13px;color:var(--ink2);margin-bottom:20px;line-height:1.6;}
+
+/* EXPLANATION */
+.explain{font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:16px;}
+.explain strong{color:var(--ink);}
+.explain em{font-style:italic;color:var(--ink3);}
+
+/* ANALOGY BOX */
+.analogy{background:var(--key-bg);border-left:3px solid #9060d0;border-radius:0 8px 8px 0;padding:14px 16px;margin:16px 0;font-size:13px;color:var(--key-t);line-height:1.6;}
+.analogy strong{font-weight:600;}
+
+/* WARN BOX */
+.warn{background:var(--warn-bg);border-left:3px solid #d0800a;border-radius:0 8px 8px 0;padding:14px 16px;margin:16px 0;font-size:13px;color:var(--warn-t);line-height:1.6;}
+.warn strong{font-weight:600;}
+
+/* CODE BLOCKS */
+.code-section{margin:20px 0;}
+.code-tabs{display:flex;gap:0;margin-bottom:0;}
+.code-tab{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:7px 16px;cursor:pointer;border:1px solid var(--rule2);border-bottom:none;background:var(--bg);color:var(--ink3);border-radius:6px 6px 0 0;margin-right:2px;}
+.code-tab.java{background:var(--java-bg);border-color:var(--java-b);color:var(--java-t);}
+.code-tab.js{background:var(--js-bg);border-color:var(--js-b);color:var(--js-t);}
+.code-tab.active{border-bottom-color:transparent;font-weight:600;}
+.code-pane{display:none;border:1px solid var(--rule2);border-radius:0 8px 8px 8px;overflow:hidden;}
+.code-pane.java-pane{border-color:var(--java-b);}
+.code-pane.js-pane{border-color:var(--js-b);}
+.code-pane.active{display:block;}
+.code-pane-header{padding:8px 14px;display:flex;justify-content:space-between;align-items:center;}
+.java-pane .code-pane-header{background:var(--java-bg);}
+.js-pane .code-pane-header{background:var(--js-bg);}
+.code-lang{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;}
+.java-pane .code-lang{color:var(--java-t);}
+.js-pane .code-lang{color:var(--js-t);}
+pre{background:#1c1a17;padding:20px;overflow-x:auto;font-family:var(--mono);font-size:12px;line-height:1.8;color:#e8e4dc;white-space:pre;}
+.cm{color:#7a7570;font-style:italic;}
+.ck{color:#ff9060;}
+.ct{color:#60c8ff;}
+.cs{color:#90e060;}
+.cf{color:#f0d060;}
+.cn{color:#c090ff;}
+.co{color:#ff6090;}
+
+/* DEEP DIVE - collapsible */
+.deep{background:var(--paper);border:1px solid var(--rule2);border-radius:10px;margin:16px 0;overflow:hidden;}
+.deep-head{padding:12px 16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg);}
+.deep-head:hover{background:var(--rule);}
+.deep-title{font-size:13px;font-weight:600;}
+.deep-arr{font-size:10px;color:var(--ink3);transition:transform 0.2s;}
+.deep.open .deep-arr{transform:rotate(180deg);}
+.deep-body{display:none;padding:16px;border-top:1px solid var(--rule);}
+.deep.open .deep-body{display:block;}
+
+/* COMPARISON TABLE */
+.cmp{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;}
+.cmp th{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:8px 12px;border-bottom:2px solid var(--rule2);background:var(--bg);}
+.cmp td{padding:9px 12px;border-bottom:1px solid var(--rule);color:var(--ink2);vertical-align:top;line-height:1.5;}
+.cmp tr:hover td{background:var(--bg);}
+.cmp td:first-child{color:var(--ink);font-weight:500;}
+
+/* INTERVIEW Q&A */
+.interview-section{background:var(--int-bg);border:1px solid var(--int-b);border-radius:12px;padding:20px;margin:24px 0;}
+.int-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:#006020;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.int-label::after{content:'';flex:1;height:1px;background:var(--int-b);}
+.qa{margin-bottom:14px;background:#fff;border:1px solid var(--int-b);border-radius:8px;overflow:hidden;}
+.qa:last-child{margin-bottom:0;}
+.qa-q{padding:12px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.qa-q:hover{background:var(--int-bg);}
+.qa-arr{color:var(--ink3);font-size:10px;flex-shrink:0;margin-top:2px;transition:transform 0.2s;}
+.qa.open .qa-arr{transform:rotate(180deg);}
+.qa-a{display:none;padding:12px 14px;border-top:1px solid var(--int-b);font-size:13px;color:var(--ink2);line-height:1.75;background:var(--int-bg);}
+.qa.open .qa-a{display:block;}
+.qa-a strong{color:var(--ink);}
+.qa-a .label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#006020;display:block;margin-bottom:6px;}
+.qa-a .follow{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#804000;display:block;margin-top:10px;margin-bottom:4px;}
+.qa-a code{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:3px;}
+
+/* CHECKLIST */
+.checklist{list-style:none;margin:12px 0;}
+.checklist li{display:flex;align-items:flex-start;gap:8px;font-size:13px;color:var(--ink2);padding:5px 0;line-height:1.5;}
+.checklist li::before{content:'→';color:var(--rule2);flex-shrink:0;margin-top:1px;}
+.checklist li strong{color:var(--ink);}
+
+/* REVISION CARD */
+.rev{background:var(--ink);color:#fff;border-radius:12px;padding:22px;margin:24px 0;}
+.rev h4{font-family:var(--head);font-size:15px;margin-bottom:12px;color:#fff;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:8px;}
+.rev ul{list-style:none;}
+.rev ul li{font-size:12px;color:rgba(255,255,255,0.75);padding:4px 0 4px 16px;position:relative;line-height:1.5;}
+.rev ul li::before{content:'✓';position:absolute;left:0;color:rgba(255,255,255,0.4);font-size:10px;margin-top:1px;}
+
+/* PROGRESS BADGE */
+.progress-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0;}
+.prog-badge{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:99px;}
+.must{background:#ffeee8;color:#8a2000;border:1px solid #f0c0a0;}
+.high{background:#e8f0ff;color:#001880;border:1px solid #a0b8f0;}
+.good{background:#e8fff0;color:#004020;border:1px solid #a0d8b0;}
+
+/* STEP MARKER */
+.step-marker{display:flex;align-items:center;gap:12px;margin:28px 0 16px;}
+.step-num{font-family:var(--mono);font-size:22px;font-weight:700;color:var(--rule2);}
+.step-line{flex:1;height:1px;background:var(--rule);}
+.step-text{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);}
+
+@media(max-width:640px){
+  .concept,.hero{padding:24px 20px;}
+  .top-nav{padding:10px 20px;flex-direction:column;align-items:flex-start;gap:8px;}
+}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="nav-label">Phase 0 · OOP</span>
+  <div class="nav-pills">
+    <a class="nav-pill" href="#encapsulation">Encapsulation</a>
+    <a class="nav-pill" href="#abstraction">Abstraction</a>
+    <a class="nav-pill" href="#inheritance">Inheritance</a>
+    <a class="nav-pill" href="#polymorphism">Polymorphism</a>
+    <a class="nav-pill" href="#this">this keyword</a>
+    <a class="nav-pill" href="#prototype">Prototype</a>
+    <a class="nav-pill" href="#solid">SOLID</a>
+    <a class="nav-pill" href="#patterns">Patterns</a>
+    <a class="nav-pill" href="#interview">All Q&amp;A</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Phase 0 · Subject 1 of 6 · Complete Teaching Guide</div>
+  <h1>Object-Oriented<br><em>Programming</em></h1>
+  <p class="hero-desc">Every concept taught inline — Java and JavaScript both. Read, understand, then close this and explain it back. If you can't explain it, you haven't learned it.</p>
+  <div class="hero-meta">
+    <span class="meta-chip hi">4–5 days</span>
+    <span class="meta-chip">Java + JavaScript both</span>
+    <span class="meta-chip">All interview Q&A included</span>
+    <span class="meta-chip">Highest interview frequency</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 1: ENCAPSULATION -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="encapsulation">
+  <div class="concept-num">Concept 01 of 08</div>
+  <h2>Encapsulation</h2>
+  <div class="concept-sub">Hiding internal state. Controlling access. Preventing invalid data. The simplest pillar to understand but the most misexplained in interviews.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Asked at every product company</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">What it is + Why it exists</span></div>
+
+  <p class="explain">
+    <strong>Encapsulation means: bundle data (fields) and the methods that operate on that data together inside a class, and restrict direct access to the data from outside.</strong>
+  </p>
+  <p class="explain">
+    Without encapsulation, any code anywhere in your program can modify your object's state directly. This causes bugs that are nearly impossible to trace. Imagine a bank account object where anyone can do <code>account.balance = -999999</code> — no validation, no guard, just a direct assignment.
+  </p>
+  <p class="explain">
+    Encapsulation fixes this: make the field <strong>private</strong>, then expose controlled <strong>getters and setters</strong> that validate before modifying. Now the class is the only one who changes its own data.
+  </p>
+
+  <div class="analogy">
+    <strong>Real analogy:</strong> An ATM machine. You can deposit and withdraw (controlled methods). You cannot reach inside and grab cash directly (private state). The machine validates every operation before allowing it.
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Java implementation</span></div>
+
+  <div class="code-section">
+    <div class="code-tabs">
+      <div class="code-tab java active" onclick="showPane('enc','java')">Java</div>
+      <div class="code-tab js" onclick="showPane('enc','js')">JavaScript</div>
+    </div>
+    <div class="code-pane java-pane active" id="enc-java">
+      <div class="code-pane-header"><span class="code-lang">Java — private fields + controlled access</span></div>
+<pre><span class="ck">public class</span> <span class="ct">BankAccount</span> {
+    <span class="cm">// private = ONLY this class can access these fields</span>
+    <span class="cm">// External code cannot do: account.balance = -9999</span>
+    <span class="ck">private double</span> balance;
+    <span class="ck">private</span> <span class="ct">String</span> owner;
+    <span class="ck">private static int</span> transactionCount = <span class="co">0</span>;
+
+    <span class="cm">// Constructor — the only way to create an account</span>
+    <span class="ck">public</span> <span class="ct">BankAccount</span>(<span class="ct">String</span> owner, <span class="ck">double</span> initialBalance) {
+        <span class="ck">if</span> (initialBalance < <span class="co">0</span>)
+            <span class="ck">throw new</span> <span class="ct">IllegalArgumentException</span>(<span class="cs">"Initial balance cannot be negative"</span>);
+        <span class="ck">this</span>.owner = owner;
+        <span class="ck">this</span>.balance = initialBalance;
+    }
+
+    <span class="cm">// Getter — read-only access. No setter for balance.</span>
+    <span class="cm">// Why no setter? Because balance MUST change through validated operations only.</span>
+    <span class="ck">public double</span> <span class="cf">getBalance</span>() { <span class="ck">return</span> balance; }
+    <span class="ck">public</span> <span class="ct">String</span> <span class="cf">getOwner</span>()  { <span class="ck">return</span> owner; }
+
+    <span class="cm">// Controlled mutation — validates BEFORE changing state</span>
+    <span class="ck">public void</span> <span class="cf">deposit</span>(<span class="ck">double</span> amount) {
+        <span class="ck">if</span> (amount <= <span class="co">0</span>)
+            <span class="ck">throw new</span> <span class="ct">IllegalArgumentException</span>(<span class="cs">"Deposit amount must be positive"</span>);
+        balance += amount;
+        transactionCount++;
+    }
+
+    <span class="ck">public void</span> <span class="cf">withdraw</span>(<span class="ck">double</span> amount) {
+        <span class="ck">if</span> (amount <= <span class="co">0</span>)
+            <span class="ck">throw new</span> <span class="ct">IllegalArgumentException</span>(<span class="cs">"Withdrawal amount must be positive"</span>);
+        <span class="ck">if</span> (amount > balance)
+            <span class="ck">throw new</span> <span class="ct">IllegalStateException</span>(<span class="cs">"Insufficient funds"</span>);
+        balance -= amount;
+        transactionCount++;
+    }
+}
+
+<span class="cm">// Usage — external code HAS to go through the methods</span>
+<span class="ct">BankAccount</span> acc = <span class="ck">new</span> <span class="ct">BankAccount</span>(<span class="cs">"Ravi"</span>, <span class="co">1000.0</span>);
+acc.<span class="cf">deposit</span>(<span class="co">500</span>);    <span class="cm">// ✓ valid</span>
+acc.<span class="cf">withdraw</span>(<span class="co">200</span>); <span class="cm">// ✓ valid</span>
+<span class="cm">// acc.balance = -9999;  → COMPILE ERROR: balance is private</span></pre>
+    </div>
+    <div class="code-pane js-pane" id="enc-js">
+      <div class="code-pane-header"><span class="code-lang">JavaScript — two approaches</span></div>
+<pre><span class="cm">// ── APPROACH 1: ES2022 Private Fields (modern, preferred) ──</span>
+<span class="cm">// The '#' prefix makes a field truly private — syntactically enforced</span>
+<span class="ck">class</span> <span class="ct">BankAccount</span> {
+    <span class="ck">#balance</span>;      <span class="cm">// private field</span>
+    <span class="ck">#owner</span>;
+    <span class="ck">static</span> <span class="ck">#transactionCount</span> = <span class="co">0</span>;
+
+    <span class="cf">constructor</span>(owner, initialBalance) {
+        <span class="ck">if</span> (initialBalance < <span class="co">0</span>)
+            <span class="ck">throw new</span> <span class="ct">Error</span>(<span class="cs">"Initial balance cannot be negative"</span>);
+        <span class="ck">this</span>.<span class="ck">#owner</span> = owner;
+        <span class="ck">this</span>.<span class="ck">#balance</span> = initialBalance;
+    }
+
+    <span class="cf">getBalance</span>() { <span class="ck">return this</span>.<span class="ck">#balance</span>; }
+    <span class="cf">getOwner</span>()  { <span class="ck">return this</span>.<span class="ck">#owner</span>; }
+
+    <span class="cf">deposit</span>(amount) {
+        <span class="ck">if</span> (amount <= <span class="co">0</span>) <span class="ck">throw new</span> <span class="ct">Error</span>(<span class="cs">"Amount must be positive"</span>);
+        <span class="ck">this</span>.<span class="ck">#balance</span> += amount;
+        <span class="ct">BankAccount</span>.<span class="ck">#transactionCount</span>++;
+    }
+
+    <span class="cf">withdraw</span>(amount) {
+        <span class="ck">if</span> (amount > <span class="ck">this</span>.<span class="ck">#balance</span>)
+            <span class="ck">throw new</span> <span class="ct">Error</span>(<span class="cs">"Insufficient funds"</span>);
+        <span class="ck">this</span>.<span class="ck">#balance</span> -= amount;
+        <span class="ct">BankAccount</span>.<span class="ck">#transactionCount</span>++;
+    }
+}
+
+<span class="ck">const</span> acc = <span class="ck">new</span> <span class="ct">BankAccount</span>(<span class="cs">"Ravi"</span>, <span class="co">1000</span>);
+acc.<span class="cf">deposit</span>(<span class="co">500</span>);
+<span class="cm">// acc.#balance       → SyntaxError: private field outside class ✓</span>
+<span class="cm">// acc['#balance']    → undefined (not the private field) ✓</span>
+
+<span class="cm">// ── APPROACH 2: Closure (older pattern, still used) ──</span>
+<span class="cm">// Variable inside function = private. Returned object = public interface.</span>
+<span class="ck">function</span> <span class="cf">createBankAccount</span>(owner, initialBalance) {
+    <span class="ck">let</span> balance = initialBalance;  <span class="cm">// private — not on 'this'</span>
+
+    <span class="ck">return</span> {
+        getBalance: () => balance,
+        deposit:    (amt) => { balance += amt; },
+        withdraw:   (amt) => {
+            <span class="ck">if</span> (amt > balance) <span class="ck">throw new</span> <span class="ct">Error</span>(<span class="cs">"Insufficient funds"</span>);
+            balance -= amt;
+        }
+    };
+}
+<span class="ck">const</span> acc2 = <span class="cf">createBankAccount</span>(<span class="cs">"Priya"</span>, <span class="co">500</span>);
+<span class="cm">// acc2.balance → undefined (it's inside the closure, not exposed)</span></pre>
+    </div>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Encapsulation vs Abstraction — the confusing part</span></div>
+
+  <p class="explain">
+    This is the most asked follow-up question. Most freshers mix these up.
+  </p>
+  <p class="explain">
+    <strong>Encapsulation</strong> = HOW you protect data (access modifiers, private fields). It's the mechanism.<br>
+    <strong>Abstraction</strong> = WHAT you expose to users (the interface, the public API). It's the concept.
+  </p>
+
+  <table class="cmp">
+    <tr><th>Aspect</th><th>Encapsulation</th><th>Abstraction</th></tr>
+    <tr><td>What it does</td><td>Hides the internal DATA</td><td>Hides the internal COMPLEXITY</td></tr>
+    <tr><td>Achieved by</td><td>private fields + getters/setters</td><td>interfaces, abstract classes</td></tr>
+    <tr><td>Question it answers</td><td>HOW is the data protected?</td><td>WHAT should users know about?</td></tr>
+    <tr><td>Car analogy</td><td>Engine internals are not directly accessible</td><td>You use the accelerator, not fuel injection</td></tr>
+    <tr><td>Can exist without other?</td><td>Yes — public interface, private data</td><td>Yes — exposed interface, public data (bad practice)</td></tr>
+  </table>
+
+  <div class="warn">
+    <strong>Interview trap:</strong> "Are they the same thing?" — No. You can have encapsulation without abstraction (private fields but no interface). You can have abstraction without encapsulation (public interface but all fields exposed). They complement each other but are distinct concepts.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Encapsulation</div>
+
+    <div class="qa" id="q-enc1">
+      <div class="qa-q" onclick="toggleQA('q-enc1')">What is encapsulation? Why do we need it? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer (what interviewers want to hear)</span>
+        Encapsulation is the bundling of data and the methods that operate on that data within a single unit (class), and restricting direct access to the internal state. We need it to prevent invalid state — if any external code could directly modify an object's fields, you lose control over the object's validity. For example, in a banking system, allowing <code>account.balance = -999</code> directly would break the business constraint that balances can't go negative. By making <code>balance</code> private and exposing only <code>deposit()</code> and <code>withdraw()</code>, the class guarantees that its state is always valid, no matter who uses it.
+        <span class="follow">Likely follow-up: "What access modifiers does Java have?"</span>
+        <code>private</code> (class only), <code>default/package</code> (same package), <code>protected</code> (same package + subclasses), <code>public</code> (everywhere). The most restrictive you can use while still working is best practice.
+      </div>
+    </div>
+
+    <div class="qa" id="q-enc2">
+      <div class="qa-q" onclick="toggleQA('q-enc2')">What's the difference between encapsulation and abstraction? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Encapsulation is the mechanism of hiding internal data — it's HOW you protect state using access modifiers. Abstraction is hiding complex implementation and exposing only relevant behavior — it's WHAT the object shows to the outside world. They work together: encapsulation implements abstraction. An ATM machine abstracts the complex cash dispensing process (you just press "withdraw") and encapsulates the internal mechanisms (you can't directly access the cash). In Java, encapsulation = private fields with getters/setters. Abstraction = interfaces and abstract classes that define WHAT operations exist without specifying HOW they work.
+      </div>
+    </div>
+
+    <div class="qa" id="q-enc3">
+      <div class="qa-q" onclick="toggleQA('q-enc3')">Can you have encapsulation in JavaScript? It doesn't have private keywords. <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        JavaScript now has native private fields using the <code>#</code> prefix (ES2022). <code>class Person { #name; }</code> — the <code>#name</code> field is truly private and throws a SyntaxError if accessed from outside. Before ES2022, closures were used: variables declared inside a factory function are private because they're in the function's scope, but the returned object only exposes the methods you choose to expose. The closure approach still works and is used in older codebases. TypeScript adds compile-time <code>private</code> and <code>readonly</code> keywords, though these become public at runtime in the JavaScript output.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Encapsulation — 60-second revision</h4>
+    <ul>
+      <li>Bundle data + methods in one class. Make data private. Expose only controlled methods.</li>
+      <li>Java: private fields + public getters/setters. Setter validates before assigning.</li>
+      <li>JS modern: # prefix for private fields. JS old: closure pattern.</li>
+      <li>Encapsulation = HOW you protect data. Abstraction = WHAT you expose. Not the same.</li>
+      <li>Why: prevents invalid state. Only the class itself can change its own data.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 2: ABSTRACTION -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="abstraction">
+  <div class="concept-num">Concept 02 of 08</div>
+  <h2>Abstraction</h2>
+  <div class="concept-sub">Hiding complexity. Exposing only what users need. The most practically important pillar — every interface and abstract class you've ever used is abstraction.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Abstract class vs Interface is asked constantly</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">What it is</span></div>
+
+  <p class="explain">
+    <strong>Abstraction means showing only the essential features of an object and hiding the underlying complexity.</strong> Users of your class know WHAT it can do, not HOW it does it.
+  </p>
+  <p class="explain">
+    In Java, abstraction is achieved through two mechanisms: <strong>Abstract classes</strong> (partial abstraction — some implementation allowed) and <strong>Interfaces</strong> (full abstraction — pure contract, no implementation in Java 7 and earlier).
+  </p>
+
+  <div class="analogy">
+    <strong>Real analogy:</strong> A TV remote. You press "Volume Up" — you don't know how the IR signal works, how the TV's audio processor interprets it, or how the speaker increases output. The remote's interface is abstracted. You deal with buttons, not circuits.
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Abstract class vs Interface — the most asked OOP question</span></div>
+
+  <div class="code-section">
+    <div class="code-tabs">
+      <div class="code-tab java active" onclick="showPane('abs','java')">Java</div>
+      <div class="code-tab js" onclick="showPane('abs','js')">JavaScript</div>
+    </div>
+    <div class="code-pane java-pane active" id="abs-java">
+      <div class="code-pane-header"><span class="code-lang">Java — Abstract class vs Interface</span></div>
+<pre><span class="cm">// ── ABSTRACT CLASS: partial abstraction ──</span>
+<span class="cm">// Use when: IS-A relationship + shared implementation code</span>
+<span class="cm">// Can have: constructors, instance variables, concrete + abstract methods</span>
+<span class="cm">// Restriction: a class can EXTEND only ONE abstract class</span>
+
+<span class="ck">abstract class</span> <span class="ct">PaymentProcessor</span> {
+    <span class="ck">protected</span> <span class="ct">String</span> currency = <span class="cs">"INR"</span>;  <span class="cm">// shared state for all processors</span>
+    <span class="ck">protected</span> <span class="ck">double</span> processingFee;
+
+    <span class="ck">public</span> <span class="ct">PaymentProcessor</span>(<span class="ck">double</span> fee) {
+        <span class="ck">this</span>.processingFee = fee;
+    }
+
+    <span class="cm">// Abstract: MUST be implemented by subclass. No body.</span>
+    <span class="ck">public abstract void</span> <span class="cf">processPayment</span>(<span class="ck">double</span> amount);
+    <span class="ck">public abstract</span> <span class="ct">String</span> <span class="cf">getPaymentMethod</span>();
+
+    <span class="cm">// Concrete: shared behavior — subclasses inherit this for free</span>
+    <span class="ck">public void</span> <span class="cf">logTransaction</span>(<span class="ck">double</span> amount) {
+        <span class="ct">System</span>.out.println(<span class="cs">"Processing "</span> + amount + <span class="cs">" "</span> + currency
+            + <span class="cs">" via "</span> + <span class="cf">getPaymentMethod</span>());
+    }
+
+    <span class="ck">public double</span> <span class="cf">calculateFee</span>(<span class="ck">double</span> amount) {
+        <span class="ck">return</span> amount * processingFee / <span class="co">100</span>;
+    }
+}
+
+<span class="cm">// ── INTERFACE: pure contract ──</span>
+<span class="cm">// Use when: CAN-DO capability across UNRELATED classes</span>
+<span class="cm">// In Java 7: no implementation. In Java 8+: default methods allowed</span>
+<span class="cm">// A class can IMPLEMENT MULTIPLE interfaces (solves multiple inheritance)</span>
+
+<span class="ck">interface</span> <span class="ct">Refundable</span> {
+    <span class="ck">void</span> <span class="cf">refund</span>(<span class="ck">double</span> amount);   <span class="cm">// implicitly public abstract</span>
+    <span class="ck">boolean</span> <span class="cf">isRefundable</span>();
+
+    <span class="cm">// Java 8+: default method — optional to override</span>
+    <span class="ck">default</span> <span class="ct">String</span> <span class="cf">getRefundPolicy</span>() { <span class="ck">return</span> <span class="cs">"Standard 7-day refund policy"</span>; }
+}
+
+<span class="ck">interface</span> <span class="ct">Auditable</span> {
+    <span class="ck">void</span> <span class="cf">audit</span>(<span class="ct">String</span> action);
+}
+
+<span class="cm">// Class can extend ONE abstract class but implement MANY interfaces</span>
+<span class="ck">class</span> <span class="ct">UPIProcessor</span> <span class="ck">extends</span> <span class="ct">PaymentProcessor</span>
+                    <span class="ck">implements</span> <span class="ct">Refundable</span>, <span class="ct">Auditable</span> {
+
+    <span class="ck">public</span> <span class="ct">UPIProcessor</span>() { <span class="ck">super</span>(<span class="co">0.5</span>); }  <span class="cm">// 0.5% fee</span>
+
+    <span class="cn">@Override</span>
+    <span class="ck">public void</span> <span class="cf">processPayment</span>(<span class="ck">double</span> amount) {
+        <span class="cf">logTransaction</span>(amount);   <span class="cm">// inherited from abstract class</span>
+        <span class="cm">// UPI-specific logic: VPA validation, NPCI API call, etc.</span>
+    }
+
+    <span class="cn">@Override</span> <span class="ck">public</span> <span class="ct">String</span> <span class="cf">getPaymentMethod</span>() { <span class="ck">return</span> <span class="cs">"UPI"</span>; }
+    <span class="cn">@Override</span> <span class="ck">public void</span>   <span class="cf">refund</span>(<span class="ck">double</span> a)    { <span class="cm">/* UPI refund */</span> }
+    <span class="cn">@Override</span> <span class="ck">public boolean</span>  <span class="cf">isRefundable</span>()   { <span class="ck">return true</span>; }
+    <span class="cn">@Override</span> <span class="ck">public void</span>   <span class="cf">audit</span>(<span class="ct">String</span> a)  { <span class="cm">/* audit log */</span> }
+}</pre>
+    </div>
+    <div class="code-pane js-pane" id="abs-js">
+      <div class="code-pane-header"><span class="code-lang">JavaScript — no native abstract/interface, but patterns exist</span></div>
+<pre><span class="cm">// JavaScript has no 'abstract' or 'interface' keywords.</span>
+<span class="cm">// You simulate abstraction by throwing errors in "abstract" methods.</span>
+
+<span class="ck">class</span> <span class="ct">PaymentProcessor</span> {
+    <span class="cf">constructor</span>(fee) {
+        <span class="ck">if</span> (<span class="ck">new</span>.target === <span class="ct">PaymentProcessor</span>) {
+            <span class="cm">// Prevent direct instantiation of the "abstract" class</span>
+            <span class="ck">throw new</span> <span class="ct">Error</span>(<span class="cs">"PaymentProcessor is abstract — cannot instantiate directly"</span>);
+        }
+        <span class="ck">this</span>.fee = fee;
+        <span class="ck">this</span>.currency = <span class="cs">"INR"</span>;
+    }
+
+    <span class="cm">// "Abstract" method — throws if subclass doesn't override</span>
+    <span class="cf">processPayment</span>(amount) {
+        <span class="ck">throw new</span> <span class="ct">Error</span>(<span class="cs">"processPayment() must be implemented by subclass"</span>);
+    }
+
+    <span class="cf">getPaymentMethod</span>() {
+        <span class="ck">throw new</span> <span class="ct">Error</span>(<span class="cs">"getPaymentMethod() must be implemented"</span>);
+    }
+
+    <span class="cm">// Concrete method — shared by all subclasses</span>
+    <span class="cf">logTransaction</span>(amount) {
+        console.log(<span class="cs">`Processing ${amount} ${this.currency} via ${this.getPaymentMethod()}`</span>);
+    }
+}
+
+<span class="ck">class</span> <span class="ct">UPIProcessor</span> <span class="ck">extends</span> <span class="ct">PaymentProcessor</span> {
+    <span class="cf">constructor</span>() { <span class="ck">super</span>(<span class="co">0.5</span>); }
+
+    <span class="cf">processPayment</span>(amount) {
+        <span class="ck">this</span>.<span class="cf">logTransaction</span>(amount);  <span class="cm">// inherited</span>
+        <span class="cm">// UPI-specific logic here</span>
+    }
+
+    <span class="cf">getPaymentMethod</span>() { <span class="ck">return</span> <span class="cs">"UPI"</span>; }
+}
+
+<span class="cm">// TypeScript gives you real interfaces:</span>
+<span class="cm">// interface Refundable { refund(amount: number): void; isRefundable(): boolean; }</span>
+<span class="cm">// class UPIProcessor implements Refundable { ... }  — compile-time checked</span></pre>
+    </div>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">The decision rule — when to use which</span></div>
+
+  <table class="cmp">
+    <tr><th>Use Abstract Class when</th><th>Use Interface when</th></tr>
+    <tr><td>Classes share code — common implementation exists</td><td>Unrelated classes share a CAPABILITY</td></tr>
+    <tr><td>IS-A relationship: Dog IS-A Animal</td><td>CAN-DO relationship: Bird CAN-DO Flyable, Plane CAN-DO Flyable</td></tr>
+    <tr><td>You want to provide a base implementation that subclasses can optionally override</td><td>You want a pure contract — each implementor provides its own logic</td></tr>
+    <tr><td>You have state (instance variables) to share</td><td>You only need behavior contracts, no shared state</td></tr>
+    <tr><td>Example: Animal (eat, sleep shared, speak abstract)</td><td>Example: Serializable, Comparable, Runnable</td></tr>
+  </table>
+
+  <div class="analogy">
+    <strong>Key difference:</strong> Abstract class = "all employees share a 'calculatePayroll' template." Interface = "some employees CAN drive company vehicles, some CAN approve budgets — unrelated capabilities, different employees."
+  </div>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">Why Java doesn't allow multiple class inheritance (Diamond Problem)</span></div>
+
+  <div class="code-section">
+    <div class="code-tabs">
+      <div class="code-tab java active" onclick="showPane('diamond','java')">Diamond Problem</div>
+    </div>
+    <div class="code-pane java-pane active" id="diamond-java">
+      <div class="code-pane-header"><span class="code-lang">The diamond problem — why Java restricts to single inheritance</span></div>
+<pre><span class="cm">// HYPOTHETICAL — Java does NOT allow this</span>
+<span class="ck">class</span> <span class="ct">A</span> {
+    <span class="ck">void</span> <span class="cf">greet</span>() { System.out.println(<span class="cs">"Hello from A"</span>); }
+}
+<span class="ck">class</span> <span class="ct">B</span> <span class="ck">extends</span> <span class="ct">A</span> {
+    <span class="ck">void</span> <span class="cf">greet</span>() { System.out.println(<span class="cs">"Hello from B"</span>); }
+}
+<span class="ck">class</span> <span class="ct">C</span> <span class="ck">extends</span> <span class="ct">A</span> {
+    <span class="ck">void</span> <span class="cf">greet</span>() { System.out.println(<span class="cs">"Hello from C"</span>); }
+}
+<span class="cm">// class D extends B, C {}  → WHICH greet() does D inherit? B's or C's?</span>
+<span class="cm">// → This ambiguity is the diamond problem</span>
+<span class="cm">// → Java prevents this by disallowing multiple class inheritance</span>
+
+<span class="cm">// SOLUTION: Java allows implementing multiple INTERFACES</span>
+<span class="cm">// If two interfaces have the same default method, you MUST override in the class</span>
+<span class="ck">interface</span> <span class="ct">IA</span> { <span class="ck">default void</span> <span class="cf">greet</span>() { System.out.println(<span class="cs">"IA"</span>); } }
+<span class="ck">interface</span> <span class="ct">IB</span> { <span class="ck">default void</span> <span class="cf">greet</span>() { System.out.println(<span class="cs">"IB"</span>); } }
+
+<span class="ck">class</span> <span class="ct">MyClass</span> <span class="ck">implements</span> <span class="ct">IA</span>, <span class="ct">IB</span> {
+    <span class="cn">@Override</span>
+    <span class="ck">public void</span> <span class="cf">greet</span>() {
+        <span class="cm">// Must explicitly choose or create new implementation</span>
+        <span class="ct">IA</span>.<span class="ck">super</span>.<span class="cf">greet</span>();  <span class="cm">// Can call specific interface's default</span>
+    }
+}
+<span class="cm">// Java forces you to resolve the ambiguity → diamond problem solved</span></pre>
+    </div>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Abstraction</div>
+
+    <div class="qa" id="q-abs1">
+      <div class="qa-q" onclick="toggleQA('q-abs1')">When would you use an abstract class over an interface? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        I'd use an abstract class when classes share common implementation code and have an IS-A relationship — for example, an <code>Animal</code> abstract class where <code>eat()</code> and <code>sleep()</code> are concrete (shared) and <code>speak()</code> is abstract (each animal speaks differently). I'd use an interface when I want to define a capability that unrelated classes might share — for example, both a <code>Bird</code> and an <code>Airplane</code> can implement a <code>Flyable</code> interface, even though they're completely unrelated in the class hierarchy. The key rule: abstract class for shared behavior and IS-A, interface for shared contract and CAN-DO.
+        <span class="follow">Follow-up: "Can an abstract class implement an interface?"</span>
+        Yes. An abstract class can implement an interface without implementing all its methods — the concrete subclass is responsible for implementing them. This is actually a common pattern.
+      </div>
+    </div>
+
+    <div class="qa" id="q-abs2">
+      <div class="qa-q" onclick="toggleQA('q-abs2')">Can you instantiate an abstract class? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        No, you cannot directly instantiate an abstract class — <code>new Animal()</code> is a compile error. However, you CAN instantiate it via an <strong>anonymous class</strong>: <code>Animal a = new Animal() { public void speak() { ... } }</code> — this creates a nameless subclass inline that implements all abstract methods. This is commonly used in Java for event listeners and callbacks, especially in older Android code. The abstract class reference variable (<code>Animal a</code>) can hold a subclass instance, which is normal polymorphism.
+      </div>
+    </div>
+
+    <div class="qa" id="q-abs3">
+      <div class="qa-q" onclick="toggleQA('q-abs3')">What changed with interfaces in Java 8? Why? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Java 8 added <code>default</code> methods and <code>static</code> methods to interfaces. Before Java 8, interfaces were pure contracts — no implementation allowed. The problem: if you add a new method to an existing interface, ALL implementing classes break (they must implement the new method). Java 8's default methods solve this by providing a default implementation that existing classes inherit without breaking. The classic example is the <code>Iterable</code> interface — adding <code>forEach()</code> as a default method let all existing collections get it for free without every custom collection implementation needing to add it. Java 9 added private methods to interfaces, allowing default methods to share private helper logic.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Abstraction — 60-second revision</h4>
+    <ul>
+      <li>Hide complexity, show only what users need. Abstract class or Interface in Java.</li>
+      <li>Abstract class: has constructors, state, concrete + abstract methods. Single inheritance only.</li>
+      <li>Interface: pure contract. No state (only constants). Multiple implementation allowed.</li>
+      <li>Use abstract class for IS-A + shared code. Use interface for CAN-DO capabilities.</li>
+      <li>Diamond problem: two parents define same method → ambiguity. Java solves by disallowing multiple class inheritance. Interfaces solve it by forcing override.</li>
+      <li>Java 8 default methods: backward compatibility — add new methods without breaking existing implementations.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 3: INHERITANCE -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="inheritance">
+  <div class="concept-num">Concept 03 of 08</div>
+  <h2>Inheritance</h2>
+  <div class="concept-sub">Child class reuses parent class code. The super keyword. Constructor chaining. Why Java has single inheritance. JS prototype chain under class syntax.</div>
+  <div class="progress-row"><span class="must">must know</span><span>super keyword and constructor chaining are tested</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">What it is + Key rules</span></div>
+
+  <p class="explain">
+    <strong>Inheritance allows a child class to inherit fields and methods from a parent class, enabling code reuse and modeling IS-A relationships.</strong>
+  </p>
+  <p class="explain">
+    Rules: <strong>Java</strong> uses <code>extends</code> for single inheritance only (one parent class). <strong>JavaScript</strong> uses <code>class Child extends Parent</code> which is syntactic sugar over the prototype chain. The <code>super</code> keyword refers to the parent — <code>super()</code> calls the parent constructor, <code>super.method()</code> calls a parent method.
+  </p>
+
+  <div class="warn">
+    <strong>Critical rule in both Java and JS:</strong> If a child class has a constructor, it MUST call <code>super()</code> before accessing <code>this</code>. In JavaScript, failing to call <code>super()</code> throws a ReferenceError. In Java, if you don't write a <code>super()</code> call, Java silently inserts <code>super()</code> (no-arg) — if parent has no no-arg constructor, it's a compile error.
+  </div>
+
+  <div class="code-section">
+    <div class="code-tabs">
+      <div class="code-tab java active" onclick="showPane('inh','java')">Java</div>
+      <div class="code-tab js" onclick="showPane('inh','js')">JavaScript</div>
+    </div>
+    <div class="code-pane java-pane active" id="inh-java">
+      <div class="code-pane-header"><span class="code-lang">Java — extends, super, override, protected</span></div>
+<pre><span class="ck">class</span> <span class="ct">Employee</span> {
+    <span class="ck">protected</span> <span class="ct">String</span> name;    <span class="cm">// protected = visible to subclasses</span>
+    <span class="ck">protected double</span> baseSalary;
+
+    <span class="ck">public</span> <span class="ct">Employee</span>(<span class="ct">String</span> name, <span class="ck">double</span> salary) {
+        <span class="ck">this</span>.name = name;
+        <span class="ck">this</span>.baseSalary = salary;
+    }
+
+    <span class="ck">public double</span> <span class="cf">calculatePay</span>() {
+        <span class="ck">return</span> baseSalary;
+    }
+
+    <span class="ck">public</span> <span class="ct">String</span> <span class="cf">getInfo</span>() {
+        <span class="ck">return</span> name + <span class="cs">" earns ₹"</span> + <span class="cf">calculatePay</span>();
+    }
+}
+
+<span class="ck">class</span> <span class="ct">Manager</span> <span class="ck">extends</span> <span class="ct">Employee</span> {
+    <span class="ck">private double</span> bonus;
+    <span class="ck">private</span> <span class="ct">String</span>[] reportees;
+
+    <span class="ck">public</span> <span class="ct">Manager</span>(<span class="ct">String</span> name, <span class="ck">double</span> salary, <span class="ck">double</span> bonus) {
+        <span class="ck">super</span>(name, salary);  <span class="cm">// MUST be FIRST line — calls Employee constructor</span>
+        <span class="ck">this</span>.bonus = bonus;
+    }
+
+    <span class="cm">// @Override tells Java (and humans) this replaces parent's method</span>
+    <span class="cm">// Without @Override: still overrides but no compile-time safety check</span>
+    <span class="cn">@Override</span>
+    <span class="ck">public double</span> <span class="cf">calculatePay</span>() {
+        <span class="ck">return super</span>.<span class="cf">calculatePay</span>() + bonus;  <span class="cm">// extend parent, don't replace</span>
+    }
+
+    <span class="cm">// New method not in Employee — adds to Manager's interface</span>
+    <span class="ck">public void</span> <span class="cf">conductReview</span>(<span class="ct">Employee</span> emp) {
+        System.out.println(name + <span class="cs">" reviewing "</span> + emp.name);
+    }
+}
+
+<span class="ck">class</span> <span class="ct">Contractor</span> <span class="ck">extends</span> <span class="ct">Employee</span> {
+    <span class="ck">private double</span> hourlyRate;
+    <span class="ck">private int</span> hoursWorked;
+
+    <span class="ck">public</span> <span class="ct">Contractor</span>(<span class="ct">String</span> name, <span class="ck">double</span> hourlyRate, <span class="ck">int</span> hours) {
+        <span class="ck">super</span>(name, <span class="co">0</span>);   <span class="cm">// contractors have no fixed base salary</span>
+        <span class="ck">this</span>.hourlyRate = hourlyRate;
+        <span class="ck">this</span>.hoursWorked = hours;
+    }
+
+    <span class="cn">@Override</span>
+    <span class="ck">public double</span> <span class="cf">calculatePay</span>() {
+        <span class="ck">return</span> hourlyRate * hoursWorked;  <span class="cm">// completely different calculation</span>
+    }
+}
+
+<span class="cm">// Runtime polymorphism — Java decides at runtime which calculatePay() to call</span>
+<span class="ct">Employee</span>[] team = {
+    <span class="ck">new</span> <span class="ct">Employee</span>(<span class="cs">"Dev"</span>, <span class="co">60000</span>),
+    <span class="ck">new</span> <span class="ct">Manager</span>(<span class="cs">"Priya"</span>, <span class="co">80000</span>, <span class="co">20000</span>),
+    <span class="ck">new</span> <span class="ct">Contractor</span>(<span class="cs">"Ravi"</span>, <span class="co">500</span>, <span class="co">160</span>)
+};
+<span class="ck">for</span> (<span class="ct">Employee</span> e : team) {
+    System.out.println(e.<span class="cf">getInfo</span>());
+    <span class="cm">// Employee.calculatePay()  → 60000</span>
+    <span class="cm">// Manager.calculatePay()   → 100000 (overridden)</span>
+    <span class="cm">// Contractor.calculatePay()→ 80000  (overridden)</span>
+}</pre>
+    </div>
+    <div class="code-pane js-pane" id="inh-js">
+      <div class="code-pane-header"><span class="code-lang">JavaScript — extends + super + what's happening under the hood</span></div>
+<pre><span class="ck">class</span> <span class="ct">Employee</span> {
+    <span class="cf">constructor</span>(name, salary) {
+        <span class="ck">this</span>.name = name;
+        <span class="ck">this</span>.salary = salary;
+    }
+
+    <span class="cf">calculatePay</span>() { <span class="ck">return this</span>.salary; }
+    <span class="cf">getInfo</span>()       { <span class="ck">return</span> <span class="cs">`${this.name} earns ₹${this.calculatePay()}`</span>; }
+}
+
+<span class="ck">class</span> <span class="ct">Manager</span> <span class="ck">extends</span> <span class="ct">Employee</span> {
+    <span class="cf">constructor</span>(name, salary, bonus) {
+        <span class="ck">super</span>(name, salary);   <span class="cm">// REQUIRED before 'this' — creates the object</span>
+        <span class="ck">this</span>.bonus = bonus;
+    }
+
+    <span class="cf">calculatePay</span>() {
+        <span class="ck">return super</span>.<span class="cf">calculatePay</span>() + <span class="ck">this</span>.bonus;
+    }
+}
+
+<span class="cm">// What 'class' syntax compiles to (proto chain — the real mechanism):</span>
+<span class="cm">// Manager.prototype.__proto__ === Employee.prototype  → true</span>
+<span class="cm">// Property lookup: mgr.calculatePay</span>
+<span class="cm">// → not on mgr instance → check Manager.prototype → found!</span>
+<span class="cm">// → if not found: check Employee.prototype → Object.prototype → null</span>
+
+<span class="ck">const</span> mgr = <span class="ck">new</span> <span class="ct">Manager</span>(<span class="cs">"Priya"</span>, <span class="co">80000</span>, <span class="co">20000</span>);
+
+<span class="cm">// Proof of prototype chain:</span>
+console.log(mgr <span class="ck">instanceof</span> <span class="ct">Manager</span>);    <span class="cm">// true</span>
+console.log(mgr <span class="ck">instanceof</span> <span class="ct">Employee</span>);   <span class="cm">// true — walks the chain</span>
+console.log(<span class="ct">Object</span>.getPrototypeOf(<span class="ct">Manager</span>.prototype) === <span class="ct">Employee</span>.prototype); <span class="cm">// true</span>
+
+<span class="cm">// What happens if you FORGET super() in JS:</span>
+<span class="ck">class</span> <span class="ct">BadManager</span> <span class="ck">extends</span> <span class="ct">Employee</span> {
+    <span class="cf">constructor</span>(name) {
+        <span class="ck">this</span>.name = name;  <span class="cm">// → ReferenceError: Must call super before accessing 'this'</span>
+        <span class="ck">super</span>(name, <span class="co">0</span>);    <span class="cm">// too late — super() must be FIRST</span>
+    }
+}</pre>
+    </div>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">protected vs private in inheritance</span></div>
+
+  <table class="cmp">
+    <tr><th>Modifier</th><th>Same Class</th><th>Same Package</th><th>Subclass (different package)</th><th>Everywhere</th></tr>
+    <tr><td>private</td><td>✓</td><td>✗</td><td>✗</td><td>✗</td></tr>
+    <tr><td>default (no modifier)</td><td>✓</td><td>✓</td><td>✗</td><td>✗</td></tr>
+    <tr><td>protected</td><td>✓</td><td>✓</td><td>✓</td><td>✗</td></tr>
+    <tr><td>public</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td></tr>
+  </table>
+
+  <p class="explain">
+    Use <strong>protected</strong> for fields/methods that are internal implementation details but need to be accessible to subclasses. Use <strong>private</strong> when even subclasses should not directly access — they must go through public methods. Private fields in a parent class are NOT inherited (subclass can't see them), but they do exist in the subclass object's memory.
+  </p>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Inheritance</div>
+
+    <div class="qa" id="q-inh1">
+      <div class="qa-q" onclick="toggleQA('q-inh1')">What is constructor chaining? What happens when you don't call super()? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Constructor chaining means calling one constructor from another. In inheritance, when a child class constructor calls <code>super()</code>, it chains to the parent constructor. In Java: if you don't explicitly write <code>super()</code>, the compiler implicitly inserts a no-arg <code>super()</code> call at the start. If the parent has no no-arg constructor — compile error. In JavaScript: if a child class has a constructor, it MUST call <code>super()</code> before any reference to <code>this</code> — otherwise ReferenceError at runtime. The reason is that in JS, the parent constructor is responsible for creating the <code>this</code> object, so you need it to run first.
+      </div>
+    </div>
+
+    <div class="qa" id="q-inh2">
+      <div class="qa-q" onclick="toggleQA('q-inh2')">Can a constructor be inherited? Can it be overridden? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        No, constructors are NOT inherited. This is a subtle but important point. A child class does not automatically get the parent's constructors — it must define its own. However, it can CALL the parent's constructor using <code>super()</code>. Constructors cannot be overridden because they're not instance methods — they belong to the class, not polymorphically resolved on instances. You can have a method with the same name as the parent's constructor in a child class, but it's just a regular method (no constructor semantics). The child class always needs its own constructor chain.
+      </div>
+    </div>
+
+    <div class="qa" id="q-inh3">
+      <div class="qa-q" onclick="toggleQA('q-inh3')">What is the difference between method overriding and method hiding? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        <strong>Overriding</strong>: instance methods. When a child class provides a new implementation for an inherited instance method, and the reference is the parent type — the child's version is called at runtime (dynamic dispatch). <code>Employee e = new Manager(); e.calculatePay();</code> calls Manager's version. <strong>Hiding</strong>: static methods. If a child class defines a static method with the same signature as the parent's static method, it hides (doesn't override) it. <code>Employee.staticMethod()</code> calls Employee's. <code>Manager.staticMethod()</code> calls Manager's. The reference type determines which static method is called — no dynamic dispatch. This distinction matters because <code>@Override</code> on a static method is a compile error.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Inheritance — 60-second revision</h4>
+    <ul>
+      <li>extends = single parent class. A class can extend only ONE class (diamond problem prevention).</li>
+      <li>super() = call parent constructor. MUST be first line. Java auto-inserts no-arg super() if missing.</li>
+      <li>super.method() = call parent's version of a method from within overriding child method.</li>
+      <li>protected = visible to same package + subclasses. private = NOT inherited (invisible to subclass).</li>
+      <li>JS: class syntax = sugar over prototype chain. Manager.prototype.__proto__ === Employee.prototype.</li>
+      <li>Constructors are NOT inherited. Cannot be overridden. Static methods are hidden, not overridden.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 4: POLYMORPHISM -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="polymorphism">
+  <div class="concept-num">Concept 04 of 08</div>
+  <h2>Polymorphism</h2>
+  <div class="concept-sub">One interface, many behaviors. Compile-time (overloading) and runtime (overriding). Dynamic dispatch. Why JS has no overloading.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Compile-time vs runtime distinction is always asked</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Two types — understand both</span></div>
+
+  <p class="explain">
+    Polymorphism = "many forms." Same method call can execute different code depending on context. There are two completely different mechanisms:
+  </p>
+  <p class="explain">
+    <strong>Compile-time polymorphism (Static/Early binding):</strong> Method overloading. Same method name, different parameter lists. Java resolves which version to call at compile time based on the argument types.<br><br>
+    <strong>Runtime polymorphism (Dynamic dispatch/Late binding):</strong> Method overriding. Child class redefines parent's method. Java resolves which version to call at runtime based on the actual object type.
+  </p>
+
+  <div class="code-section">
+    <div class="code-tabs">
+      <div class="code-tab java active" onclick="showPane('poly','java')">Java</div>
+      <div class="code-tab js" onclick="showPane('poly','js')">JavaScript</div>
+    </div>
+    <div class="code-pane java-pane active" id="poly-java">
+      <div class="code-pane-header"><span class="code-lang">Java — overloading + overriding + dynamic dispatch</span></div>
+<pre><span class="cm">// ── COMPILE-TIME POLYMORPHISM: Method Overloading ──</span>
+<span class="ck">class</span> <span class="ct">Calculator</span> {
+    <span class="cm">// Same name, different PARAMETER LISTS. Compiler picks the right one.</span>
+    <span class="ck">public int</span>    <span class="cf">add</span>(<span class="ck">int</span> a, <span class="ck">int</span> b)            { <span class="ck">return</span> a + b; }
+    <span class="ck">public double</span> <span class="cf">add</span>(<span class="ck">double</span> a, <span class="ck">double</span> b)    { <span class="ck">return</span> a + b; }
+    <span class="ck">public int</span>    <span class="cf">add</span>(<span class="ck">int</span> a, <span class="ck">int</span> b, <span class="ck">int</span> c)   { <span class="ck">return</span> a + b + c; }
+    <span class="ck">public</span> <span class="ct">String</span> <span class="cf">add</span>(<span class="ct">String</span> a, <span class="ct">String</span> b)   { <span class="ck">return</span> a + b; }
+    <span class="cm">// Return type alone does NOT make overloading. Parameters must differ.</span>
+}
+<span class="cm">// Compiler resolves at COMPILE TIME based on argument types</span>
+<span class="ct">Calculator</span> calc = <span class="ck">new</span> <span class="ct">Calculator</span>();
+calc.<span class="cf">add</span>(<span class="co">1</span>, <span class="co">2</span>);         <span class="cm">// → add(int, int)</span>
+calc.<span class="cf">add</span>(<span class="co">1.0</span>, <span class="co">2.0</span>);   <span class="cm">// → add(double, double)</span>
+calc.<span class="cf">add</span>(<span class="cs">"Hi"</span>, <span class="cs">"!"</span>); <span class="cm">// → add(String, String)</span>
+
+<span class="cm">// ── RUNTIME POLYMORPHISM: Method Overriding + Dynamic Dispatch ──</span>
+<span class="ck">class</span> <span class="ct">Shape</span> {
+    <span class="ck">public double</span> <span class="cf">area</span>()        { <span class="ck">return</span> <span class="co">0</span>; }
+    <span class="ck">public</span> <span class="ct">String</span> <span class="cf">describe</span>()   { <span class="ck">return</span> <span class="cs">"Shape with area: "</span> + <span class="cf">area</span>(); }
+}
+
+<span class="ck">class</span> <span class="ct">Circle</span> <span class="ck">extends</span> <span class="ct">Shape</span> {
+    <span class="ck">private double</span> radius;
+    <span class="ct">Circle</span>(<span class="ck">double</span> r) { <span class="ck">this</span>.radius = r; }
+    <span class="cn">@Override</span>
+    <span class="ck">public double</span> <span class="cf">area</span>() { <span class="ck">return</span> Math.PI * radius * radius; }
+}
+
+<span class="ck">class</span> <span class="ct">Rectangle</span> <span class="ck">extends</span> <span class="ct">Shape</span> {
+    <span class="ck">private double</span> w, h;
+    <span class="ct">Rectangle</span>(<span class="ck">double</span> w, <span class="ck">double</span> h) { <span class="ck">this</span>.w = w; <span class="ck">this</span>.h = h; }
+    <span class="cn">@Override</span>
+    <span class="ck">public double</span> <span class="cf">area</span>() { <span class="ck">return</span> w * h; }
+}
+
+<span class="cm">// The MAGIC of runtime polymorphism:</span>
+<span class="ct">Shape</span>[] shapes = { <span class="ck">new</span> <span class="ct">Circle</span>(<span class="co">5</span>), <span class="ck">new</span> <span class="ct">Rectangle</span>(<span class="co">4</span>, <span class="co">6</span>), <span class="ck">new</span> <span class="ct">Shape</span>() };
+<span class="ck">for</span> (<span class="ct">Shape</span> s : shapes) {
+    System.out.println(s.<span class="cf">describe</span>());
+    <span class="cm">// s.area() — reference type is 'Shape' but ACTUAL type determines which runs:</span>
+    <span class="cm">// Circle    → Circle.area()    (78.54)</span>
+    <span class="cm">// Rectangle → Rectangle.area() (24.0)</span>
+    <span class="cm">// Shape     → Shape.area()     (0.0)</span>
+    <span class="cm">// Even inside Shape.describe(), 'this.area()' calls the overridden version!</span>
+}
+<span class="cm">// This is DYNAMIC DISPATCH: Java looks at actual object type at RUNTIME</span>
+<span class="cm">// The reference type (Shape) doesn't matter for instance method resolution</span></pre>
+    </div>
+    <div class="code-pane js-pane" id="poly-js">
+      <div class="code-pane-header"><span class="code-lang">JavaScript — overriding yes, overloading no</span></div>
+<pre><span class="cm">// JS does NOT have method overloading</span>
+<span class="cm">// If you define the same name twice, second definition REPLACES the first</span>
+<span class="ck">function</span> <span class="cf">greet</span>(name)         { console.log(<span class="cs">"Hello, "</span> + name); }
+<span class="ck">function</span> <span class="cf">greet</span>(name, greeting) { console.log(greeting + <span class="cs">", "</span> + name); }
+<span class="cf">greet</span>(<span class="cs">"Ravi"</span>);  <span class="cm">// → "undefined, Ravi" — second definition wins!</span>
+
+<span class="cm">// JS workaround for overloading: check arguments inside the function</span>
+<span class="ck">function</span> <span class="cf">add</span>(...args) {
+    <span class="ck">if</span> (args.every(a => <span class="ck">typeof</span> a === <span class="cs">"number"</span>))
+        <span class="ck">return</span> args.reduce((a, b) => a + b, <span class="co">0</span>);
+    <span class="ck">if</span> (args.every(a => <span class="ck">typeof</span> a === <span class="cs">"string"</span>))
+        <span class="ck">return</span> args.join(<span class="cs">""</span>);
+    <span class="ck">throw new</span> <span class="ct">Error</span>(<span class="cs">"Invalid arguments"</span>);
+}
+
+<span class="cm">// Overriding works perfectly — same as Java's runtime polymorphism</span>
+<span class="ck">class</span> <span class="ct">Shape</span>     { <span class="cf">area</span>() { <span class="ck">return</span> <span class="co">0</span>; } }
+<span class="ck">class</span> <span class="ct">Circle</span>    <span class="ck">extends</span> <span class="ct">Shape</span> { <span class="cf">constructor</span>(r) { <span class="ck">super</span>(); <span class="ck">this</span>.r = r; } <span class="cf">area</span>() { <span class="ck">return</span> Math.PI * <span class="ck">this</span>.r ** <span class="co">2</span>; } }
+<span class="ck">class</span> <span class="ct">Rectangle</span> <span class="ck">extends</span> <span class="ct">Shape</span> { <span class="cf">constructor</span>(w,h) { <span class="ck">super</span>(); <span class="ck">this</span>.w=w; <span class="ck">this</span>.h=h; } <span class="cf">area</span>() { <span class="ck">return this</span>.w * <span class="ck">this</span>.h; } }
+
+<span class="ck">const</span> shapes = [<span class="ck">new</span> <span class="ct">Circle</span>(<span class="co">5</span>), <span class="ck">new</span> <span class="ct">Rectangle</span>(<span class="co">4</span>, <span class="co">6</span>)];
+shapes.<span class="cf">forEach</span>(s => console.log(s.<span class="cf">area</span>()));
+<span class="cm">// Same runtime polymorphism — JS checks actual object's prototype chain</span></pre>
+    </div>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Rules for valid overriding</span></div>
+
+  <table class="cmp">
+    <tr><th>Rule</th><th>Detail</th></tr>
+    <tr><td>Method signature must match</td><td>Same name, same parameter types and count. Return type can be covariant (subtype).</td></tr>
+    <tr><td>Access modifier can't be more restrictive</td><td>Parent is public → child can be public. Parent is protected → child can be protected or public. Never narrower.</td></tr>
+    <tr><td>Cannot override final methods</td><td><code>final</code> methods in parent = sealed, cannot be overridden by any subclass.</td></tr>
+    <tr><td>Cannot override static methods</td><td>Static methods are hidden, not overridden. @Override on static = compile error.</td></tr>
+    <tr><td>Cannot override private methods</td><td>Private methods aren't inherited, so they can't be overridden (you'd just be creating a new method).</td></tr>
+  </table>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Polymorphism</div>
+
+    <div class="qa" id="q-poly1">
+      <div class="qa-q" onclick="toggleQA('q-poly1')">What is the difference between method overloading and method overriding? Which is compile-time and which is runtime? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        <strong>Overloading</strong> (compile-time polymorphism): Same method name, different parameter lists within the same class. The Java compiler decides which version to call based on argument types at compile time — no runtime decision needed. JavaScript does NOT support overloading; the second definition replaces the first. <strong>Overriding</strong> (runtime polymorphism): Child class redefines parent's method with the same signature. Java decides which version to call at runtime based on the actual object type — this is called dynamic dispatch. Even through a parent-type reference, the child's overriding method runs. @Override annotation tells the compiler to verify you're actually overriding something (prevents typos in method names).
+      </div>
+    </div>
+
+    <div class="qa" id="q-poly2">
+      <div class="qa-q" onclick="toggleQA('q-poly2')">What is dynamic dispatch / dynamic binding? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Dynamic dispatch (also called dynamic binding or late binding) is the mechanism where Java determines at runtime — not compile time — which overriding method implementation to call, based on the actual type of the object, not the type of the reference. Example: <code>Shape s = new Circle();</code> — the reference type is Shape, but <code>s.area()</code> calls Circle's area() because the actual object is a Circle. Java maintains a virtual method table (vtable) for each class mapping method signatures to implementations. When you call an overridable method, Java looks up the vtable of the actual object. This enables writing generic code that works on parent types but gets the right behavior for each subtype.
+        <span class="follow">Follow-up: "Does dynamic dispatch work for static methods?"</span>
+        No. Static methods are resolved at compile time based on the reference type, not the actual object type. This is called static binding.
+      </div>
+    </div>
+
+    <div class="qa" id="q-poly3">
+      <div class="qa-q" onclick="toggleQA('q-poly3')">Can you override a method and reduce its visibility? Example: parent is public, can child make it private? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        No — this would violate the Liskov Substitution Principle. If a parent class method is public, any code that has a parent reference expects to call that public method. If a child class overrode it as private, calling it through a parent reference would fail — breaking the contract. Java enforces this: you cannot reduce visibility when overriding. Parent is public → child can be public (same). Parent is protected → child can be protected or public (same or wider). You can WIDEN access (protected → public) but never NARROW it (public → protected or private = compile error).
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Polymorphism — 60-second revision</h4>
+    <ul>
+      <li>Overloading: same name, different params, resolved at COMPILE TIME. Java only. Return type alone doesn't distinguish.</li>
+      <li>Overriding: child redefines parent method, resolved at RUNTIME via dynamic dispatch. Both Java and JS.</li>
+      <li>Dynamic dispatch: Java checks ACTUAL object type at runtime, not reference type. Circle through Shape reference → Circle's method.</li>
+      <li>Cannot override: final, static, or private methods. Static methods are hidden, not overridden.</li>
+      <li>Cannot narrow visibility when overriding. Can widen (protected → public). Cannot narrow (public → private).</li>
+      <li>JS: no overloading. Second definition replaces first. Simulate via arguments check inside function.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 5: THIS KEYWORD -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="this">
+  <div class="concept-num">Concept 05 of 08</div>
+  <h2>The <code>this</code> Keyword in JS</h2>
+  <div class="concept-sub">The most common JavaScript trap. 4 rules. Arrow functions. bind/call/apply. React event handler gotcha. Java's this is simple — JavaScript's is not.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Asked at every JS/full stack interview</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Java's this — simple</span></div>
+
+  <p class="explain">
+    In Java, <code>this</code> always refers to the current object instance. Period. No ambiguity. It's lexically bound — Java looks at the class you're in and that's the object. You use it to: disambiguate when a parameter has the same name as a field, call another constructor from a constructor (<code>this(args)</code>), or pass the current object as an argument.
+  </p>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">JavaScript's this — 4 rules, and they can conflict</span></div>
+
+  <p class="explain">
+    JavaScript's <code>this</code> is determined at <strong>call time</strong> (when the function is invoked), not at <strong>definition time</strong> (where the function is written). This is the source of most JS bugs.
+  </p>
+
+  <div class="code-section">
+    <div class="code-tabs">
+      <div class="code-tab js active" onclick="showPane('this','js')">JavaScript — all 4 rules</div>
+    </div>
+    <div class="code-pane js-pane active" id="this-js">
+      <div class="code-pane-header"><span class="code-lang">The 4 rules for 'this' in JavaScript</span></div>
+<pre><span class="cm">// ── RULE 1: Global context ──</span>
+<span class="ck">function</span> <span class="cf">whoAmI</span>() { console.log(<span class="ck">this</span>); }
+<span class="cf">whoAmI</span>();
+<span class="cm">// Browser (non-strict): this = window object</span>
+<span class="cm">// Browser (strict mode) or Node.js: this = undefined</span>
+<span class="cm">// 'use strict' at top of file enforces strict mode</span>
+
+<span class="cm">// ── RULE 2: Method call — object before the dot ──</span>
+<span class="ck">const</span> user = {
+    name: <span class="cs">"Ravi"</span>,
+    greet() {
+        console.log(<span class="cs">"Hello, I am "</span> + <span class="ck">this</span>.name);
+    }
+};
+user.<span class="cf">greet</span>();       <span class="cm">// → "Hello, I am Ravi"  (this = user, object before dot)</span>
+
+<span class="cm">// THE CLASSIC BUG: detach the method — lose 'this'</span>
+<span class="ck">const</span> greetFn = user.greet;  <span class="cm">// no longer called as user.greet</span>
+<span class="cf">greetFn</span>();                    <span class="cm">// → "Hello, I am undefined" — this = global/undefined</span>
+<span class="cm">// WHY: greetFn() has nothing before the dot — falls back to global context</span>
+
+<span class="cm">// ── RULE 3: new keyword — this = newly created object ──</span>
+<span class="ck">function</span> <span class="ct">Person</span>(name, age) {
+    <span class="ck">this</span>.name = name;  <span class="cm">// 'this' = the new empty object being constructed</span>
+    <span class="ck">this</span>.age  = age;
+}
+<span class="ck">const</span> p = <span class="ck">new</span> <span class="ct">Person</span>(<span class="cs">"Priya"</span>, <span class="co">25</span>);
+<span class="cm">// 'new' does 4 things: 1) creates empty object, 2) sets its proto,</span>
+<span class="cm">// 3) runs Person with this = new object, 4) returns the object</span>
+
+<span class="cm">// ── RULE 4: Explicit binding — call, apply, bind ──</span>
+<span class="ck">function</span> <span class="cf">introduce</span>() {
+    console.log(<span class="cs">"I am "</span> + <span class="ck">this</span>.name + <span class="cs">" from "</span> + <span class="ck">this</span>.city);
+}
+<span class="ck">const</span> person1 = { name: <span class="cs">"Ravi"</span>,  city: <span class="cs">"Bangalore"</span> };
+<span class="ck">const</span> person2 = { name: <span class="cs">"Priya"</span>, city: <span class="cs">"Mumbai"</span>    };
+
+<span class="cm">// .call(thisArg, arg1, arg2, ...) — call immediately with explicit this</span>
+<span class="cf">introduce</span>.call(person1);   <span class="cm">// → "I am Ravi from Bangalore"</span>
+<span class="cf">introduce</span>.call(person2);   <span class="cm">// → "I am Priya from Mumbai"</span>
+
+<span class="cm">// .apply(thisArg, [args]) — like call but arguments as array</span>
+<span class="ck">function</span> <span class="cf">greetWith</span>(greeting, punctuation) {
+    console.log(greeting + <span class="cs">" "</span> + <span class="ck">this</span>.name + punctuation);
+}
+<span class="cf">greetWith</span>.apply(person1, [<span class="cs">"Hello"</span>, <span class="cs">"!"</span>]);  <span class="cm">// → "Hello Ravi!"</span>
+
+<span class="cm">// .bind(thisArg) — returns NEW function with this permanently bound</span>
+<span class="ck">const</span> boundGreet = user.greet.bind(user);
+<span class="cf">boundGreet</span>();  <span class="cm">// → "Hello, I am Ravi" — always! even if detached</span>
+setTimeout(boundGreet, <span class="co">1000</span>); <span class="cm">// → still works — this is locked</span>
+
+<span class="cm">// ── ARROW FUNCTIONS: no own 'this' — lexically inherited ──</span>
+<span class="ck">const</span> timer = {
+    name: <span class="cs">"countdown"</span>,
+
+    start_BROKEN() {
+        setTimeout(<span class="ck">function</span>() {
+            console.log(<span class="ck">this</span>.name);  <span class="cm">// undefined — regular function has own 'this'</span>
+        }, <span class="co">100</span>);
+    },
+
+    start_FIXED() {
+        setTimeout(() => {
+            console.log(<span class="ck">this</span>.name);  <span class="cm">// "countdown" — arrow inherits 'this' from start_FIXED</span>
+        }, <span class="co">100</span>);
+    }
+};
+<span class="cm">// Arrow functions DON'T have their own 'this'</span>
+<span class="cm">// They capture 'this' from the enclosing scope at DEFINITION time — not call time</span>
+<span class="cm">// This is WHY React functional component event handlers work:</span>
+<span class="cm">// const handleClick = () => { /* 'this' not needed — we use closures */ }</span>
+
+<span class="cm">// ── REACT CLASS COMPONENT GOTCHA ──</span>
+<span class="ck">class</span> <span class="ct">Counter</span> <span class="ck">extends</span> React.Component {
+    <span class="cf">constructor</span>(props) {
+        <span class="ck">super</span>(props);
+        <span class="ck">this</span>.state = { count: <span class="co">0</span> };
+        <span class="cm">// FIX 1: bind in constructor</span>
+        <span class="ck">this</span>.increment = <span class="ck">this</span>.increment.bind(<span class="ck">this</span>);
+    }
+
+    increment() { <span class="ck">this</span>.setState(s => ({ count: s.count + <span class="co">1</span> })); }
+    <span class="cm">// ↑ Without binding, onClick={this.increment} detaches the method</span>
+    <span class="cm">// → 'this' inside increment becomes undefined when button is clicked</span>
+
+    <span class="cm">// FIX 2: arrow class field (no binding needed)</span>
+    incrementArrow = () => { <span class="ck">this</span>.setState(s => ({ count: s.count + <span class="co">1</span> })); }
+    <span class="cm">// Arrow class fields are defined in the constructor, so 'this' is lexically bound</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — this keyword</div>
+
+    <div class="qa" id="q-this1">
+      <div class="qa-q" onclick="toggleQA('q-this1')">What does 'this' refer to in JavaScript? How is it different from Java? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        In Java, <code>this</code> always refers to the current object instance — simple, predictable, determined at definition time. In JavaScript, <code>this</code> is dynamic — determined by HOW a function is called, not where it's defined. The 4 rules: (1) Global context → <code>window</code> or <code>undefined</code> (strict mode). (2) Method call → object before the dot. (3) <code>new</code> → newly created object. (4) <code>call</code>/<code>apply</code>/<code>bind</code> → explicitly provided value. Arrow functions are the exception — they don't have their own <code>this</code> and inherit from the enclosing scope lexically.
+      </div>
+    </div>
+
+    <div class="qa" id="q-this2">
+      <div class="qa-q" onclick="toggleQA('q-this2')">What's the difference between call, apply, and bind? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        All three explicitly set <code>this</code> for a function. <strong>call</strong>: invokes the function immediately, passes arguments individually: <code>fn.call(obj, arg1, arg2)</code>. <strong>apply</strong>: invokes immediately, passes arguments as an array: <code>fn.apply(obj, [arg1, arg2])</code>. <strong>bind</strong>: does NOT invoke immediately — returns a NEW function with <code>this</code> permanently bound to the specified value: <code>const boundFn = fn.bind(obj)</code>. You call <code>boundFn()</code> later. Bind is used for event handlers and callbacks where you want to pre-set the context.
+      </div>
+    </div>
+
+    <div class="qa" id="q-this3">
+      <div class="qa-q" onclick="toggleQA('q-this3')">Why do arrow functions fix the 'this' problem in React class components? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        In React class components, when you pass a method as an event handler — <code>onClick={this.handleClick}</code> — the method gets detached from the component instance. When the button is clicked, <code>handleClick()</code> is called as a plain function (no object before dot), so <code>this</code> is <code>undefined</code> in strict mode. Arrow class fields solve this because they're defined in the constructor scope — <code>handleClick = () => {...}</code> — the arrow function captures <code>this</code> lexically at definition time (when the constructor runs), so it permanently refers to the component instance regardless of how it's called later. This is why functional components with hooks are preferred — there's no <code>this</code> at all.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>this keyword — 60-second revision</h4>
+    <ul>
+      <li>Java: this = current object, always. Simple.</li>
+      <li>JS: this = determined by call site, not definition. 4 rules.</li>
+      <li>Rule 1: Global call → window (browser) / undefined (strict). Rule 2: Method call → object before dot.</li>
+      <li>Rule 3: new → the newly created object. Rule 4: call/apply/bind → explicitly provided value.</li>
+      <li>Arrow functions: NO own this. Inherits from enclosing scope lexically (at definition time).</li>
+      <li>React class: bind in constructor OR use arrow class fields. OR just use functional components with hooks.</li>
+      <li>bind() returns new function. call/apply() invoke immediately. call = args separately, apply = args as array.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 6: PROTOTYPE CHAIN -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="prototype">
+  <div class="concept-num">Concept 06 of 08</div>
+  <h2>JavaScript Prototype Chain</h2>
+  <div class="concept-sub">How JS inheritance actually works under the hood. Class syntax is sugar over this. Property lookup walks the chain. instanceof checks the chain.</div>
+  <div class="progress-row"><span class="must">must know for JS interviews</span><span>Proves you understand JS deeply, not just surface</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">How the chain works</span></div>
+
+  <p class="explain">
+    Every JavaScript object has an internal <code>[[Prototype]]</code> link (accessible via <code>Object.getPrototypeOf(obj)</code> or the non-standard <code>obj.__proto__</code>). When you access a property that doesn't exist on an object, JavaScript automatically walks up this chain looking for it.
+  </p>
+  <p class="explain">
+    The <code>class</code> syntax introduced in ES6 is <strong>syntactic sugar</strong> — it compiles to the exact same prototype-based mechanism that existed before classes. Understanding prototypes helps you understand why classes work the way they do, how <code>instanceof</code> works, and how to debug inheritance issues.
+  </p>
+
+  <div class="code-section">
+    <div class="code-tabs">
+      <div class="code-tab js active" onclick="showPane('proto','js')">JavaScript — prototype chain</span></div>
+    </div>
+    <div class="code-pane js-pane active" id="proto-js">
+      <div class="code-pane-header"><span class="code-lang">Prototype chain — what class syntax actually does</span></div>
+<pre><span class="cm">// ── PART 1: Pre-class prototype pattern (still used, need to understand) ──</span>
+<span class="ck">function</span> <span class="ct">Animal</span>(name) {
+    <span class="ck">this</span>.name = name;       <span class="cm">// instance property</span>
+}
+<span class="cm">// Methods go on the prototype — SHARED across all instances (memory efficient)</span>
+<span class="ct">Animal</span>.prototype.speak = <span class="ck">function</span>() {
+    console.log(<span class="ck">this</span>.name + <span class="cs">" makes a sound"</span>);
+};
+
+<span class="ck">function</span> <span class="ct">Dog</span>(name, breed) {
+    <span class="ct">Animal</span>.call(<span class="ck">this</span>, name);  <span class="cm">// call parent constructor with this object</span>
+    <span class="ck">this</span>.breed = breed;
+}
+<span class="cm">// Set up prototype chain: Dog → Animal → Object</span>
+<span class="ct">Dog</span>.prototype = <span class="ct">Object</span>.create(<span class="ct">Animal</span>.prototype);
+<span class="ct">Dog</span>.prototype.constructor = <span class="ct">Dog</span>;  <span class="cm">// fix constructor reference</span>
+<span class="ct">Dog</span>.prototype.bark = <span class="ck">function</span>() { console.log(<span class="cs">"Woof!"</span>); };
+
+<span class="ck">const</span> d = <span class="ck">new</span> <span class="ct">Dog</span>(<span class="cs">"Bruno"</span>, <span class="cs">"Labrador"</span>);
+
+<span class="cm">// Property lookup — walks the chain:</span>
+d.name;     <span class="cm">// on d itself (instance property) → found immediately</span>
+d.breed;    <span class="cm">// on d itself → found</span>
+d.bark;     <span class="cm">// NOT on d → check Dog.prototype → found!</span>
+d.speak;    <span class="cm">// NOT on d → NOT on Dog.prototype → check Animal.prototype → found!</span>
+d.toString; <span class="cm">// not found all the way up → check Object.prototype → found!</span>
+d.missing;  <span class="cm">// not anywhere → returns undefined (end of chain: null)</span>
+
+<span class="cm">// Chain visualization:</span>
+<span class="cm">// d → Dog.prototype → Animal.prototype → Object.prototype → null</span>
+
+<span class="cm">// ── PART 2: Class syntax — compiles to the SAME prototype setup ──</span>
+<span class="ck">class</span> <span class="ct">Animal2</span> {
+    <span class="cf">constructor</span>(name) { <span class="ck">this</span>.name = name; }
+    <span class="cf">speak</span>() { console.log(<span class="ck">this</span>.name + <span class="cs">" makes a sound"</span>); }
+    <span class="cm">// speak goes to Animal2.prototype — not on each instance</span>
+}
+<span class="ck">class</span> <span class="ct">Dog2</span> <span class="ck">extends</span> <span class="ct">Animal2</span> {
+    <span class="cf">constructor</span>(name, breed) { <span class="ck">super</span>(name); <span class="ck">this</span>.breed = breed; }
+    <span class="cf">bark</span>() { console.log(<span class="cs">"Woof!"</span>); }
+}
+
+<span class="cm">// Proof that class syntax = prototype chain:</span>
+console.log(<span class="ct">Dog2</span>.prototype.__proto__ === <span class="ct">Animal2</span>.prototype);  <span class="cm">// true</span>
+console.log(<span class="ct">Object</span>.getPrototypeOf(<span class="ct">Dog2</span>) === <span class="ct">Animal2</span>);         <span class="cm">// true (static inheritance)</span>
+
+<span class="cm">// instanceof walks the prototype chain:</span>
+<span class="ck">const</span> d2 = <span class="ck">new</span> <span class="ct">Dog2</span>(<span class="cs">"Rex"</span>, <span class="cs">"Poodle"</span>);
+d2 <span class="ck">instanceof</span> <span class="ct">Dog2</span>;     <span class="cm">// true — Dog2.prototype is in d2's chain</span>
+d2 <span class="ck">instanceof</span> <span class="ct">Animal2</span>;  <span class="cm">// true — Animal2.prototype is in d2's chain</span>
+d2 <span class="ck">instanceof</span> <span class="ct">Object</span>;   <span class="cm">// true — Object.prototype is at the end of every chain</span>
+
+<span class="cm">// ── KEY INSIGHT: instance methods are on the prototype, not the instance ──</span>
+<span class="ck">const</span> a = <span class="ck">new</span> <span class="ct">Dog2</span>(<span class="cs">"A"</span>, <span class="cs">"Lab"</span>);
+<span class="ck">const</span> b = <span class="ck">new</span> <span class="ct">Dog2</span>(<span class="cs">"B"</span>, <span class="cs">"Pug"</span>);
+a.bark === b.bark;  <span class="cm">// true — same function reference! Both share Dog2.prototype.bark</span>
+a.name === b.name;  <span class="cm">// false — own properties, each instance has its own copy</span></pre>
+    </div>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Prototype Chain</div>
+
+    <div class="qa" id="q-proto1">
+      <div class="qa-q" onclick="toggleQA('q-proto1')">How does JavaScript's prototype chain work? What is `class` syntax really? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Every JavaScript object has an internal link (<code>[[Prototype]]</code>) to another object. When you access a property, JS first checks the object itself, then its prototype, then that prototype's prototype, continuing until null. <code>class</code> syntax is syntactic sugar over this prototype mechanism — it doesn't add a new inheritance system. When you write <code>class Dog extends Animal</code>, JavaScript sets <code>Dog.prototype.__proto__ = Animal.prototype</code>. Methods defined in a class go on the prototype (shared by all instances, memory efficient). Properties set with <code>this.x</code> in the constructor go on the instance (each instance has its own copy).
+      </div>
+    </div>
+
+    <div class="qa" id="q-proto2">
+      <div class="qa-q" onclick="toggleQA('q-proto2')">What does instanceof check? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        <code>a instanceof B</code> walks <code>a</code>'s prototype chain and returns <code>true</code> if <code>B.prototype</code> is found anywhere in that chain. It does NOT check if <code>a</code> was constructed by <code>B</code> directly — it checks the prototype chain, which means it returns true for parent classes too. <code>dog instanceof Animal</code> is true because <code>Animal.prototype</code> is in the chain. Edge cases: if someone replaces the prototype after construction, instanceof can give unexpected results. It also doesn't work across iframe boundaries (different global contexts have different Object.prototypes).
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Prototype Chain — 60-second revision</h4>
+    <ul>
+      <li>Every object has [[Prototype]] link. Property lookup walks the chain until found or null.</li>
+      <li>class syntax = syntactic sugar over prototype chain. Same mechanism, cleaner syntax.</li>
+      <li>class Foo extends Bar → Foo.prototype.__proto__ = Bar.prototype.</li>
+      <li>Methods on prototype = shared by all instances. this.x in constructor = own property per instance.</li>
+      <li>instanceof walks the prototype chain. Returns true for parent classes too.</li>
+      <li>Object.prototype is at the top of every chain. Has: toString, hasOwnProperty, valueOf.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 7: SOLID PRINCIPLES -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="solid">
+  <div class="concept-num">Concept 07 of 08</div>
+  <h2>SOLID Principles</h2>
+  <div class="concept-sub">5 principles for writing maintainable OOP code. Know one real example per principle. Interviewers test understanding, not definition memorization.</div>
+  <div class="progress-row"><span class="high">high value</span><span>Asked at Swiggy, CRED, PhonePe level companies</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">All 5 principles with real examples</span></div>
+
+  <div class="code-section">
+    <div class="code-tabs">
+      <div class="code-tab java active" onclick="showPane('solid','java')">All 5 Principles</div>
+    </div>
+    <div class="code-pane java-pane active" id="solid-java">
+      <div class="code-pane-header"><span class="code-lang">SOLID — what each one fixes + real example</span></div>
+<pre><span class="cm">// ── S: Single Responsibility Principle ──</span>
+<span class="cm">// A class should have ONE reason to change.</span>
+<span class="cm">// VIOLATION: UserService does too many things</span>
+<span class="ck">class</span> <span class="ct">UserService_BAD</span> {
+    <span class="ck">void</span> <span class="cf">createUser</span>(<span class="ct">User</span> u)  { <span class="cm">/* save to DB */</span> }
+    <span class="ck">void</span> <span class="cf">sendWelcomeEmail</span>()   { <span class="cm">/* email logic here — wrong! */</span> }
+    <span class="ck">void</span> <span class="cf">generateUserReport</span>() { <span class="cm">/* report logic here — wrong! */</span> }
+}
+<span class="cm">// FIXED: separate concerns</span>
+<span class="ck">class</span> <span class="ct">UserService</span>   { <span class="ck">void</span> <span class="cf">createUser</span>(<span class="ct">User</span> u)  { } }
+<span class="ck">class</span> <span class="ct">EmailService</span>  { <span class="ck">void</span> <span class="cf">sendWelcomeEmail</span>(<span class="ct">User</span> u) { } }
+<span class="ck">class</span> <span class="ct">ReportService</span> { <span class="ck">void</span> <span class="cf">generateReport</span>(<span class="ct">User</span> u) { } }
+<span class="cm">// Now if email logic changes → only EmailService changes. DB logic unchanged.</span>
+
+<span class="cm">// ── O: Open/Closed Principle ──</span>
+<span class="cm">// Open for EXTENSION, closed for MODIFICATION.</span>
+<span class="cm">// Adding new behavior by adding new code, not changing existing code.</span>
+<span class="ck">interface</span> <span class="ct">Discount</span> { <span class="ck">double</span> <span class="cf">apply</span>(<span class="ck">double</span> price); }
+<span class="ck">class</span> <span class="ct">NoDiscount</span>       <span class="ck">implements</span> <span class="ct">Discount</span> { <span class="ck">public double</span> <span class="cf">apply</span>(<span class="ck">double</span> p) { <span class="ck">return</span> p; } }
+<span class="ck">class</span> <span class="ct">TenPercentOff</span>    <span class="ck">implements</span> <span class="ct">Discount</span> { <span class="ck">public double</span> <span class="cf">apply</span>(<span class="ck">double</span> p) { <span class="ck">return</span> p * <span class="co">0.9</span>; } }
+<span class="cm">// New discount type: create new class. Don't touch existing discount classes.</span>
+<span class="ck">class</span> <span class="ct">FlatRs500Off</span>     <span class="ck">implements</span> <span class="ct">Discount</span> { <span class="ck">public double</span> <span class="cf">apply</span>(<span class="ck">double</span> p) { <span class="ck">return</span> p - <span class="co">500</span>; } }
+
+<span class="cm">// ── L: Liskov Substitution Principle ──</span>
+<span class="cm">// Subclasses must be replaceable for their parent without breaking behavior.</span>
+<span class="cm">// VIOLATION: Square extends Rectangle but breaks setWidth contract</span>
+<span class="ck">class</span> <span class="ct">Rectangle</span> {
+    <span class="ck">protected int</span> width, height;
+    <span class="ck">void</span> <span class="cf">setWidth</span>(<span class="ck">int</span> w)  { width = w; }   <span class="cm">// width and height independent</span>
+    <span class="ck">void</span> <span class="cf">setHeight</span>(<span class="ck">int</span> h) { height = h; }
+    <span class="ck">int</span> <span class="cf">area</span>() { <span class="ck">return</span> width * height; }
+}
+<span class="ck">class</span> <span class="ct">Square_VIOLATION</span> <span class="ck">extends</span> <span class="ct">Rectangle</span> {
+    <span class="ck">void</span> <span class="cf">setWidth</span>(<span class="ck">int</span> w)  { width = height = w; } <span class="cm">// breaks Rectangle's contract!</span>
+    <span class="ck">void</span> <span class="cf">setHeight</span>(<span class="ck">int</span> h) { width = height = h; } <span class="cm">// setWidth → changes height too?!</span>
+}
+<span class="cm">// Code expecting Rectangle: rect.setWidth(4); rect.setHeight(5); → area=20</span>
+<span class="cm">// With Square: area = 25 (both become 5). Contract broken. LSP violated.</span>
+<span class="cm">// Fix: don't force IS-A. Square and Rectangle should be siblings, not parent/child.</span>
+
+<span class="cm">// ── I: Interface Segregation Principle ──</span>
+<span class="cm">// Don't force classes to implement methods they don't use.</span>
+<span class="cm">// VIOLATION: Fat interface</span>
+<span class="ck">interface</span> <span class="ct">Machine_BAD</span> {
+    <span class="ck">void</span> <span class="cf">print</span>(); <span class="ck">void</span> <span class="cf">scan</span>(); <span class="ck">void</span> <span class="cf">fax</span>();
+}
+<span class="cm">// OldPrinter must implement scan() and fax() even though it has neither</span>
+<span class="cm">// FIXED: split into focused interfaces</span>
+<span class="ck">interface</span> <span class="ct">Printable</span> { <span class="ck">void</span> <span class="cf">print</span>(); }
+<span class="ck">interface</span> <span class="ct">Scannable</span>  { <span class="ck">void</span> <span class="cf">scan</span>(); }
+<span class="ck">interface</span> <span class="ct">Faxable</span>    { <span class="ck">void</span> <span class="cf">fax</span>(); }
+<span class="cm">// OldPrinter implements only Printable. MultiFunctionDevice implements all three.</span>
+
+<span class="cm">// ── D: Dependency Inversion Principle ──</span>
+<span class="cm">// High-level modules should not depend on low-level modules.</span>
+<span class="cm">// Both should depend on abstractions (interfaces).</span>
+<span class="cm">// VIOLATION: UserService directly depends on concrete MySQL implementation</span>
+<span class="ck">class</span> <span class="ct">UserService_BAD2</span> {
+    <span class="ck">private</span> <span class="ct">MySQLUserRepository</span> repo = <span class="ck">new</span> <span class="ct">MySQLUserRepository</span>(); <span class="cm">// concrete!</span>
+}
+<span class="cm">// FIXED: depend on interface</span>
+<span class="ck">interface</span> <span class="ct">UserRepository</span> { <span class="ct">User</span> <span class="cf">findById</span>(<span class="ck">int</span> id); <span class="ck">void</span> <span class="cf">save</span>(<span class="ct">User</span> u); }
+<span class="ck">class</span> <span class="ct">UserService_GOOD</span> {
+    <span class="ck">private final</span> <span class="ct">UserRepository</span> repo;    <span class="cm">// depends on abstraction</span>
+    <span class="ck">public</span> <span class="ct">UserService_GOOD</span>(<span class="ct">UserRepository</span> repo) { <span class="ck">this</span>.repo = repo; }
+    <span class="cm">// Inject MySQL in production, InMemory for tests — no code change needed</span>
+    <span class="cm">// This is exactly what Spring Boot's @Autowired does!</span>
+}</pre>
+    </div>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — SOLID</div>
+    <div class="qa" id="q-solid1">
+      <div class="qa-q" onclick="toggleQA('q-solid1')">Can you explain SOLID and give a real example for any two principles? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer — focus on S and D (most relevant to full stack)</span>
+        <strong>S (Single Responsibility)</strong>: A UserService should only handle user domain logic. Email sending belongs in an EmailService. If the email provider changes, only EmailService changes — UserService is untouched. In my Node.js project, I have separate authService, userService, and emailService for exactly this reason. <strong>D (Dependency Inversion)</strong>: High-level modules (UserService) should depend on abstractions (UserRepository interface), not concrete implementations (MySQLUserRepository). This is what Spring Boot's @Autowired does — it injects the concrete implementation at runtime while your code depends on the interface. Makes unit testing easy: inject a MockUserRepository in tests, the real MySQL one in production.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>SOLID — 60-second revision</h4>
+    <ul>
+      <li>S: One class, one responsibility. Email sending ≠ User management. One reason to change.</li>
+      <li>O: Open for extension (new class), closed for modification (don't edit existing). Add discount types, don't edit discount calculator.</li>
+      <li>L: Subclass must work wherever parent is expected. Square breaking Rectangle's contract = violation.</li>
+      <li>I: Don't force classes to implement unused methods. Split fat interfaces into focused ones.</li>
+      <li>D: Depend on interfaces, not concretions. Spring's @Autowired implements this. Enables unit testing.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 8: DESIGN PATTERNS -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="patterns">
+  <div class="concept-num">Concept 08 of 08</div>
+  <h2>Design Patterns</h2>
+  <div class="concept-sub">Singleton, Observer, Factory — the 3 patterns freshers need to know. Understand the concept and 1 real use case each. Deep implementation is Phase 3+.</div>
+  <div class="progress-row"><span class="high">high value</span><span>Singleton thread safety is asked often</span></div>
+
+  <div class="code-section">
+    <div class="code-tabs">
+      <div class="code-tab java active" onclick="showPane('patterns','java')">Java</div>
+      <div class="code-tab js" onclick="showPane('patterns','js')">JavaScript</div>
+    </div>
+    <div class="code-pane java-pane active" id="patterns-java">
+      <div class="code-pane-header"><span class="code-lang">Java — Singleton, Observer, Factory</span></div>
+<pre><span class="cm">// ── SINGLETON: Only one instance of a class can exist ──</span>
+<span class="cm">// Use case: Database connection pool, Application config, Logger</span>
+
+<span class="cm">// BEST approach in Java: Enum singleton (thread-safe by JVM guarantee)</span>
+<span class="ck">enum</span> <span class="ct">DatabaseConfig</span> {
+    INSTANCE;   <span class="cm">// JVM ensures this is created exactly once, thread-safe</span>
+    <span class="ck">private</span> <span class="ct">String</span> url = <span class="cs">"jdbc:postgresql://prod-db/myapp"</span>;
+    <span class="ck">public</span> <span class="ct">String</span> <span class="cf">getUrl</span>() { <span class="ck">return</span> url; }
+}
+<span class="ct">DatabaseConfig</span>.INSTANCE.<span class="cf">getUrl</span>();  <span class="cm">// always the same config</span>
+
+<span class="cm">// Classic approach — NOT thread-safe (know why):</span>
+<span class="ck">class</span> <span class="ct">Config_UNSAFE</span> {
+    <span class="ck">private static</span> <span class="ct">Config_UNSAFE</span> instance;  <span class="cm">// starts null</span>
+    <span class="ck">private</span> <span class="ct">Config_UNSAFE</span>() {}              <span class="cm">// private constructor</span>
+    <span class="ck">public static</span> <span class="ct">Config_UNSAFE</span> <span class="cf">getInstance</span>() {
+        <span class="ck">if</span> (instance == <span class="ck">null</span>) {             <span class="cm">// Thread A AND Thread B can both pass here</span>
+            instance = <span class="ck">new</span> <span class="ct">Config_UNSAFE</span>(); <span class="cm">// both create instances → NOT singleton!</span>
+        }
+        <span class="ck">return</span> instance;
+    }
+}
+<span class="cm">// Fix: synchronized (but slow), or double-checked locking + volatile, or enum</span>
+
+<span class="cm">// ── OBSERVER: Notify subscribers when state changes ──</span>
+<span class="cm">// Use case: Event listeners, pub/sub systems, MVC model notifying views</span>
+<span class="ck">interface</span> <span class="ct">OrderObserver</span> { <span class="ck">void</span> <span class="cf">onOrderUpdate</span>(<span class="ct">String</span> status); }
+
+<span class="ck">class</span> <span class="ct">Order</span> {
+    <span class="ck">private</span> <span class="ct">List</span>&lt;<span class="ct">OrderObserver</span>&gt; observers = <span class="ck">new</span> <span class="ct">ArrayList</span>&lt;&gt;();
+    <span class="ck">private</span> <span class="ct">String</span> status = <span class="cs">"PENDING"</span>;
+
+    <span class="ck">public void</span> <span class="cf">addObserver</span>(<span class="ct">OrderObserver</span> o) { observers.add(o); }
+    <span class="ck">public void</span> <span class="cf">updateStatus</span>(<span class="ct">String</span> newStatus) {
+        status = newStatus;
+        observers.<span class="cf">forEach</span>(o -> o.<span class="cf">onOrderUpdate</span>(status));  <span class="cm">// notify all</span>
+    }
+}
+<span class="cm">// Swiggy: order status changes → notify SMS service, push notification, email</span>
+<span class="cm">// All are observers — decoupled from the Order class</span>
+
+<span class="cm">// ── FACTORY: Create objects without exposing creation logic ──</span>
+<span class="cm">// Use case: Creating different payment processors based on type</span>
+<span class="ck">interface</span> <span class="ct">Payment</span> { <span class="ck">void</span> <span class="cf">pay</span>(<span class="ck">double</span> amount); }
+<span class="ck">class</span> <span class="ct">UPIPayment</span>   <span class="ck">implements</span> <span class="ct">Payment</span> { <span class="ck">public void</span> <span class="cf">pay</span>(<span class="ck">double</span> a) { <span class="cm">/* UPI */</span>  } }
+<span class="ck">class</span> <span class="ct">CardPayment</span>  <span class="ck">implements</span> <span class="ct">Payment</span> { <span class="ck">public void</span> <span class="cf">pay</span>(<span class="ck">double</span> a) { <span class="cm">/* Card */</span> } }
+<span class="ck">class</span> <span class="ct">WalletPayment</span><span class="ck">implements</span> <span class="ct">Payment</span> { <span class="ck">public void</span> <span class="cf">pay</span>(<span class="ck">double</span> a) { <span class="cm">/* Wallet */</span> } }
+
+<span class="ck">class</span> <span class="ct">PaymentFactory</span> {
+    <span class="ck">public static</span> <span class="ct">Payment</span> <span class="cf">create</span>(<span class="ct">String</span> type) {
+        <span class="ck">return switch</span> (type) {
+            <span class="ck">case</span> <span class="cs">"UPI"</span>    -> <span class="ck">new</span> <span class="ct">UPIPayment</span>();
+            <span class="ck">case</span> <span class="cs">"CARD"</span>   -> <span class="ck">new</span> <span class="ct">CardPayment</span>();
+            <span class="ck">case</span> <span class="cs">"WALLET"</span> -> <span class="ck">new</span> <span class="ct">WalletPayment</span>();
+            <span class="ck">default</span>       -> <span class="ck">throw new</span> <span class="ct">IllegalArgumentException</span>(<span class="cs">"Unknown: "</span> + type);
+        };
+    }
+}
+<span class="cm">// Client code doesn't need to know which class to instantiate</span>
+<span class="ct">Payment</span> p = <span class="ct">PaymentFactory</span>.<span class="cf">create</span>(<span class="cs">"UPI"</span>);</pre>
+    </div>
+    <div class="code-pane js-pane" id="patterns-js">
+      <div class="code-pane-header"><span class="code-lang">JavaScript — same patterns, JS style</span></div>
+<pre><span class="cm">// ── SINGLETON in JavaScript ──</span>
+<span class="cm">// Modules are singletons by default! Module cache means require/import</span>
+<span class="cm">// returns the same object every time.</span>
+
+<span class="cm">// db.js — this module is a singleton automatically</span>
+<span class="ck">import</span> mongoose <span class="ck">from</span> <span class="cs">'mongoose'</span>;
+<span class="ck">const</span> connection = mongoose.<span class="cf">connect</span>(<span class="cs">'mongodb://...'</span>);
+<span class="ck">export default</span> connection;  <span class="cm">// same connection everywhere it's imported</span>
+
+<span class="cm">// Manual singleton pattern:</span>
+<span class="ck">let</span> instance = <span class="ck">null</span>;
+<span class="ck">class</span> <span class="ct">Config</span> {
+    <span class="ck">constructor</span>() {
+        <span class="ck">if</span> (instance) <span class="ck">return</span> instance;  <span class="cm">// return existing if already created</span>
+        <span class="ck">this</span>.settings = { theme: <span class="cs">"dark"</span>, language: <span class="cs">"en"</span> };
+        instance = <span class="ck">this</span>;
+    }
+}
+<span class="cm">// JS doesn't have thread safety concerns for singleton — single-threaded</span>
+
+<span class="cm">// ── OBSERVER in JavaScript ──</span>
+<span class="cm">// You already use this: addEventListener, EventEmitter, React state, Redux</span>
+<span class="ck">class</span> <span class="ct">EventEmitter</span> {
+    <span class="ck">#events</span> = {};
+
+    <span class="cf">on</span>(event, listener) {
+        <span class="ck">if</span> (!<span class="ck">this</span>.<span class="ck">#events</span>[event]) <span class="ck">this</span>.<span class="ck">#events</span>[event] = [];
+        <span class="ck">this</span>.<span class="ck">#events</span>[event].push(listener);
+        <span class="ck">return this</span>;  <span class="cm">// enable chaining: emitter.on('a', fn).on('b', fn2)</span>
+    }
+
+    <span class="cf">emit</span>(event, data) {
+        (<span class="ck">this</span>.<span class="ck">#events</span>[event] || []).<span class="cf">forEach</span>(fn => <span class="cf">fn</span>(data));
+        <span class="ck">return this</span>;
+    }
+
+    <span class="cf">off</span>(event, listener) {
+        <span class="ck">this</span>.<span class="ck">#events</span>[event] = (<span class="ck">this</span>.<span class="ck">#events</span>[event] || [])
+            .<span class="cf">filter</span>(fn => fn !== listener);
+    }
+}
+
+<span class="ck">const</span> order = <span class="ck">new</span> <span class="ct">EventEmitter</span>();
+order.<span class="cf">on</span>(<span class="cs">'status-change'</span>, status => console.log(<span class="cs">`SMS: Order is ${status}`</span>));
+order.<span class="cf">on</span>(<span class="cs">'status-change'</span>, status => console.log(<span class="cs">`Push: Your order ${status}`</span>));
+order.<span class="cf">emit</span>(<span class="cs">'status-change'</span>, <span class="cs">'DELIVERED'</span>);
+<span class="cm">// This is exactly how Node.js EventEmitter works in Express/Socket.io</span></pre>
+    </div>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Design Patterns</div>
+    <div class="qa" id="q-pat1">
+      <div class="qa-q" onclick="toggleQA('q-pat1')">Explain the Singleton pattern. Why is the basic implementation not thread-safe in Java? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Singleton ensures only one instance of a class exists globally. The private constructor prevents external instantiation. The static <code>getInstance()</code> method returns the single instance. The basic lazy implementation (<code>if (instance == null) create</code>) is not thread-safe because two threads can simultaneously pass the null check before either creates the instance — both then create separate instances, violating the singleton guarantee. Solutions: (1) <code>synchronized</code> on the whole method — safe but locks on every call (slow); (2) double-checked locking with <code>volatile</code> — faster, only locks on first creation; (3) enum singleton — best, JVM guarantees enum instances are created once and thread-safely. In JavaScript, modules are automatically singletons due to module caching.
+      </div>
+    </div>
+
+    <div class="qa" id="q-pat2">
+      <div class="qa-q" onclick="toggleQA('q-pat2')">Where does the Observer pattern appear in your projects? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer — connect to your actual work</span>
+        The Observer pattern is everywhere in frontend and backend work. In my CollabDocs project, Socket.io uses Observer — when a user edits, the server emits to all subscribers in the room (document observers). In Node.js, EventEmitter is the Observer pattern — my Express server uses it for request handling. In React, the component re-render mechanism is Observer — useState triggers an update notification to React, which re-renders the component (observer). In Java/Spring, ApplicationEventPublisher is the official Observer implementation — services can publish events and listeners react without direct coupling. The pattern decouples the source of change from the things that need to respond to it.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Design Patterns — 60-second revision</h4>
+    <ul>
+      <li>Singleton: one instance globally. Java: enum (thread-safe). Classic if-null: NOT thread-safe. JS: modules are automatic singletons.</li>
+      <li>Observer: subject notifies multiple observers on state change. Decouples producer from consumers. Node EventEmitter, addEventListener, Socket.io events all use this.</li>
+      <li>Factory: create objects without knowing exact class. Client asks factory, factory decides which concrete class. PaymentFactory.create("UPI") returns the right implementation.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MASTER INTERVIEW SECTION -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="interview">
+  <div class="concept-num">Master Review</div>
+  <h2>All OOP Interview Questions</h2>
+  <div class="concept-sub">Every question that appears in Bangalore product company interviews on OOP. Read the question, answer out loud (no peeking), then check. If your answer missed key points — re-study that concept.</div>
+
+  <div class="interview-section" style="margin-top:24px;">
+    <div class="int-label">Complete OOP Q&amp;A bank — 20 questions</div>
+
+    <div class="qa" id="qm1"><div class="qa-q" onclick="toggleQA('qm1')">1. What are the 4 pillars of OOP? Explain each in one sentence. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span><strong>Encapsulation</strong>: bundle data and methods, restrict direct access to internal state. <strong>Abstraction</strong>: hide complexity, expose only relevant interface (abstract classes, interfaces). <strong>Inheritance</strong>: child class reuses parent class code via extends; IS-A relationship. <strong>Polymorphism</strong>: same method name behaves differently — overloading (compile-time) or overriding (runtime).</div></div>
+
+    <div class="qa" id="qm2"><div class="qa-q" onclick="toggleQA('qm2')">2. What is the difference between abstract class and interface in Java? When use which? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Abstract class: can have constructors, state, concrete + abstract methods. Single inheritance only. Use for IS-A + shared code. Interface: pure contract (Java 7), default methods (Java 8). No state. Multiple implementation. Use for CAN-DO capabilities across unrelated classes. Key: if you need shared implementation → abstract class. If you need a contract multiple unrelated classes satisfy → interface.</div></div>
+
+    <div class="qa" id="qm3"><div class="qa-q" onclick="toggleQA('qm3')">3. Can a class extend multiple classes in Java? Can it implement multiple interfaces? Why the difference? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>A class can extend only ONE class (diamond problem — ambiguity when two parents have the same method). A class CAN implement multiple interfaces. Java 8 partially reintroduces the diamond problem with default methods — resolved by forcing the implementing class to override the conflicting method. <code>class Dog extends Animal implements Runnable, Serializable</code> is valid.</div></div>
+
+    <div class="qa" id="qm4"><div class="qa-q" onclick="toggleQA('qm4')">4. What is method overriding? What are the rules? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Child class provides new implementation for an inherited instance method with the same signature. Rules: same name and parameters; return type can be covariant (subtype); cannot reduce visibility (public → protected = error); cannot override final, static, or private methods; checked exceptions can't be broader than parent's declared exceptions. @Override annotation verifies you're overriding, not accidentally creating a new method.</div></div>
+
+    <div class="qa" id="qm5"><div class="qa-q" onclick="toggleQA('qm5')">5. What is dynamic dispatch? Give an example. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Dynamic dispatch is Java's mechanism of resolving which overriding method to call at runtime based on the actual object type, not the reference type. Example: <code>Shape s = new Circle(); s.area();</code> — reference type is Shape, but Java calls Circle's area() because the actual object is a Circle. This is how polymorphism works in practice. Java maintains a vtable per class for this. Note: static methods use static binding — reference type decides, not actual type.</div></div>
+
+    <div class="qa" id="qm6"><div class="qa-q" onclick="toggleQA('qm6')">6. What is the diamond problem? How does Java solve it? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>The diamond problem: if class D extends B and C, and B and C both override the same method from A, D has ambiguous inheritance — which version does it get? Java prevents this by allowing only single class inheritance. With interfaces (Java 8 default methods), the problem can occur — solved by forcing the implementing class to explicitly override the conflicting method, choosing which interface's implementation to call or providing its own.</div></div>
+
+    <div class="qa" id="qm7"><div class="qa-q" onclick="toggleQA('qm7')">7. What does the 'this' keyword mean in Java vs JavaScript? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Java: always the current object instance. Lexically bound. Predictable. Used to disambiguate fields from parameters, call other constructors. JavaScript: determined at call time, not definition time. Four rules: (1) global call → window/undefined, (2) method call → object before dot, (3) new → new object, (4) explicit binding via call/apply/bind. Arrow functions are special — no own this, lexically inherit from enclosing scope.</div></div>
+
+    <div class="qa" id="qm8"><div class="qa-q" onclick="toggleQA('qm8')">8. Why are arrow functions different from regular functions regarding 'this'? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Regular functions have their own <code>this</code>, determined at call time. Arrow functions don't have their own <code>this</code> — they inherit <code>this</code> from the enclosing lexical scope at definition time. This makes them predictable in callbacks. Classic problem: <code>setTimeout(function() { this.count++ }, 1000)</code> — <code>this</code> is window, not the object. With arrow: <code>setTimeout(() => { this.count++ }, 1000)</code> — <code>this</code> is whatever it was in the surrounding code. This is why React functional components with hooks are cleaner — no <code>this</code> at all.</div></div>
+
+    <div class="qa" id="qm9"><div class="qa-q" onclick="toggleQA('qm9')">9. What is the JavaScript prototype chain? How does class syntax relate to it? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Every JS object has an internal [[Prototype]] link. Property lookup walks this chain until the property is found or null is reached. <code>class</code> syntax is syntactic sugar — <code>class Dog extends Animal</code> sets <code>Dog.prototype.__proto__ = Animal.prototype</code>. Methods defined in a class are placed on the prototype (shared across instances). Properties set with <code>this.x</code> in constructor are on the instance (each instance has its own). <code>instanceof</code> checks if B.prototype appears anywhere in the chain.</div></div>
+
+    <div class="qa" id="qm10"><div class="qa-q" onclick="toggleQA('qm10')">10. What is the Singleton pattern? Why is the basic implementation not thread-safe? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Singleton ensures one instance globally. The classic <code>if(instance==null) create</code> is not thread-safe because two threads can both pass the null check simultaneously before either creates the instance. Best Java solution: enum singleton (JVM guarantees thread-safe enum creation). JavaScript: modules are singletons by default due to require/import caching — no synchronization needed since JS is single-threaded.</div></div>
+
+    <div class="qa" id="qm11"><div class="qa-q" onclick="toggleQA('qm11')">11. What is SOLID? Explain S and D with a real example. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span><strong>S (Single Responsibility)</strong>: UserService handles only user logic. Email sending → EmailService. If the email provider changes, only EmailService changes. <strong>O</strong>: add new behavior by creating new code, not editing existing. <strong>L</strong>: subclasses must be substitutable for parents without breaking behavior. <strong>I</strong>: don't force classes to implement unused methods. <strong>D (Dependency Inversion)</strong>: depend on interfaces, not concretions. Spring's @Autowired injects the implementation at runtime. Your service depends on UserRepository (interface), not MySQLUserRepository (concrete) — enables testing with mocks.</div></div>
+
+    <div class="qa" id="qm12"><div class="qa-q" onclick="toggleQA('qm12')">12. Can you instantiate an abstract class? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>No, directly — <code>new AbstractClass()</code> is a compile error. However, you can instantiate it via an anonymous subclass: <code>AbstractClass a = new AbstractClass() { public void method() {...} }</code>. This creates a nameless subclass inline that implements all abstract methods. Commonly used for event listeners in Java. The abstract class reference variable can hold any subclass instance — this is standard polymorphism.</div></div>
+
+    <div class="qa" id="qm13"><div class="qa-q" onclick="toggleQA('qm13')">13. What is constructor chaining? What happens if you don't call super() in Java vs JavaScript? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Constructor chaining = calling one constructor from another, forming a chain to the root. Java: if you don't write <code>super()</code>, the compiler inserts a no-arg <code>super()</code> automatically. If parent has no no-arg constructor → compile error. JavaScript: if a child class has a constructor, not calling <code>super()</code> before using <code>this</code> → ReferenceError at runtime. This is because in JS, the parent constructor creates the <code>this</code> object — without it, <code>this</code> doesn't exist yet.</div></div>
+
+    <div class="qa" id="qm14"><div class="qa-q" onclick="toggleQA('qm14')">14. What is the Observer pattern? Where does it appear in your projects? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Observer: a subject maintains a list of observers and notifies all when state changes. Decouples producers from consumers. In my CollabDocs project: Socket.io uses Observer — when a document changes, the server emits to all subscribed clients. In React: useState triggers re-render (component is observer of state). In Node.js: EventEmitter is Observer — button.addEventListener in browser, server.on('request') in Node. In Spring: ApplicationEventPublisher. The pattern enables one-to-many change notification without tight coupling.</div></div>
+
+    <div class="qa" id="qm15"><div class="qa-q" onclick="toggleQA('qm15')">15. What is encapsulation? How does JavaScript implement it? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Encapsulation: bundle data and methods together, restrict direct external access. Java: private fields + public getters/setters with validation. JavaScript: (1) ES2022 # prefix for truly private fields — <code>class Foo { #secret; }</code> — <code>#secret</code> throws SyntaxError if accessed externally. (2) Closure pattern (older): factory function returns object exposing only selected methods; variables inside the function are private by scope. TypeScript adds compile-time <code>private</code> keyword (becomes public in generated JS).</div></div>
+
+    <div class="qa" id="qm16"><div class="qa-q" onclick="toggleQA('qm16')">16. What is covariant return type in method overriding? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>When overriding a method, the return type in the child class can be a subtype of the parent's return type. Example: parent declares <code>Animal getAnimal()</code>. Child can override with <code>Dog getAnimal()</code> because Dog IS-A Animal. The caller using a parent reference still gets a valid Animal (actually a Dog). This is called covariant return type. It's valid overriding in Java. Useful for builder patterns and factory methods in subclasses.</div></div>
+
+    <div class="qa" id="qm17"><div class="qa-q" onclick="toggleQA('qm17')">17. What is the Liskov Substitution Principle? Give a violation example. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>LSP: Any code using a parent class must work correctly with a subclass without knowing the difference. Classic violation: Square extends Rectangle. Rectangle's contract says setWidth() and setHeight() are independent. Square overrides them to keep sides equal — calling setWidth(4) on a Square also changes height. Code expecting Rectangle behavior is broken. Fix: don't force IS-A when the subtype can't honor the parent's contract. Square and Rectangle should both implement a Shape interface, not have a parent-child relationship.</div></div>
+
+    <div class="qa" id="qm18"><div class="qa-q" onclick="toggleQA('qm18')">18. What is the difference between method overloading and method overriding? Which is compile-time? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span><strong>Overloading</strong> (compile-time): same name, different parameters, resolved at compile time. Java only. <strong>Overriding</strong> (runtime): child redefines parent's instance method with same signature, resolved at runtime via dynamic dispatch. Key differences: overloading in same class, overriding in different classes (parent/child). Overloading = compile-time polymorphism. Overriding = runtime polymorphism. @Override annotates overriding, not overloading. JS has no overloading.</div></div>
+
+    <div class="qa" id="qm19"><div class="qa-q" onclick="toggleQA('qm19')">19. Can you override a private method? A static method? A final method? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span><strong>Private methods</strong>: Cannot be overridden — they're not inherited. If you write the same signature in a child class, it's a new independent method, not an override. <strong>Static methods</strong>: Cannot be overridden — they're hidden. Declaring the same static method in a child creates a separate method. @Override on a static method = compile error. Static binding uses reference type, not actual type. <strong>Final methods</strong>: Cannot be overridden by design — compile error. Final signals "this implementation is complete, don't change it."</div></div>
+
+    <div class="qa" id="qm20"><div class="qa-q" onclick="toggleQA('qm20')">20. Why would you use composition over inheritance? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>"Favor composition over inheritance" — GoF Design Patterns principle. Inheritance creates tight coupling: child class knows about parent's internals. If parent changes, child breaks. Composition: a class has a reference to another class and delegates to it. More flexible — you can swap implementations at runtime. Example: instead of <code>class LoggingUserService extends UserService</code> (breaks if UserService changes), do <code>class LoggingUserService { private UserService service; /* delegate + add logging */ }</code>. Composition enables the Decorator pattern. Inheritance is appropriate for genuine IS-A relationships with stable base classes — not just code reuse.</div></div>
+  </div>
+
+  <div class="rev">
+    <h4>OOP Complete — Phase 0 OOP is done when you can...</h4>
+    <ul>
+      <li>Explain all 4 pillars with Java AND JavaScript examples back to back, without notes</li>
+      <li>Draw the difference between abstract class and interface — when to use each — in 60 seconds</li>
+      <li>Show the classic JS 'this' bug (detached method) and fix it 3 ways (bind, arrow, explicit)</li>
+      <li>Explain the prototype chain and why class syntax is just sugar over it</li>
+      <li>Give a real project example for the Observer pattern and the Singleton pattern</li>
+      <li>Answer all 20 questions above without looking at the answers for more than 30 seconds</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+function showPane(group, lang) {
+  const tabs = document.querySelectorAll(`.code-tab`);
+  const panes = document.querySelectorAll(`.code-pane`);
+  document.querySelectorAll(`[onclick*="showPane('${group}'"]`).forEach(t => t.classList.remove('active'));
+  document.querySelectorAll(`#${group}-${lang}, #${group}-java, #${group}-js`).forEach(p => p.classList.remove('active'));
+  document.querySelector(`[onclick="showPane('${group}','${lang}')"]`)?.classList.add('active');
+  const pane = document.getElementById(`${group}-${lang}`);
+  if (pane) pane.classList.add('active');
+}
+
+function toggleQA(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+// Smooth scroll for nav pills
+document.querySelectorAll('.nav-pill').forEach(pill => {
+  pill.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+
+// Highlight active nav pill on scroll
+window.addEventListener('scroll', () => {
+  const concepts = document.querySelectorAll('.concept[id]');
+  const pills = document.querySelectorAll('.nav-pill');
+  let active = '';
+  concepts.forEach(c => {
+    if (c.getBoundingClientRect().top < 100) active = c.id;
+  });
+  pills.forEach(p => {
+    p.classList.toggle('active', p.getAttribute('href') === '#' + active);
+  });
+});
+</script>
+</body>
+</html>

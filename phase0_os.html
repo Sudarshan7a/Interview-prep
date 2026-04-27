@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 0 · OS — Complete Teaching Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+:root{
+  --bg:#f7f8fa;--ink:#1a1d23;--ink2:#4a5060;--ink3:#8a90a0;
+  --paper:#fff;--rule:#e2e6f0;--rule2:#c8cee0;
+  --mono:'IBM Plex Mono',monospace;--head:'Syne',sans-serif;--body:'Inter',sans-serif;
+  --os:#1a5c8a;--os-l:#e8f3fc;--os-b:#90c8f0;
+  --warn-bg:#fff8e8;--warn-b:#f0d060;--warn-t:#3a2800;
+  --good-bg:#e8fff4;--good-b:#60d0a0;--good-t:#003820;
+  --key-bg:#f0ecff;--key-b:#b090f0;--key-t:#1a0040;
+  --node-bg:#e8fff0;--node-b:#60e090;--node-t:#002810;
+  --int-bg:#e8f5ff;--int-b:#60b0e0;--int-t:#001a30;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.75;max-width:880px;margin:0 auto;}
+
+/* NAV */
+.top-nav{background:var(--ink);color:#fff;padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:100;flex-wrap:wrap;}
+.nav-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);white-space:nowrap;}
+.nav-pills{display:flex;gap:5px;flex-wrap:wrap;}
+.nav-pill{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);cursor:pointer;text-decoration:none;transition:all 0.15s;}
+.nav-pill:hover,.nav-pill.active{border-color:rgba(255,255,255,0.7);color:#fff;}
+
+/* HERO */
+.hero{padding:52px 40px 40px;border-bottom:2px solid var(--ink);}
+.hero-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--os);margin-bottom:12px;}
+.hero h1{font-family:var(--head);font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:14px;}
+.hero h1 em{font-style:normal;color:var(--os);}
+.hero-desc{font-size:14px;color:var(--ink2);max-width:540px;line-height:1.7;}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.meta-chip{font-family:var(--mono);font-size:10px;padding:4px 12px;border-radius:6px;border:1px solid var(--rule2);color:var(--ink2);}
+.meta-chip.hi{border-color:var(--os);color:var(--os);font-weight:700;}
+
+/* CONCEPT BLOCKS */
+.concept{padding:40px;border-bottom:1px solid var(--rule);}
+.concept-num{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;}
+.concept h2{font-family:var(--head);font-size:26px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;}
+.concept-sub{font-size:13px;color:var(--ink2);margin-bottom:20px;line-height:1.6;}
+
+.explain{font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:14px;}
+.explain strong{color:var(--ink);}
+.explain code{font-family:var(--mono);font-size:12px;background:var(--rule);padding:1px 6px;border-radius:4px;color:var(--os);}
+
+/* STEP */
+.step-marker{display:flex;align-items:center;gap:12px;margin:28px 0 14px;}
+.step-num{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--rule2);}
+.step-line{flex:1;height:1px;background:var(--rule);}
+.step-text{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);}
+
+/* BOXES */
+.analogy{background:var(--key-bg);border-left:3px solid #9060d0;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--key-t);line-height:1.6;}
+.analogy strong{font-weight:600;}
+.warn{background:var(--warn-bg);border-left:3px solid #d09000;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--warn-t);line-height:1.6;}
+.warn strong{font-weight:600;}
+.good-box{background:var(--good-bg);border-left:3px solid #20a060;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--good-t);line-height:1.6;}
+.good-box strong{font-weight:600;}
+.node-box{background:var(--node-bg);border-left:3px solid #20c060;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--node-t);line-height:1.6;}
+.node-box strong{font-weight:600;}
+
+/* DIAGRAM */
+.diagram{background:#1a1d23;border-radius:10px;padding:20px 24px;margin:16px 0;overflow-x:auto;}
+.diagram pre{font-family:var(--mono);font-size:12px;line-height:1.7;color:#c8d0e8;white-space:pre;}
+.d-hl{color:#60c8ff;}
+.d-ok{color:#60e0a0;}
+.d-warn{color:#f0d060;}
+.d-err{color:#f06060;}
+.d-cmt{color:#6a7090;font-style:italic;}
+
+/* CODE */
+pre.code{background:#1a1d23;border-radius:10px;padding:18px 20px;font-family:var(--mono);font-size:12px;line-height:1.8;color:#c8d0e8;overflow-x:auto;margin:14px 0;white-space:pre;}
+.cm{color:#6a7090;font-style:italic;}
+.ck{color:#ff8060;}
+.ct{color:#60c8ff;}
+.cs{color:#80e080;}
+.cf{color:#f0d060;}
+.cn{color:#c080ff;}
+.co{color:#ff9060;}
+
+/* COMPARISON TABLE */
+.cmp{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;}
+.cmp th{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:8px 12px;border-bottom:2px solid var(--rule2);background:var(--bg);}
+.cmp td{padding:9px 12px;border-bottom:1px solid var(--rule);color:var(--ink2);vertical-align:top;line-height:1.5;}
+.cmp tr:hover td{background:var(--bg);}
+.cmp td:first-child{color:var(--ink);font-weight:500;}
+.cmp td code{font-family:var(--mono);font-size:11px;background:var(--rule);padding:1px 5px;border-radius:3px;}
+
+/* INTERVIEW */
+.interview-section{background:var(--int-bg);border:1px solid var(--int-b);border-radius:12px;padding:20px;margin:24px 0;}
+.int-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--os);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.int-label::after{content:'';flex:1;height:1px;background:var(--int-b);}
+.qa{margin-bottom:10px;background:#fff;border:1px solid var(--int-b);border-radius:8px;overflow:hidden;}
+.qa:last-child{margin-bottom:0;}
+.qa-q{padding:12px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.qa-q:hover{background:var(--int-bg);}
+.qa-arr{color:var(--ink3);font-size:10px;flex-shrink:0;margin-top:2px;transition:transform 0.2s;}
+.qa.open .qa-arr{transform:rotate(180deg);}
+.qa-a{display:none;padding:12px 14px;border-top:1px solid var(--int-b);font-size:13px;color:var(--ink2);line-height:1.75;background:var(--int-bg);}
+.qa.open .qa-a{display:block;}
+.qa-a strong{color:var(--ink);}
+.qa-a .label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--os);display:block;margin-bottom:6px;}
+.qa-a .follow{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#804000;display:block;margin-top:10px;margin-bottom:4px;}
+.qa-a code{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:3px;}
+
+/* REVISION */
+.rev{background:var(--ink);color:#fff;border-radius:12px;padding:22px;margin:24px 0;}
+.rev h4{font-family:var(--head);font-size:15px;margin-bottom:12px;color:#fff;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:8px;}
+.rev ul{list-style:none;}
+.rev ul li{font-size:12px;color:rgba(255,255,255,0.75);padding:4px 0 4px 16px;position:relative;line-height:1.5;}
+.rev ul li::before{content:'✓';position:absolute;left:0;color:rgba(255,255,255,0.4);font-size:10px;margin-top:1px;}
+
+.progress-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px;}
+.must{background:#ffeee8;color:#8a2000;border:1px solid #f0c0a0;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:99px;}
+.high{background:#e8f0ff;color:#001880;border:1px solid #a0b8f0;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:99px;}
+
+@media(max-width:640px){.concept,.hero{padding:24px 20px;}.top-nav{padding:10px 16px;}}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="nav-label">Phase 0 · OS</span>
+  <div class="nav-pills">
+    <a class="nav-pill" href="#process-thread">Process vs Thread</a>
+    <a class="nav-pill" href="#concurrency">Concurrency</a>
+    <a class="nav-pill" href="#scheduling">Scheduling</a>
+    <a class="nav-pill" href="#sync">Sync & Race</a>
+    <a class="nav-pill" href="#deadlock">Deadlock</a>
+    <a class="nav-pill" href="#memory">Memory</a>
+    <a class="nav-pill" href="#io">I/O & Event Loop</a>
+    <a class="nav-pill" href="#interview">All Q&amp;A</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Phase 0 · Subject 2 of 6 · Complete Teaching Guide</div>
+  <h1>Operating<br><em>Systems</em></h1>
+  <p class="hero-desc">No kernel internals. No page replacement algorithms. Just the OS concepts that every Bangalore product company asks in round 2 — taught at interview depth with real full stack connections.</p>
+  <div class="hero-meta">
+    <span class="meta-chip hi">4 days</span>
+    <span class="meta-chip">Theory only — no coding</span>
+    <span class="meta-chip">High frequency at every company</span>
+    <span class="meta-chip">All interview Q&amp;A included</span>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 1: PROCESS vs THREAD -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="process-thread">
+  <div class="concept-num">Concept 01 of 07</div>
+  <h2>Process vs Thread</h2>
+  <div class="concept-sub">The most foundational OS concept. Everything else builds on understanding what a process is, what a thread is, and why the distinction matters for full stack work.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Connects to Node.js, Spring Boot, every web server</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">What is a Process?</span></div>
+
+  <p class="explain">
+    A <strong>process</strong> is an independent running program. When you open Chrome, the OS creates a process for it. That process has its own isolated chunk of memory — no other program can read or write to it directly.
+  </p>
+  <p class="explain">
+    Every process gets its own: <strong>code segment</strong> (program instructions), <strong>data segment</strong> (global variables), <strong>heap</strong> (dynamic allocations), <strong>stack</strong> (function calls, local variables), and a <strong>PCB</strong> (Process Control Block — OS's metadata about this process: PID, state, register values, open files).
+  </p>
+
+  <div class="diagram">
+    <pre>
+  ┌──────────────────────────────────────────┐
+  │              PROCESS MEMORY              │
+  ├──────────────────────────────────────────┤
+  │  <span class="d-hl">Code (Text)</span>  — program instructions     │  ← read-only
+  ├──────────────────────────────────────────┤
+  │  <span class="d-hl">Data</span>         — global + static vars      │
+  ├──────────────────────────────────────────┤
+  │  <span class="d-ok">Heap</span>  ↑ grows up                         │  ← new/malloc
+  │         (dynamic allocation)             │
+  │                                          │
+  │  <span class="d-warn">Stack</span> ↓ grows down                        │  ← function calls
+  │         (local vars, return addresses)   │
+  └──────────────────────────────────────────┘
+
+  Each process has its OWN copy of all of this.
+  Process A <span class="d-err">CANNOT</span> read process B's memory (isolation guarantee).
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">What is a Thread?</span></div>
+
+  <p class="explain">
+    A <strong>thread</strong> is a unit of execution <em>within</em> a process. A process can have many threads. They all share the same code, data, and heap — but each thread gets its own <strong>stack</strong> and <strong>registers</strong>.
+  </p>
+  <p class="explain">
+    Creating a thread is much cheaper than creating a process: no need to allocate separate memory space, no need to copy the program — just create a new stack and register set. Communication between threads is easy — they just read/write the shared heap. But this shared access creates the risk of <strong>race conditions</strong>.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  ┌─────────────────────────────────────────────────────┐
+  │                    ONE PROCESS                      │
+  ├─────────────────────────────────────────────────────┤
+  │  <span class="d-hl">Code</span>  │  <span class="d-hl">Data</span>  │         <span class="d-ok">Heap</span>                     │
+  │       (shared by ALL threads in this process)      │
+  ├─────────────────────────────────────────────────────┤
+  │  <span class="d-warn">Thread 1 Stack</span>  │  <span class="d-warn">Thread 2 Stack</span>  │  <span class="d-warn">Thread 3 Stack</span>  │
+  │  Thread 1 Regs  │  Thread 2 Regs  │  Thread 3 Regs  │
+  │      (each thread has its own stack + registers)   │
+  └─────────────────────────────────────────────────────┘
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Key differences — memorize this table</span></div>
+
+  <table class="cmp">
+    <tr><th></th><th>Process</th><th>Thread</th></tr>
+    <tr><td>Memory</td><td>Own isolated memory space</td><td>Shares process's heap + data</td></tr>
+    <tr><td>Creation cost</td><td>Expensive — OS allocates memory, copies state</td><td>Cheap — just needs a stack + registers</td></tr>
+    <tr><td>Communication</td><td>IPC — pipes, sockets, shared memory (complex)</td><td>Direct shared memory (simple, but risky)</td></tr>
+    <tr><td>Isolation</td><td>Complete — one crash doesn't affect others</td><td>None — one crash kills the whole process</td></tr>
+    <tr><td>Context switch</td><td>Expensive — must save/restore full memory map</td><td>Cheaper — stack + registers only</td></tr>
+    <tr><td>Use when</td><td>Need isolation (browser tabs, microservices)</td><td>Need shared state + speed (web server request handling)</td></tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">Real-world examples you must know</span></div>
+
+  <p class="explain"><strong>Chrome browser:</strong> Each tab runs in a separate process. Why? If one tab crashes (e.g., bad JS), the other tabs survive. This is process isolation in action. Within each tab process, multiple threads handle: JavaScript execution (main thread), network requests, rendering, etc.</p>
+
+  <p class="explain"><strong>Node.js:</strong> Single process, single main thread (the event loop). No multi-threading by default. But Node uses libuv's thread pool (4 threads) for I/O operations internally. <code>worker_threads</code> module allows explicit multi-threading when needed.</p>
+
+  <p class="explain"><strong>Spring Boot / Java web server:</strong> By default (Tomcat), each HTTP request is handled by a thread from a thread pool. Threads share the application's heap (Spring beans, connection pools). This is why thread safety matters in Java web apps.</p>
+
+  <div class="node-box">
+    <strong>Node.js interview question connection:</strong> "Node.js is single-threaded. How does it handle concurrent requests?" — The answer is in the next section (Event Loop). For now: each request doesn't get its own thread. Node processes requests one at a time, but non-blocking I/O means the thread never waits — it registers callbacks and moves on.
+  </div>
+
+  <div class="step-marker"><span class="step-num">05</span><span class="step-line"></span><span class="step-text">Process States — the lifecycle</span></div>
+
+  <div class="diagram">
+    <pre>
+               ┌─────────┐
+     created → │   NEW   │
+               └────┬────┘
+                    │ admitted to ready queue
+                    ▼
+               ┌─────────┐  scheduler picks it     ┌─────────┐
+               │  READY  │ ─────────────────────→  │ RUNNING │
+               └─────────┘                         └────┬────┘
+                    ▲                                    │
+                    │ I/O done / event ready             │ I/O request / wait for event
+                    │                              ┌─────▼────┐
+                    └──────────────────────────────│ WAITING  │
+                                                   └──────────┘
+                                                        │
+                                               process exits
+                                                        ▼
+                                               ┌──────────────┐
+                                               │  TERMINATED  │
+                                               └──────────────┘
+
+    <span class="d-cmt">READY: in memory, waiting for CPU time</span>
+    <span class="d-cmt">RUNNING: currently executing on CPU</span>
+    <span class="d-cmt">WAITING/BLOCKED: waiting for I/O or event (not using CPU)</span>
+    </pre>
+  </div>
+
+  <p class="explain">
+    The key insight: a process in the <strong>WAITING</strong> state is not using the CPU. The CPU can be given to another process while this one waits. This is how an OS runs hundreds of processes on a single CPU — most are waiting at any given moment.
+  </p>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Process vs Thread</div>
+
+    <div class="qa" id="q-pt1">
+      <div class="qa-q" onclick="toggleQA('q-pt1')">What is the difference between a process and a thread? When would you use each? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        A <strong>process</strong> is an independent execution unit with its own isolated memory space. A <strong>thread</strong> is a lightweight execution unit within a process that shares the heap and data segment but has its own stack. Use <strong>processes</strong> when isolation matters — browser tabs (one crash doesn't kill others), microservices (each service is a separate process). Use <strong>threads</strong> when you need shared state with low overhead — a Java web server where multiple request-handling threads share the same database connection pool and application objects. Threads are cheaper to create and switch between, but shared memory creates race condition risks.
+        <span class="follow">Follow-up: "What is a PCB?"</span>
+        Process Control Block — the OS's data structure for a process. Contains: PID, process state, program counter, CPU registers, memory map, list of open files, and scheduling info. When the OS context-switches to another process, it saves all this state so it can resume later.
+      </div>
+    </div>
+
+    <div class="qa" id="q-pt2">
+      <div class="qa-q" onclick="toggleQA('q-pt2')">What is context switching? Why is it expensive? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Context switching is when the OS pauses one running process/thread and starts another. The steps: save the current process's CPU registers and program counter into its PCB → update its state to READY → select next process → load that process's registers and program counter → update its state to RUNNING. It's expensive because: (1) saving and restoring registers takes time, (2) CPU caches (TLB, instruction cache) are invalidated — the new process's memory map is different, so cached memory lookups become misses. Too many threads = too many context switches = performance degradation. This is why Node.js's single-threaded model is efficient for I/O-bound work — no context switch overhead.
+      </div>
+    </div>
+
+    <div class="qa" id="q-pt3">
+      <div class="qa-q" onclick="toggleQA('q-pt3')">How does Chrome use processes? Why not threads? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Chrome runs each tab as a separate process (the "process-per-site" model). This gives complete isolation — if one tab runs malicious JavaScript that crashes, it only kills that tab's process. Other tabs' processes are unaffected. Security: processes can't access each other's memory, so a compromised tab can't steal data from another tab's memory. The cost: processes are heavier than threads (more memory, slower creation). Chrome accepts this cost for security and stability. Within each tab process, multiple threads handle different tasks: the main thread runs JavaScript, a separate thread handles network requests, the compositor thread handles rendering. Multi-process architecture is the foundation of microservices too — same isolation principle at a different scale.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Process vs Thread — 60-second revision</h4>
+    <ul>
+      <li>Process: own memory space (code, data, heap, stack). Isolated. Expensive. Crash doesn't affect others.</li>
+      <li>Thread: shares process heap + data. Own stack + registers only. Cheap. Shared memory = race conditions.</li>
+      <li>Context switch: save registers → load next process's registers. Expensive — cache invalidation.</li>
+      <li>Chrome: each tab = process (isolation + security). Within tab: multiple threads.</li>
+      <li>Node.js: single process, single main thread. libuv thread pool for I/O behind the scenes.</li>
+      <li>Java web server: thread pool — each request handled by a thread that shares the app's objects.</li>
+      <li>PCB: OS metadata per process — state, registers, memory map, open files.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 2: CONCURRENCY vs PARALLELISM -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="concurrency">
+  <div class="concept-num">Concept 02 of 07</div>
+  <h2>Concurrency vs Parallelism</h2>
+  <div class="concept-sub">The most misunderstood pair in OS. Concurrency is NOT parallelism. Node.js is concurrent but not parallel. This concept directly answers the #1 Node.js interview question.</div>
+  <div class="progress-row"><span class="must">must know</span><span>The Node.js question is asked everywhere</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Concurrency — the illusion of simultaneity</span></div>
+
+  <p class="explain">
+    <strong>Concurrency</strong> means multiple tasks are making progress at the same time — but they may not literally run at the exact same instant. On a single CPU, the OS rapidly switches between tasks, giving each a small slice of time. This time-slicing creates the <em>illusion</em> that everything runs simultaneously.
+  </p>
+  <p class="explain">
+    Think of a chef cooking multiple dishes. They stir the soup, then check the oven, then chop vegetables, then stir again. Only one action at a time, but all dishes are progressing. That's concurrency.
+  </p>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Parallelism — truly simultaneous</span></div>
+
+  <p class="explain">
+    <strong>Parallelism</strong> means tasks literally run at the exact same instant on multiple CPU cores. Two threads on two different cores executing simultaneously — real parallelism.
+  </p>
+  <p class="explain">
+    Two chefs cooking two different dishes simultaneously in two kitchens. That's parallelism.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  CONCURRENCY (single CPU, time-slicing):
+  Time →  |--A--|--B--|--A--|--C--|--A--|--B--|
+  CPU 1:  Task A  Task B  Task A  Task C  ...
+  <span class="d-cmt">→ Only one task runs at a time, but all make progress</span>
+
+  PARALLELISM (multiple CPUs):
+  Time →  |--A--|--A--|--A--|
+  CPU 1:  Task A (running)
+  CPU 2:  Task B (running simultaneously)
+  CPU 3:  Task C (running simultaneously)
+  <span class="d-cmt">→ Truly simultaneous execution</span>
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Node.js — concurrent but not parallel (by default)</span></div>
+
+  <p class="explain">
+    Node.js has a single JavaScript thread — the event loop. It cannot run two JS functions simultaneously. But it achieves high concurrency through <strong>non-blocking I/O</strong>: instead of waiting for a database query or file read (which would block the thread), Node registers a callback and immediately moves on to the next task. When the I/O completes, libuv queues the callback for execution.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  Node.js event loop handling 3 concurrent requests:
+
+  Request 1 arrives → start DB query (async) → <span class="d-ok">move on immediately</span>
+  Request 2 arrives → start file read (async) → <span class="d-ok">move on immediately</span>
+  Request 3 arrives → start API call (async) → <span class="d-ok">move on immediately</span>
+
+  [libuv thread pool executes I/O in background]
+
+  DB query done     → callback queued → event loop picks it up → send response 1
+  File read done    → callback queued → event loop picks it up → send response 2
+  API call done     → callback queued → event loop picks it up → send response 3
+
+  <span class="d-cmt">The single thread is NEVER idle. It processes one callback at a time.</span>
+  <span class="d-cmt">This is concurrency without parallelism.</span>
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">When Node.js breaks — CPU-heavy work</span></div>
+
+  <p class="explain">
+    Node's single-threaded model works <em>only</em> because I/O is non-blocking. CPU-heavy tasks (image processing, video encoding, complex encryption, sorting huge arrays) <strong>block the event loop</strong> — the single thread is busy doing computation, and no other requests can be handled.
+  </p>
+
+<pre class="code">
+<span class="cm">// BLOCKS the event loop — BAD for production Node</span>
+app.get(<span class="cs">'/resize'</span>, (req, res) => {
+    <span class="ck">const</span> result = heavyImageProcessing(req.body.image);  <span class="cm">// CPU intensive</span>
+    <span class="cm">// While this runs: ALL other requests wait. Event loop is blocked.</span>
+    res.json(result);
+});
+
+<span class="cm">// FIX 1: worker_threads (Node.js multi-threading)</span>
+<span class="ck">const</span> { Worker } = require(<span class="cs">'worker_threads'</span>);
+app.get(<span class="cs">'/resize'</span>, (req, res) => {
+    <span class="ck">const</span> worker = <span class="ck">new</span> Worker(<span class="cs">'./imageWorker.js'</span>, { workerData: req.body.image });
+    worker.on(<span class="cs">'message'</span>, result => res.json(result));
+    <span class="cm">// Main event loop free to handle other requests while worker runs on separate thread</span>
+});
+
+<span class="cm">// FIX 2: separate microservice for CPU-heavy work</span>
+<span class="cm">// Python/Go service handles image processing, Node just proxies to it</span>
+</pre>
+
+  <div class="warn">
+    <strong>Interview gotcha:</strong> "Node.js is single-threaded so it can't handle concurrency." — WRONG. Node.js is single-threaded for JavaScript execution but achieves concurrency through non-blocking I/O and the event loop. It can handle thousands of concurrent I/O-bound requests efficiently. It's CPU-bound work that's problematic.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Concurrency vs Parallelism</div>
+
+    <div class="qa" id="q-cp1">
+      <div class="qa-q" onclick="toggleQA('q-cp1')">Node.js is single-threaded. How does it handle thousands of concurrent requests? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer — the most asked Node.js OS question</span>
+        Node.js uses a <strong>non-blocking I/O model with an event loop</strong>. When a request needs I/O (database query, file read, HTTP call to another service), instead of blocking the single thread and waiting, Node registers a callback with libuv and <em>immediately</em> moves to the next request. The actual I/O is handed to libuv's internal thread pool (4 threads by default). When the I/O completes, libuv queues the callback in the event loop. The main thread processes callbacks one at a time — it's never sitting idle. This is <strong>concurrency</strong> (not parallelism) — multiple tasks making progress via time-slicing and async I/O. It's extremely efficient for I/O-bound workloads. The problem: CPU-heavy work blocks the event loop — fix with worker_threads or a separate service.
+        <span class="follow">Follow-up: "Can you make Node.js parallel?"</span>
+        Yes: <code>worker_threads</code> module creates actual OS threads for CPU-heavy work. <code>cluster</code> module forks the Node process across CPU cores — each core runs an independent Node process, a load balancer distributes requests. Both approaches add real parallelism.
+      </div>
+    </div>
+
+    <div class="qa" id="q-cp2">
+      <div class="qa-q" onclick="toggleQA('q-cp2')">What is the difference between concurrency and parallelism? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        <strong>Concurrency</strong>: multiple tasks are in progress at the same time but may not be executing simultaneously. They interleave on a single CPU via time-slicing — the OS gives each task a time quantum, rapidly switching between them. Creates the illusion of simultaneous progress. <strong>Parallelism</strong>: tasks literally execute at the exact same time on multiple CPU cores. Real simultaneity, not interleaving. Node.js is concurrent (single thread, event loop) but not parallel by default. Java can be both — a thread pool with 8 threads on an 8-core machine achieves true parallelism. You can have concurrency without parallelism (Node.js), but parallelism always implies some form of concurrency management.
+      </div>
+    </div>
+
+    <div class="qa" id="q-cp3">
+      <div class="qa-q" onclick="toggleQA('q-cp3')">What happens if you run a heavy synchronous loop in a Node.js request handler? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        The event loop is blocked. While the loop runs, no other request callbacks can execute — all incoming requests pile up in the queue. Node.js cannot respond to anything until the synchronous computation finishes. This is a production incident — users see timeouts. Fix options: (1) <code>worker_threads</code> — offload CPU work to a separate thread; (2) <code>setImmediate()</code> or <code>process.nextTick()</code> to break up work into chunks and yield to the event loop periodically; (3) move CPU-intensive work to a separate service (Python, Go, Rust) and have Node proxy to it. This is why Node.js shines for I/O-heavy APIs and websocket servers, but is a poor choice for image processing or ML inference servers.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Concurrency vs Parallelism — 60-second revision</h4>
+    <ul>
+      <li>Concurrency: multiple tasks make progress by time-slicing on 1 CPU. Illusion of simultaneity.</li>
+      <li>Parallelism: multiple tasks execute literally simultaneously on multiple CPU cores.</li>
+      <li>Node.js: concurrent (not parallel by default). Single thread + event loop + non-blocking I/O.</li>
+      <li>Node event loop: register I/O callback → move on → libuv handles I/O → callback queued → event loop picks it up.</li>
+      <li>Node breaks on: CPU-heavy work (blocks event loop). Fix: worker_threads or separate service.</li>
+      <li>Java web server: parallel — thread pool on multiple cores. Each request handled by a thread.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 3: CPU SCHEDULING -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="scheduling">
+  <div class="concept-num">Concept 03 of 07</div>
+  <h2>CPU Scheduling</h2>
+  <div class="concept-sub">When multiple processes are ready to run, how does the OS decide who goes next? Know the trade-offs — not the calculations.</div>
+  <div class="progress-row"><span class="high">high value</span><span>Trade-offs matter more than Gantt charts</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Why scheduling matters</span></div>
+
+  <p class="explain">
+    At any moment, many processes are in the READY state (waiting for CPU). The <strong>scheduler</strong> picks which one runs next. The goal: maximize CPU utilization, minimize waiting time, ensure fairness, and meet response time requirements. Different algorithms make different trade-offs.
+  </p>
+  <p class="explain">
+    Two types: <strong>Preemptive</strong> (OS can interrupt a running process and give CPU to another) vs <strong>Non-preemptive</strong> (process runs until it voluntarily gives up CPU or blocks). Modern OS schedulers are preemptive.
+  </p>
+
+  <table class="cmp">
+    <tr><th>Algorithm</th><th>How it works</th><th>Problem</th><th>Real use</th></tr>
+    <tr>
+      <td>FCFS<br><small>(First Come First Served)</small></td>
+      <td>Run in arrival order. Non-preemptive.</td>
+      <td><strong>Convoy effect:</strong> one long process blocks all short ones behind it.</td>
+      <td>Simple batch systems. Never in interactive OS.</td>
+    </tr>
+    <tr>
+      <td>SJF<br><small>(Shortest Job First)</small></td>
+      <td>Run shortest estimated job next. Minimizes average wait time.</td>
+      <td><strong>Starvation:</strong> long jobs may never run if short jobs keep arriving. Requires knowing burst time in advance.</td>
+      <td>Batch systems where job length is known. Approximated in modern schedulers.</td>
+    </tr>
+    <tr>
+      <td>Round Robin</td>
+      <td>Each process gets a <em>time quantum</em> (e.g., 10ms). After quantum expires, preempt and go to end of queue.</td>
+      <td>Too small quantum = too many context switches. Too large = behaves like FCFS.</td>
+      <td><strong>Most real interactive OS</strong>. Fair. Good response time.</td>
+    </tr>
+    <tr>
+      <td>Priority Scheduling</td>
+      <td>Highest priority runs first. Can be preemptive or not.</td>
+      <td><strong>Starvation:</strong> low priority processes may never run.</td>
+      <td>Real-time systems. OS kernel processes. Fixed with <em>aging</em> (priority increases over time).</td>
+    </tr>
+    <tr>
+      <td>Multilevel Feedback Queue</td>
+      <td>Multiple queues with different priorities and time quantums. Processes move between queues based on behavior.</td>
+      <td>Complex to configure.</td>
+      <td>Linux (CFS - Completely Fair Scheduler). macOS. Modern OS.</td>
+    </tr>
+  </table>
+
+  <div class="analogy">
+    <strong>Round Robin analogy:</strong> A restaurant where each table gets 10 minutes of waiter attention in rotation. No table starves. If your order isn't taken in 10 minutes, waiter moves to next table and comes back. Fair and responsive.
+  </div>
+
+  <div class="warn">
+    <strong>Starvation vs Deadlock:</strong> Starvation = process keeps getting delayed indefinitely (still able to run, just never selected). Deadlock = process is permanently blocked waiting for a resource that will never come. Starvation fix: aging (increase priority over time). Deadlock fix: breaking one of the Coffman conditions.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Scheduling</div>
+
+    <div class="qa" id="q-sch1">
+      <div class="qa-q" onclick="toggleQA('q-sch1')">What is the convoy effect in FCFS scheduling? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        The convoy effect occurs when one long CPU-bound process holds up many shorter processes. Example: process A needs 200ms of CPU time. Processes B, C, D each need 2ms but arrive just after A. Under FCFS (non-preemptive), B, C, D wait 200ms before they can run, even though they could each complete in 2ms. The long process creates a "convoy" of waiting processes. Average waiting time is terrible. Round Robin solves this by preempting A after each time quantum and giving B, C, D a chance to run, dramatically reducing average wait time.
+      </div>
+    </div>
+
+    <div class="qa" id="q-sch2">
+      <div class="qa-q" onclick="toggleQA('q-sch2')">What is starvation? How does aging fix it? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Starvation occurs when a process is perpetually denied CPU time because higher-priority processes always arrive and preempt it. In priority scheduling, if high-priority processes keep arriving, a low-priority process may wait indefinitely — never starving technically (it's not blocked forever) but practically never running. <strong>Aging</strong> is the fix: the longer a process waits in the ready queue, the higher its priority becomes. Eventually its priority rises high enough that it gets CPU time. Most production OS schedulers (like Linux's CFS) use aging or similar mechanisms to ensure fairness and prevent starvation.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>CPU Scheduling — 60-second revision</h4>
+    <ul>
+      <li>Preemptive: OS can interrupt. Non-preemptive: process runs till done or blocks.</li>
+      <li>FCFS: arrival order. Problem: convoy effect (long process blocks short ones).</li>
+      <li>SJF: shortest job first. Optimal average wait. Problem: starvation of long jobs.</li>
+      <li>Round Robin: time quantum per process. Fair. Good response time. Most real OS use this basis.</li>
+      <li>Priority: highest priority first. Problem: starvation. Fix: aging (priority increases over wait time).</li>
+      <li>Starvation: process never selected. Deadlock: process permanently blocked. Different problems.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 4: RACE CONDITIONS, MUTEX, SEMAPHORE -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="sync">
+  <div class="concept-num">Concept 04 of 07</div>
+  <h2>Race Conditions, Mutex &amp; Semaphore</h2>
+  <div class="concept-sub">When threads share memory, they can corrupt each other's data. Synchronization primitives prevent this. Mutex and semaphore are different — most freshers confuse them.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Mutex vs Semaphore is asked constantly</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Race Condition — what it is and why it happens</span></div>
+
+  <p class="explain">
+    A <strong>race condition</strong> occurs when the outcome of a program depends on the unpredictable timing/ordering of thread execution. Two threads read-modify-write the same variable without coordination → wrong result.
+  </p>
+  <p class="explain">
+    The key insight: even simple operations like <code>count++</code> are <strong>not atomic</strong>. They compile to three separate CPU instructions: READ the value, ADD 1, WRITE back. If two threads execute these three steps concurrently, they can interleave in ways that produce wrong results.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  Initial value: count = 5
+
+  Thread A               Thread B
+  READ count = 5
+                         READ count = 5    ← Both read 5 before either writes!
+  ADD 1 → 6
+  WRITE count = 6
+                         ADD 1 → 6
+                         WRITE count = 6   ← Overwrites A's result
+
+  Final: count = 6  (Expected: count = 7)  ← RACE CONDITION
+    </pre>
+  </div>
+
+<pre class="code">
+<span class="cm">// Java — demonstrating race condition</span>
+<span class="ck">class</span> <span class="ct">Counter</span> {
+    <span class="ck">int</span> count = <span class="co">0</span>;
+    <span class="ck">void</span> <span class="cf">increment</span>() { count++; }  <span class="cm">// NOT atomic — 3 CPU instructions</span>
+}
+
+<span class="cm">// Two threads each call increment() 1000 times</span>
+<span class="cm">// Expected: count = 2000</span>
+<span class="cm">// Actual: count = 1734 (random, depends on thread interleaving)</span>
+
+<span class="cm">// FIX 1: synchronized — turns increment() into a critical section</span>
+<span class="ck">synchronized void</span> <span class="cf">increment</span>() { count++; }
+<span class="cm">// Only ONE thread can execute synchronized method at a time</span>
+<span class="cm">// Other threads wait (blocked) at the method's lock</span>
+
+<span class="cm">// FIX 2: AtomicInteger — lock-free, uses CPU-level compare-and-swap</span>
+<span class="ct">AtomicInteger</span> count = <span class="ck">new</span> <span class="ct">AtomicInteger</span>(<span class="co">0</span>);
+count.<span class="cf">incrementAndGet</span>();  <span class="cm">// truly atomic at hardware level</span>
+</pre>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Critical Section</span></div>
+
+  <p class="explain">
+    A <strong>critical section</strong> is a piece of code that accesses shared resources (variables, files, data structures) and must not be executed by more than one thread at the same time. The goal of synchronization is to protect critical sections.
+  </p>
+  <p class="explain">
+    Requirements for a correct solution: <strong>Mutual Exclusion</strong> (only one thread in the critical section at a time), <strong>Progress</strong> (if no one is in the critical section, a waiting thread should eventually enter), <strong>Bounded Waiting</strong> (a thread should not wait forever to enter the critical section).
+  </p>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Mutex — binary lock with ownership</span></div>
+
+  <p class="explain">
+    A <strong>mutex</strong> (mutual exclusion lock) is a binary lock — it's either <em>locked</em> or <em>unlocked</em>. The <strong>key property</strong>: only the thread that locked it can unlock it. This is ownership.
+  </p>
+  <p class="explain">
+    When a thread tries to lock a mutex that's already locked, it <strong>blocks</strong> — it goes to WAITING state until the mutex is unlocked. Then it wakes up and acquires the lock.
+  </p>
+
+<pre class="code">
+<span class="cm">// Java — mutex via synchronized block (implicit mutex)</span>
+<span class="ck">class</span> <span class="ct">SafeCounter</span> {
+    <span class="ck">private final</span> <span class="ct">Object</span> lock = <span class="ck">new</span> <span class="ct">Object</span>();  <span class="cm">// the mutex object</span>
+    <span class="ck">private int</span> count = <span class="co">0</span>;
+
+    <span class="ck">void</span> <span class="cf">increment</span>() {
+        <span class="ck">synchronized</span>(lock) {     <span class="cm">// acquire mutex — blocks if another thread holds it</span>
+            count++;              <span class="cm">// critical section — only 1 thread here at a time</span>
+        }                         <span class="cm">// release mutex automatically when block exits</span>
+    }
+}
+
+<span class="cm">// Explicit mutex via ReentrantLock</span>
+<span class="ct">ReentrantLock</span> mutex = <span class="ck">new</span> <span class="ct">ReentrantLock</span>();
+mutex.<span class="cf">lock</span>();                <span class="cm">// acquire lock (blocks if held by another thread)</span>
+<span class="ck">try</span> {
+    count++;                  <span class="cm">// critical section</span>
+} <span class="ck">finally</span> {
+    mutex.<span class="cf">unlock</span>();           <span class="cm">// release lock — MUST be in finally to guarantee release</span>
+}
+<span class="cm">// Only the thread that called lock() can call unlock() — ownership</span>
+</pre>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">Semaphore — counter, no ownership</span></div>
+
+  <p class="explain">
+    A <strong>semaphore</strong> is a counter (not just binary). It can allow multiple threads to access a resource simultaneously, up to a defined limit. Two operations: <strong>wait()</strong> — decrement the counter, block if it reaches 0; <strong>signal()</strong> — increment the counter, wake a waiting thread.
+  </p>
+  <p class="explain">
+    <strong>Key difference from mutex</strong>: any thread can signal a semaphore, not just the one that waited. There's no ownership concept.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  SEMAPHORE example: Database connection pool allows max 10 connections
+
+  Initial semaphore count: 10
+
+  Thread A: wait() → count = 9, gets a connection
+  Thread B: wait() → count = 8, gets a connection
+  Thread C: wait() → count = 7, gets a connection
+  ... (10 threads each acquire a connection)
+
+  Thread K (11th): wait() → count = 0, BLOCKS — waits for a connection to free up
+
+  Thread A finishes: signal() → count = 1, Thread K unblocks, gets the connection
+
+  <span class="d-cmt">BINARY SEMAPHORE (count starts at 1): similar to mutex, but WITHOUT ownership.</span>
+  <span class="d-cmt">Thread A can signal a semaphore that Thread B waited on — this is valid.</span>
+  <span class="d-cmt">Thread A cannot unlock a mutex that Thread B locked — this would be an error.</span>
+    </pre>
+  </div>
+
+  <table class="cmp">
+    <tr><th>Feature</th><th>Mutex</th><th>Semaphore</th></tr>
+    <tr><td>Value</td><td>Binary (locked/unlocked)</td><td>Integer counter (0 to N)</td></tr>
+    <tr><td>Ownership</td><td>Yes — only locker can unlock</td><td>No — any thread can signal</td></tr>
+    <tr><td>Purpose</td><td>Mutual exclusion (1 thread in critical section)</td><td>Resource counting (N slots available)</td></tr>
+    <tr><td>Use case</td><td>Protect shared variable from concurrent writes</td><td>Limit concurrent access to resource pool</td></tr>
+    <tr><td>Example</td><td><code>synchronized</code> in Java, <code>lock</code></td><td>DB connection pool of 10, thread pool limit</td></tr>
+    <tr><td>Can release from different thread?</td><td>No (violation)</td><td>Yes (intentional design)</td></tr>
+  </table>
+
+  <div class="analogy">
+    <strong>Analogy:</strong> Mutex = single-occupancy bathroom key. Only one person at a time. The person who took the key returns it. Semaphore = parking lot with 10 spaces. A counter shows available spaces. Any car can take a space (wait/decrement). Any car can free a space (signal/increment). You don't have to leave with your own ticket.
+  </div>
+
+  <div class="node-box">
+    <strong>Is JavaScript affected by race conditions?</strong> — Mostly no for CPU operations, because JavaScript is single-threaded. Two JS functions cannot run simultaneously and corrupt shared variables. However, <strong>async operations</strong> can create logical race conditions. Example: two async functions both read a user's balance, both check if balance > 100, both decide to deduct — if the check and deduction aren't atomic at the DB level, you have a race condition. Fix: database transactions with proper isolation levels.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Synchronization</div>
+
+    <div class="qa" id="q-sync1">
+      <div class="qa-q" onclick="toggleQA('q-sync1')">What is a race condition? Give a real example. <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        A race condition occurs when the program's output depends on the unpredictable timing of thread execution. Classic example: two threads both execute <code>count++</code> (which is READ, ADD, WRITE — three non-atomic operations). If thread A reads count=5, thread B reads count=5 before A writes, they both compute 6 and write 6 — one increment is lost, count should be 7 but is 6. Real-world example: two users simultaneously clicking "book the last seat" in a ticketing system. Without proper locking, both read "1 seat available," both succeed, now you've sold the same seat twice. Fix: database-level locks or transactions with serializable isolation.
+        <span class="follow">Follow-up: "Is JavaScript safe from race conditions?"</span>
+        For CPU-level operations yes — single-threaded, no parallel modification of memory. But async operations (two requests to deduct money from same account) can cause logical race conditions. These must be prevented at the database level with transactions.
+      </div>
+    </div>
+
+    <div class="qa" id="q-sync2">
+      <div class="qa-q" onclick="toggleQA('q-sync2')">What is the difference between a mutex and a semaphore? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        A <strong>mutex</strong> is a binary lock with ownership — only the thread that locked it can unlock it. Used for mutual exclusion: one thread in the critical section at a time. A <strong>semaphore</strong> is an integer counter with no ownership — any thread can signal (increment) it, even if a different thread waited (decremented) on it. Semaphores allow N threads to access a resource simultaneously, where N is the initial count. A binary semaphore (count=1) is similar to a mutex but without ownership, so it can be signaled by any thread — useful for signaling between threads. Use mutex for protecting a critical section. Use semaphore for managing a resource pool (e.g., limit simultaneous DB connections to 10).
+      </div>
+    </div>
+
+    <div class="qa" id="q-sync3">
+      <div class="qa-q" onclick="toggleQA('q-sync3')">What is a monitor? How does Java's synchronized keyword implement it? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        A monitor is a high-level synchronization construct that combines a mutex with condition variables. Every Java object has an associated monitor (also called intrinsic lock). When you use <code>synchronized(obj)</code>, the current thread acquires obj's monitor lock — only one thread can hold a specific object's monitor at a time. Other threads trying to synchronize on the same object block until the lock is released. <code>wait()</code> releases the lock and waits. <code>notify()</code>/<code>notifyAll()</code> signals waiting threads. Java's <code>synchronized</code> keyword is the most common way to use monitors — it handles lock acquisition and release automatically (even on exception, the lock is released when the block exits).
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Synchronization — 60-second revision</h4>
+    <ul>
+      <li>Race condition: outcome depends on thread timing. count++ is not atomic (3 instructions).</li>
+      <li>Critical section: code that accesses shared resources. Only 1 thread at a time.</li>
+      <li>Mutex: binary lock. Only locker can unlock (ownership). Used for mutual exclusion.</li>
+      <li>Semaphore: integer counter. Any thread can signal (no ownership). Used for resource counting.</li>
+      <li>Binary semaphore vs mutex: similar but no ownership in semaphore. Any thread can signal.</li>
+      <li>Java synchronized: implicit monitor lock. Lock acquired on enter, released on exit (even on exception).</li>
+      <li>JS: single-threaded, no CPU race conditions. But async DB operations can have logical races — fix at DB level.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 5: DEADLOCK -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="deadlock">
+  <div class="concept-num">Concept 05 of 07</div>
+  <h2>Deadlock</h2>
+  <div class="concept-sub">Four conditions. When all four hold simultaneously, you have deadlock. Break any one condition to prevent it. Real-world examples make this click.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Asked at every product company interview</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">What is deadlock?</span></div>
+
+  <p class="explain">
+    A <strong>deadlock</strong> is a situation where two or more threads are each waiting for a resource held by another, and none can proceed. They're all permanently stuck.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  Thread A                    Thread B
+  ─────────────────────       ─────────────────────
+  Holds: Lock 1               Holds: Lock 2
+  Waiting for: Lock 2         Waiting for: Lock 1
+
+  → Thread A can't proceed (needs Lock 2, B has it)
+  → Thread B can't proceed (needs Lock 1, A has it)
+  → Neither will ever release what the other needs
+  → <span class="d-err">DEADLOCK — permanent standstill</span>
+
+  Real example: UPI transfer
+  Transaction A: locks User X's account → wants User Y's account
+  Transaction B: locks User Y's account → wants User X's account
+  → Neither transaction can complete → deadlock
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">The 4 Coffman Conditions — ALL must hold for deadlock</span></div>
+
+  <p class="explain">
+    Deadlock can only occur if all four conditions hold simultaneously. Preventing any one condition prevents deadlock.
+  </p>
+
+  <table class="cmp">
+    <tr><th>#</th><th>Condition</th><th>What it means</th><th>How to prevent</th></tr>
+    <tr>
+      <td><strong>1</strong></td>
+      <td>Mutual Exclusion</td>
+      <td>At least one resource can only be held by one thread at a time (non-shareable)</td>
+      <td>Make resources shareable where possible. Hard to eliminate — some resources genuinely can't be shared.</td>
+    </tr>
+    <tr>
+      <td><strong>2</strong></td>
+      <td>Hold and Wait</td>
+      <td>A thread holds at least one resource while waiting for another</td>
+      <td>Require a thread to request ALL resources it will ever need before starting. (Practical problem: you may not know what you'll need.)</td>
+    </tr>
+    <tr>
+      <td><strong>3</strong></td>
+      <td>No Preemption</td>
+      <td>Resources can't be forcibly taken from a thread — it must release voluntarily</td>
+      <td>Allow OS to preempt resources. If thread can't get a resource, release all it holds and retry.</td>
+    </tr>
+    <tr>
+      <td><strong>4</strong></td>
+      <td>Circular Wait</td>
+      <td>A chain of threads where each waits for a resource held by the next — forming a cycle</td>
+      <td><strong>Most practical fix: impose a total ordering on resources. Always acquire in the same fixed order.</strong></td>
+    </tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Prevention — the practical approach</span></div>
+
+  <p class="explain">
+    The most practical deadlock prevention strategy is eliminating <strong>Circular Wait</strong> by imposing a total ordering on resource acquisition.
+  </p>
+
+<pre class="code">
+<span class="cm">// DEADLOCK SCENARIO: Thread A and B acquire locks in different order</span>
+<span class="cm">// Thread A: lock1 then lock2</span>
+<span class="cm">// Thread B: lock2 then lock1  ← different order! → circular wait possible</span>
+
+<span class="cm">// PREVENTION: Always acquire in the same fixed order (e.g., by lock ID)</span>
+<span class="cm">// Thread A: lock1(id=1) then lock2(id=2)  ← always lower ID first</span>
+<span class="cm">// Thread B: lock1(id=1) then lock2(id=2)  ← SAME order</span>
+<span class="cm">// Thread B will wait for Thread A to release lock1, then acquire it</span>
+<span class="cm">// No circular wait → no deadlock</span>
+
+<span class="cm">// Java example: sort locks by System.identityHashCode before acquiring</span>
+<span class="ck">void</span> <span class="cf">transfer</span>(<span class="ct">Account</span> from, <span class="ct">Account</span> to, <span class="ck">double</span> amount) {
+    <span class="ct">Account</span> first  = from.id < to.id ? from : to;    <span class="cm">// lower ID first</span>
+    <span class="ct">Account</span> second = from.id < to.id ? to   : from;
+    <span class="ck">synchronized</span>(first) {
+        <span class="ck">synchronized</span>(second) {
+            from.balance -= amount;
+            to.balance   += amount;
+        }
+    }
+}
+<span class="cm">// Both transfer(A→B) and transfer(B→A) will try to lock lower-ID account first</span>
+<span class="cm">// No circular wait possible → safe</span>
+</pre>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">Deadlock Detection &amp; Recovery — how databases handle it</span></div>
+
+  <p class="explain">
+    Sometimes prevention isn't practical (you don't know the order). Databases use <strong>detection and recovery</strong>:
+  </p>
+  <ul style="margin-left:20px;margin-bottom:14px;font-size:13px;color:var(--ink2);line-height:2;">
+    <li><strong>Detection:</strong> The DB monitors a "wait-for" graph. If a cycle exists → deadlock detected.</li>
+    <li><strong>Recovery:</strong> Kill one of the transactions (the victim), roll it back. The other transaction proceeds. The killed transaction is retried automatically.</li>
+    <li><strong>Timeout:</strong> If a transaction can't acquire a lock within N seconds → assume deadlock → rollback → retry. Simpler than cycle detection.</li>
+  </ul>
+  <p class="explain">
+    This is why you sometimes see database errors like "Deadlock detected, transaction rolled back, please retry." The application should handle this by retrying the transaction.
+  </p>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Deadlock</div>
+
+    <div class="qa" id="q-dl1">
+      <div class="qa-q" onclick="toggleQA('q-dl1')">What is a deadlock? What are the 4 necessary conditions? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Deadlock is when two or more threads are permanently stuck — each waiting for a resource held by another. All 4 Coffman conditions must hold: <strong>(1) Mutual Exclusion</strong>: at least one resource is non-shareable. <strong>(2) Hold and Wait</strong>: a thread holds resources while waiting for others. <strong>(3) No Preemption</strong>: resources can't be forcibly taken — thread must release voluntarily. <strong>(4) Circular Wait</strong>: a cycle of threads, each waiting for the next's resource. Break ANY one → deadlock impossible. Most practical: break Circular Wait by always acquiring multiple locks in the same fixed order (by resource ID or name).
+      </div>
+    </div>
+
+    <div class="qa" id="q-dl2">
+      <div class="qa-q" onclick="toggleQA('q-dl2')">Give a real deadlock example with a bank transfer and show how to prevent it. <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        PhonePe scenario: Transaction 1 transfers ₹500 from Account A to Account B. It locks Account A first, then needs Account B. Transaction 2 simultaneously transfers ₹200 from Account B to Account A. It locks Account B first, then needs Account A. T1 holds A, waiting for B. T2 holds B, waiting for A. Circular wait — deadlock. <strong>Prevention</strong>: always lock accounts in ascending order of their ID/account number, regardless of transaction direction. T1 and T2 both try to lock the lower-ID account first. One waits, the other completes and releases, then the waiting one proceeds. No circular wait. This is exactly what database engines implement at a lower level for row-level locking.
+      </div>
+    </div>
+
+    <div class="qa" id="q-dl3">
+      <div class="qa-q" onclick="toggleQA('q-dl3')">What is the difference between deadlock and starvation? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        <strong>Deadlock</strong>: threads are permanently blocked — they literally cannot proceed because each holds something the other needs. No amount of waiting will resolve it. Requires external intervention (timeout, rollback, process kill). <strong>Starvation</strong>: a thread is perpetually denied a resource it needs, but there's no circular dependency — the resource is available, it just keeps getting given to higher-priority threads. Theoretically, if the high-priority threads stop arriving, the starved thread would proceed. Fix: aging (increase priority over wait time). Starvation is unfair scheduling; deadlock is a permanent circular block. Both result in a thread not progressing, but for different reasons with different solutions.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Deadlock — 60-second revision</h4>
+    <ul>
+      <li>Deadlock: threads permanently blocked, each waiting for resource held by another.</li>
+      <li>4 Coffman conditions (all must hold): Mutual Exclusion, Hold and Wait, No Preemption, Circular Wait.</li>
+      <li>Prevention: break any one condition. Most practical: break Circular Wait.</li>
+      <li>Fix Circular Wait: always acquire multiple locks in same fixed order (by ID/name).</li>
+      <li>Databases: detect via wait-for graph cycle detection OR timeout + rollback + retry.</li>
+      <li>Deadlock vs Starvation: deadlock = permanent circular block. Starvation = unfair scheduling, can resolve on its own.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 6: MEMORY MANAGEMENT -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="memory">
+  <div class="concept-num">Concept 06 of 07</div>
+  <h2>Memory Management</h2>
+  <div class="concept-sub">Stack vs Heap. Garbage collection. Memory leaks in Java and JavaScript. Virtual memory at a concept level. This directly applies to debugging your own code.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Memory leaks in React are a common interview topic</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Stack vs Heap — where things live</span></div>
+
+  <table class="cmp">
+    <tr><th>Aspect</th><th>Stack</th><th>Heap</th></tr>
+    <tr><td>What lives here</td><td>Local variables, function call frames, return addresses, primitive values</td><td>Objects created with <code>new</code>, dynamic allocations, closures</td></tr>
+    <tr><td>Management</td><td>Auto-managed by compiler/runtime. LIFO — freed when function returns.</td><td>Java: managed by Garbage Collector. C: manual (malloc/free). JS: GC.</td></tr>
+    <tr><td>Size</td><td>Fixed and small (typically 1-8MB). Stack overflow = too deep recursion.</td><td>Dynamic, limited by available RAM. Grows and shrinks.</td></tr>
+    <tr><td>Speed</td><td>Very fast — just move stack pointer</td><td>Slower — GC overhead, fragmentation</td></tr>
+    <tr><td>Thread safety</td><td>Each thread has own stack — no sharing, no race conditions</td><td>Shared across threads — must synchronize access</td></tr>
+  </table>
+
+<pre class="code">
+<span class="cm">// Java: what goes where</span>
+<span class="ck">void</span> <span class="cf">example</span>() {
+    <span class="ck">int</span> x = <span class="co">5</span>;                              <span class="cm">// STACK: primitive int</span>
+    <span class="ct">String</span> s = <span class="cs">"hello"</span>;                     <span class="cm">// STACK: reference 's' | HEAP: String object</span>
+    <span class="ct">Person</span> p = <span class="ck">new</span> <span class="ct">Person</span>(<span class="cs">"Ravi"</span>);          <span class="cm">// STACK: reference 'p' | HEAP: Person object</span>
+    <span class="cf">doWork</span>(p);                              <span class="cm">// STACK: new frame for doWork</span>
+}
+<span class="cm">// After example() returns: x, s, p popped from stack</span>
+<span class="cm">// Person object on HEAP: GC eligible when no more references exist</span>
+
+<span class="cm">// JavaScript: same pattern</span>
+<span class="ck">function</span> <span class="cf">example</span>() {
+    <span class="ck">let</span> x = <span class="co">5</span>;                              <span class="cm">// STACK: primitive number</span>
+    <span class="ck">let</span> obj = { name: <span class="cs">"Ravi"</span> };             <span class="cm">// STACK: reference | HEAP: object</span>
+    <span class="ck">const</span> arr = [<span class="co">1</span>, <span class="co">2</span>, <span class="co">3</span>];               <span class="cm">// STACK: reference | HEAP: array</span>
+    <span class="ck">const</span> fn = () => obj.name;             <span class="cm">// HEAP: closure (captures obj reference)</span>
+}
+<span class="cm">// After example() returns: stack frame gone</span>
+<span class="cm">// BUT if fn is returned/stored: closure keeps obj alive on heap → potential memory leak</span>
+</pre>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Garbage Collection — how JVM GC works</span></div>
+
+  <p class="explain">
+    Garbage Collection automatically frees heap memory that's no longer reachable from the program. The JVM uses <strong>generational GC</strong> based on the observation: "most objects die young."
+  </p>
+
+  <div class="diagram">
+    <pre>
+  JVM HEAP STRUCTURE:
+  ┌────────────────────────────────────────────────────────┐
+  │                    YOUNG GENERATION                    │
+  │  ┌─────────┐   ┌────────────┐   ┌───────────────────┐ │
+  │  │  Eden   │   │ Survivor S0│   │   Survivor S1     │ │
+  │  │(new obj)│   │            │   │                   │ │
+  │  └─────────┘   └────────────┘   └───────────────────┘ │
+  ├────────────────────────────────────────────────────────┤
+  │                    OLD GENERATION                      │
+  │         (objects that survived many GC cycles)         │
+  └────────────────────────────────────────────────────────┘
+
+  Flow:
+  1. New objects → Eden
+  2. Eden fills → <span class="d-warn">MINOR GC</span> (fast! most objects die here)
+  3. Survivors → Survivor space (S0 or S1)
+  4. After several minor GCs → promoted to Old Gen
+  5. Old Gen fills → <span class="d-err">MAJOR GC</span> (slow! stop-the-world)
+
+  Why generational? ~90% of objects die in Young Gen → fast minor GC handles them.
+    </pre>
+  </div>
+
+  <p class="explain">
+    <strong>Mark and Sweep</strong>: GC traverses all live objects starting from "GC roots" (static fields, local variables in stack frames, active threads) — marks them as live. Everything not marked is garbage. Sweep phase frees the unmarked memory.
+  </p>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Memory Leaks — where they happen in your code</span></div>
+
+<pre class="code">
+<span class="cm">// ── Java Memory Leaks ──</span>
+
+<span class="cm">// 1. Static collection that grows forever</span>
+<span class="ck">static</span> <span class="ct">List</span>&lt;<span class="ct">User</span>&gt; cache = <span class="ck">new</span> <span class="ct">ArrayList</span>&lt;&gt;();
+cache.<span class="cf">add</span>(user);  <span class="cm">// added, never removed</span>
+<span class="cm">// Static field = GC root → all added objects keep alive forever</span>
+
+<span class="cm">// 2. Unclosed resources</span>
+<span class="ct">Connection</span> conn = dataSource.<span class="cf">getConnection</span>();
+<span class="cm">// if you forget conn.close() → connection leaks, pool exhausted</span>
+<span class="cm">// Fix: try-with-resources</span>
+<span class="ck">try</span> (<span class="ct">Connection</span> conn2 = dataSource.<span class="cf">getConnection</span>()) {
+    <span class="cm">// auto-closed on exit</span>
+}
+
+<span class="cm">// ── React / JavaScript Memory Leaks ──</span>
+
+<span class="cm">// 1. setState after component unmount</span>
+useEffect(() => {
+    <span class="cf">fetchUserData</span>().<span class="cf">then</span>(data => {
+        setState(data);  <span class="cm">// if component unmounted before fetch completes → React warning + leak</span>
+    });
+}, []);
+<span class="cm">// FIX: use AbortController or a cancelled flag</span>
+useEffect(() => {
+    <span class="ck">let</span> cancelled = <span class="ck">false</span>;
+    <span class="cf">fetchUserData</span>().<span class="cf">then</span>(data => {
+        <span class="ck">if</span> (!cancelled) <span class="cf">setState</span>(data);
+    });
+    <span class="ck">return</span> () => { cancelled = <span class="ck">true</span>; };  <span class="cm">// cleanup on unmount</span>
+}, []);
+
+<span class="cm">// 2. Forgotten event listeners</span>
+useEffect(() => {
+    <span class="ck">const</span> handler = () => console.log(<span class="cs">'scroll'</span>);
+    window.<span class="cf">addEventListener</span>(<span class="cs">'scroll'</span>, handler);
+    <span class="ck">return</span> () => window.<span class="cf">removeEventListener</span>(<span class="cs">'scroll'</span>, handler);  <span class="cm">// REQUIRED cleanup</span>
+}, []);
+
+<span class="cm">// 3. Forgotten timers / intervals</span>
+useEffect(() => {
+    <span class="ck">const</span> timer = setInterval(<span class="cf">fetchData</span>, <span class="co">5000</span>);
+    <span class="ck">return</span> () => clearInterval(timer);  <span class="cm">// REQUIRED cleanup</span>
+}, []);
+
+<span class="cm">// How to DETECT: Chrome DevTools → Memory tab → Take Heap Snapshot</span>
+<span class="cm">// Take snapshot before action, perform action, take snapshot after</span>
+<span class="cm">// Compare: objects that grew → potential leak</span>
+</pre>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">Virtual Memory — concept only</span></div>
+
+  <p class="explain">
+    <strong>Virtual memory</strong> gives each process the illusion that it has a large, contiguous block of memory — much larger than actual physical RAM. The OS maps virtual addresses to physical RAM pages. If a page isn't in RAM, the OS fetches it from disk (a <strong>page fault</strong>).
+  </p>
+  <p class="explain">
+    Why it matters to you: When you run too many services on a small server, the OS starts swapping memory to disk. This causes frequent page faults, and performance degrades dramatically (disk is 1000x slower than RAM). This is why "swap memory" is a code smell — if your process regularly page-faults, you need more RAM.
+  </p>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Memory</div>
+
+    <div class="qa" id="q-mem1">
+      <div class="qa-q" onclick="toggleQA('q-mem1')">What is the difference between stack and heap memory? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        <strong>Stack</strong>: holds local variables, function call frames, and primitive values. Auto-managed — freed when a function returns. Fixed size (typically 1-8MB). Thread-specific — each thread has its own stack, so no race conditions on stack data. Very fast — just a pointer move. Stack overflow = infinite recursion exceeds stack size. <strong>Heap</strong>: holds objects created with <code>new</code>, closures, and dynamic allocations. Managed by GC (Java/JS) or manually (C). Shared across threads — access needs synchronization. Slower — GC overhead and fragmentation. In both Java and JavaScript: the reference variable (name pointing to the object) is on the stack; the actual object is on the heap.
+      </div>
+    </div>
+
+    <div class="qa" id="q-mem2">
+      <div class="qa-q" onclick="toggleQA('q-mem2')">What causes memory leaks in a React application? How do you fix them? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Common React memory leaks: (1) <strong>setState after unmount</strong>: an async operation (fetch, timer) completes after the component unmounts and calls setState. React warns and the closure holds the component's state alive. Fix: use a <code>cancelled</code> flag in useEffect cleanup or AbortController for fetch. (2) <strong>Forgotten event listeners</strong>: window.addEventListener without a corresponding removeEventListener in cleanup. Component unmounts but listener persists, holding a reference to the component. Fix: always return cleanup from useEffect. (3) <strong>Forgotten intervals/timers</strong>: setInterval without clearInterval in cleanup. Fix: return cleanup. Detect: Chrome DevTools → Memory tab → Compare heap snapshots before and after actions → look for growing object counts.
+      </div>
+    </div>
+
+    <div class="qa" id="q-mem3">
+      <div class="qa-q" onclick="toggleQA('q-mem3')">Explain Java's generational garbage collection. Why is it efficient? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Java's GC is "generational" because it's based on the empirical observation that most objects die young — they're created for a brief purpose (a request object, a temporary string) and immediately become unreachable. JVM heap has Young Generation (Eden + Survivor spaces) and Old Generation. New objects go to Eden. When Eden fills, a fast Minor GC runs — it collects only Young Gen, where most garbage is. Objects that survive several minor GCs are promoted to Old Gen. When Old Gen fills, a Major GC (full GC) runs — it's slow (stop-the-world) but infrequent. Efficiency: Minor GC handles 90%+ of garbage collection work, and it's fast because Young Gen is small and most objects are dead.
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Memory Management — 60-second revision</h4>
+    <ul>
+      <li>Stack: local vars, call frames, primitives. Auto-freed on function return. Thread-specific. Fast. Fixed size.</li>
+      <li>Heap: objects (new), closures, dynamic allocation. GC-managed in Java/JS. Shared across threads.</li>
+      <li>Stack overflow: too deep recursion exceeds stack size limit.</li>
+      <li>JVM GC: generational. Young Gen (Eden + Survivor): minor GC (fast). Old Gen: major GC (slow, stop-the-world).</li>
+      <li>Mark and Sweep: traverse from GC roots → mark live → sweep unmarked.</li>
+      <li>React leaks: setState after unmount (fix: cancelled flag), forgotten listeners (fix: cleanup), forgotten timers (fix: clearInterval).</li>
+      <li>Virtual memory: process sees large virtual address space mapped to physical RAM. Page fault = fetch from disk = slow.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- CONCEPT 7: I/O AND THE EVENT LOOP -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="io">
+  <div class="concept-num">Concept 07 of 07</div>
+  <h2>Blocking vs Non-Blocking I/O &amp; The Event Loop</h2>
+  <div class="concept-sub">The deepest dive into how Node.js actually works. The event loop, libuv, macrotask queue, microtask queue — understand this and you understand async JavaScript completely.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Directly explains your daily Node.js/React code</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Blocking I/O — the old way</span></div>
+
+  <p class="explain">
+    In the traditional <strong>blocking I/O</strong> model (classic Java servlet, PHP, Python Flask by default): when a request arrives and needs to read from a database or file, the <strong>thread blocks</strong> — it sits idle, doing nothing, waiting for the I/O to complete. The CPU is wasted.
+  </p>
+  <p class="explain">
+    To handle N concurrent requests, you need N threads. With 1000 concurrent requests, you need 1000 threads. Creating and context-switching 1000 threads is expensive. Most threads spend most time blocked on I/O.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  Blocking I/O (thread-per-request model):
+  Request 1 → Thread 1 →  [====I/O WAIT====] → [process] → response
+  Request 2 → Thread 2 →  [====I/O WAIT====] → [process] → response
+  Request 3 → Thread 3 →  [====I/O WAIT====] → [process] → response
+
+  <span class="d-warn">1000 concurrent requests = 1000 threads blocking on I/O.</span>
+  <span class="d-warn">Most threads sitting idle. Massive memory waste (1 thread ≈ 1MB stack).</span>
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Non-Blocking I/O — Node's approach</span></div>
+
+  <p class="explain">
+    In <strong>non-blocking I/O</strong>: when a request needs I/O, the thread registers a callback and <em>immediately returns</em> to handle more requests. When the I/O completes (handled by the OS or a background thread), the callback is queued for execution. One thread handles many concurrent requests.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  Non-Blocking I/O (Node.js event loop):
+
+  Single Thread (Event Loop)
+  ─────────────────────────────────────────────────────────────
+  t=0ms: Request 1 arrives → register DB callback → <span class="d-ok">CONTINUE</span>
+  t=0ms: Request 2 arrives → register file callback → <span class="d-ok">CONTINUE</span>
+  t=0ms: Request 3 arrives → register API callback → <span class="d-ok">CONTINUE</span>
+
+  [libuv/OS handles I/O in background]
+
+  t=15ms: DB done → callback queued → event loop runs it → send response 1
+  t=20ms: File done → callback queued → event loop runs it → send response 2
+  t=25ms: API done → callback queued → event loop runs it → send response 3
+  ─────────────────────────────────────────────────────────────
+  <span class="d-ok">Single thread handled 3 concurrent requests. Never blocked.</span>
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">The Event Loop — phases in detail</span></div>
+
+  <p class="explain">
+    The event loop runs continuously, processing callbacks in a specific order. Understanding the order explains exactly why your JavaScript code executes in the sequence it does.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  ┌─────────────────────────────────────────────────────┐
+  │                  Event Loop Tick                    │
+  │                                                     │
+  │  1. <span class="d-hl">timers</span>        — setTimeout / setInterval callbacks │
+  │  2. pending I/O   — I/O callbacks deferred from prev │
+  │  3. idle, prepare — internal use                    │
+  │  4. <span class="d-hl">poll</span>          — retrieve new I/O events           │
+  │  5. <span class="d-hl">check</span>         — setImmediate() callbacks           │
+  │  6. close callbacks — socket.on('close', ...)       │
+  │                                                     │
+  │  Between EACH phase:                                │
+  │  → Drain the <span class="d-ok">microtask queue</span>                        │
+  │    (Promise.then, async/await, process.nextTick)   │
+  └─────────────────────────────────────────────────────┘
+
+  <span class="d-cmt">MICROTASKS run BEFORE the next phase begins — higher priority</span>
+  <span class="d-cmt">MACROTASKS (setTimeout callbacks) run in the timers phase</span>
+    </pre>
+  </div>
+
+<pre class="code">
+<span class="cm">// Classic execution order quiz — what's the output?</span>
+console.log(<span class="cs">'1'</span>);                              <span class="cm">// synchronous — runs immediately</span>
+
+setTimeout(() => console.log(<span class="cs">'2'</span>), <span class="co">0</span>);       <span class="cm">// macrotask — timers phase</span>
+
+<span class="ct">Promise</span>.<span class="cf">resolve</span>().<span class="cf">then</span>(() => console.log(<span class="cs">'3'</span>)); <span class="cm">// microtask — runs before next phase</span>
+
+console.log(<span class="cs">'4'</span>);                              <span class="cm">// synchronous — runs immediately</span>
+
+<span class="cm">// Output: 1, 4, 3, 2</span>
+<span class="cm">// Why: synchronous (1, 4) → microtasks (3) → macrotasks (2)</span>
+
+<span class="cm">// Another example:</span>
+async <span class="ck">function</span> <span class="cf">fetchData</span>() {
+    console.log(<span class="cs">'A'</span>);                          <span class="cm">// synchronous (inside async fn)</span>
+    <span class="ck">const</span> data = <span class="ck">await</span> <span class="cf">fetch</span>(url);           <span class="cm">// suspends, returns to caller</span>
+    console.log(<span class="cs">'B'</span>);                          <span class="cm">// microtask — runs after await resolves</span>
+}
+console.log(<span class="cs">'C'</span>);
+<span class="cf">fetchData</span>();
+console.log(<span class="cs">'D'</span>);
+<span class="cm">// Output: C, A, D, B</span>
+<span class="cm">// Why: C (sync) → A (inside fetchData, sync) → D (sync, back in caller) → B (microtask after fetch)</span>
+</pre>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">libuv — the engine behind Node.js I/O</span></div>
+
+  <p class="explain">
+    <strong>libuv</strong> is a C library that handles asynchronous I/O for Node.js. It maintains a thread pool (4 threads by default, configurable via <code>UV_THREADPOOL_SIZE</code>) for I/O operations that don't have native async OS support (like file system operations).
+  </p>
+  <p class="explain">
+    Network I/O (TCP sockets) uses the OS's native async capabilities (epoll on Linux, kqueue on macOS, IOCP on Windows) — these truly don't need extra threads. File I/O uses the libuv thread pool because file operations are less consistently async across OS platforms.
+  </p>
+
+  <div class="analogy">
+    <strong>Node.js architecture in one paragraph:</strong> Your JavaScript runs on V8 (the JS engine). When your code calls <code>fs.readFile()</code> or <code>https.get()</code>, Node passes the work to libuv. libuv either uses the OS's async I/O (for network) or its thread pool (for file). When the I/O completes, libuv puts the callback in the event queue. The event loop — running in your main JS thread — picks up callbacks from the queue and executes them one at a time. V8 + libuv + event loop = Node.js.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — I/O and Event Loop</div>
+
+    <div class="qa" id="q-io1">
+      <div class="qa-q" onclick="toggleQA('q-io1')">What is the difference between blocking and non-blocking I/O? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        <strong>Blocking I/O</strong>: the calling thread suspends execution until the I/O operation completes. The thread is idle during I/O — wasting CPU. To handle N concurrent I/O operations, you need N threads. Traditional Java servlets, PHP, and Python Flask use this model. <strong>Non-blocking I/O</strong>: the thread initiates the I/O operation, registers a callback, and immediately returns to do other work. The OS notifies when I/O completes, and the callback is queued. One thread can manage many concurrent I/O operations. Node.js uses this model with its event loop. Non-blocking is far more efficient for I/O-bound workloads; blocking is simpler to reason about and better for CPU-bound work.
+      </div>
+    </div>
+
+    <div class="qa" id="q-io2">
+      <div class="qa-q" onclick="toggleQA('q-io2')">What is the output of this code? console.log('1'); setTimeout(fn, 0); Promise.resolve().then(fn2); console.log('4'); <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        Output: 1, 4, (fn2 result), (fn result). Execution order: (1) Synchronous code runs first — console.log('1') then console.log('4'). (2) Microtask queue is drained — Promise.then callbacks are microtasks, they run after all synchronous code but before the next event loop phase. fn2 runs here. (3) Macrotask queue — setTimeout callback is a macrotask (in the timers phase). fn runs here. Key rule: synchronous → microtasks (Promises, async/await) → macrotasks (setTimeout, setInterval, I/O callbacks). This ordering explains why Promise-based code executes "before" setTimeout even with 0ms delay.
+      </div>
+    </div>
+
+    <div class="qa" id="q-io3">
+      <div class="qa-q" onclick="toggleQA('q-io3')">What is libuv? What role does it play in Node.js? <span class="qa-arr">▼</span></div>
+      <div class="qa-a">
+        <span class="label">Strong answer</span>
+        libuv is a cross-platform C library that provides Node.js with asynchronous I/O capabilities and an event loop implementation. When you call fs.readFile() or https.get(), Node.js delegates the actual I/O to libuv. For network I/O, libuv uses the OS's native async mechanisms (epoll/Linux, kqueue/macOS, IOCP/Windows). For file I/O, libuv uses its own thread pool (4 threads by default) because file operations don't have consistent native async support across platforms. When I/O completes, libuv places the callback in the event queue. The Node.js event loop — which libuv also manages — picks up callbacks and gives them to V8 (the JavaScript engine) to execute. Node.js = V8 (JS execution) + libuv (async I/O + event loop).
+      </div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>I/O and Event Loop — 60-second revision</h4>
+    <ul>
+      <li>Blocking I/O: thread waits idle during I/O. N concurrent requests = N threads needed.</li>
+      <li>Non-blocking I/O: register callback, return immediately. One thread handles many concurrent I/O operations.</li>
+      <li>Event loop phases: timers → poll (I/O) → check (setImmediate) → close callbacks.</li>
+      <li>Microtasks (Promise.then, async/await): run BEFORE next event loop phase. Higher priority than macrotasks.</li>
+      <li>Macrotasks (setTimeout, setInterval, I/O): run in their respective event loop phase.</li>
+      <li>Execution order: synchronous → microtasks → macrotasks.</li>
+      <li>libuv: C library providing async I/O + event loop. Thread pool (4 threads) for file I/O. OS async for network I/O.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════ -->
+<!-- MASTER INTERVIEW Q&A -->
+<!-- ══════════════════════════════════════════ -->
+<div class="concept" id="interview">
+  <div class="concept-num">Master Review</div>
+  <h2>All OS Interview Questions</h2>
+  <div class="concept-sub">Every OS question that appears in Bangalore product company interviews. Answer out loud without looking, then check. If your answer was weak — study that section again.</div>
+
+  <div class="interview-section" style="margin-top:20px;">
+    <div class="int-label">Complete OS Q&amp;A bank — 20 questions</div>
+
+    <div class="qa" id="qos1"><div class="qa-q" onclick="toggleQA('qos1')">1. What is the difference between a process and a thread? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Process: independent unit with own memory space (code, data, heap, stack). Isolated — crashes don't affect others. Heavy to create. Thread: lightweight unit within a process, shares heap + data, own stack + registers. Cheap to create. Race condition risk from shared memory. Use processes for isolation (browser tabs, microservices). Use threads for shared-state concurrent work (request handling in Java servers).</div></div>
+
+    <div class="qa" id="qos2"><div class="qa-q" onclick="toggleQA('qos2')">2. What is context switching? Why is it expensive? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>OS pauses one process and resumes another: save current process's CPU registers + program counter into its PCB → select next process → load its registers. Expensive because: CPU caches (TLB, instruction cache, data cache) are invalidated — the new process has a different memory map, so cached lookups become misses. Too many threads = too many context switches = performance degradation. Node.js's single-threaded model avoids this overhead for I/O-bound work.</div></div>
+
+    <div class="qa" id="qos3"><div class="qa-q" onclick="toggleQA('qos3')">3. What is concurrency? What is parallelism? How does Node.js achieve concurrency? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Concurrency: multiple tasks make progress via time-slicing on 1 CPU — interleaving, not truly simultaneous. Parallelism: multiple tasks run literally simultaneously on multiple CPU cores. Node.js achieves concurrency through non-blocking I/O + event loop: when I/O is needed, register callback and move on. libuv handles I/O in background. When done, callback queued. Single thread processes one callback at a time — never idles. Efficient for I/O-bound workloads. CPU-bound tasks block the event loop.</div></div>
+
+    <div class="qa" id="qos4"><div class="qa-q" onclick="toggleQA('qos4')">4. What is a race condition? How is it caused? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Outcome depends on unpredictable thread timing. Caused by non-atomic operations on shared data. Example: count++ is READ, ADD, WRITE — three instructions. Thread A reads 5, Thread B reads 5 before A writes, both compute 6, final value is 6 not 7. Real example: two requests to "book last seat" both read "1 available," both succeed → oversold. Fix: synchronize the critical section (mutex/synchronized), or use atomic operations (AtomicInteger), or use database transactions with proper isolation.</div></div>
+
+    <div class="qa" id="qos5"><div class="qa-q" onclick="toggleQA('qos5')">5. What is a mutex? What is a semaphore? What is the key difference? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Mutex: binary lock with ownership. Only the thread that locked it can unlock it. Used for mutual exclusion (one thread in critical section). Semaphore: integer counter, no ownership. Any thread can signal (increment) it. Allows up to N threads to access a resource simultaneously. Binary semaphore (count=1) ≈ mutex but without ownership. Key difference: ownership. Mutex owns the lock. Semaphore has no owner — any thread can signal. Use mutex to protect a critical section. Use semaphore to manage a resource pool (connection pool of 10).</div></div>
+
+    <div class="qa" id="qos6"><div class="qa-q" onclick="toggleQA('qos6')">6. What is a deadlock? What are the 4 Coffman conditions? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Two or more threads permanently blocked — each waiting for a resource held by another. 4 conditions (all must hold): (1) Mutual Exclusion — resource non-shareable. (2) Hold and Wait — holds one resource, waiting for another. (3) No Preemption — resources can't be forcibly taken. (4) Circular Wait — cycle of threads, each waiting for next's resource. Break any one → no deadlock. Most practical: break Circular Wait by always acquiring locks in the same fixed order by resource ID.</div></div>
+
+    <div class="qa" id="qos7"><div class="qa-q" onclick="toggleQA('qos7')">7. What is the difference between deadlock and starvation? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Deadlock: permanent circular block. No thread can proceed. Requires external intervention (kill and restart, timeout + rollback). Starvation: thread perpetually denied CPU time but NOT permanently blocked — high-priority threads keep preempting. If they stop arriving, the starved thread would run. Fix: aging (priority increases with wait time). Deadlock is circular dependency. Starvation is unfair scheduling. Both result in a thread not running, but different causes and fixes.</div></div>
+
+    <div class="qa" id="qos8"><div class="qa-q" onclick="toggleQA('qos8')">8. What is stack vs heap memory? What lives where? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Stack: local variables, function call frames, primitives. LIFO — freed automatically when function returns. Thread-specific (no race conditions). Fixed size. Fast. Stack overflow = too deep recursion. Heap: objects (new/malloc), closures, dynamic allocations. GC-managed in Java/JS. Shared across threads (needs synchronization). Variable size. Slower. In Java/JS: the variable name is on the stack, the object it points to is on the heap. When a function exits, its stack frame is popped but heap objects remain until no references point to them (GC eligible).</div></div>
+
+    <div class="qa" id="qos9"><div class="qa-q" onclick="toggleQA('qos9')">9. What is garbage collection? How does Java's generational GC work? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>GC automatically frees heap memory that's no longer reachable from the program. Java uses generational GC based on "most objects die young." JVM heap: Young Generation (Eden + Survivor) and Old Generation. New objects in Eden. When Eden fills → fast Minor GC (collects mostly dead young objects). Survivors promoted to Old Gen over multiple GCs. Old Gen fills → slow Major GC (stop-the-world). Mark and Sweep: traverse from GC roots (statics, stack refs, thread objects), mark live objects, sweep unmarked. Efficiency: Minor GC handles 90%+ of garbage, runs fast because Young Gen is small.</div></div>
+
+    <div class="qa" id="qos10"><div class="qa-q" onclick="toggleQA('qos10')">10. What causes memory leaks in React? How do you prevent them? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Three common React memory leaks: (1) setState after unmount — async fetch completes after component unmounts, calls setState. Fix: cancelled flag in useEffect cleanup or AbortController. (2) Forgotten event listeners — addEventListener without removeEventListener in cleanup. DOM element removed but listener persists, holding reference. (3) Forgotten timers — setInterval without clearInterval in cleanup. Pattern: always return cleanup from useEffect: <code>return () => { clearInterval(timer); window.removeEventListener('scroll', handler); }</code>. Detect: Chrome DevTools Memory tab → heap snapshot comparison.</div></div>
+
+    <div class="qa" id="qos11"><div class="qa-q" onclick="toggleQA('qos11')">11. What is the Node.js event loop? What is the execution order of sync, microtask, and macrotask? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>The event loop is Node's mechanism for processing async operations. It continuously loops through phases: timers (setTimeout/setInterval callbacks), I/O callbacks, poll (retrieve I/O events), check (setImmediate), close callbacks. Between each phase, the microtask queue is fully drained. Execution order: (1) All synchronous code executes first. (2) Microtasks run (Promise.then, async/await, process.nextTick — nextTick runs before other microtasks). (3) Macrotasks run in their event loop phase (setTimeout, I/O callbacks). Example: <code>console.log(1); setTimeout(()=>log(2),0); Promise.resolve().then(()=>log(3)); log(4);</code> → output: 1, 4, 3, 2.</div></div>
+
+    <div class="qa" id="qos12"><div class="qa-q" onclick="toggleQA('qos12')">12. What is CPU scheduling? What is Round Robin? What is its advantage? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>CPU scheduling determines which ready process runs next. Round Robin: each process gets a fixed time quantum (e.g., 10ms). After quantum expires, it's preempted and put at the back of the ready queue. All processes cycle through equally. Advantages: fair — no process starves; good average response time for interactive systems; preemptive — no convoy effect. Trade-off: time quantum size matters — too small = too many context switches (overhead); too large = behaves like FCFS (long processes block short ones). Most modern OS schedulers use Round Robin with priority queues (multilevel feedback queue).</div></div>
+
+    <div class="qa" id="qos13"><div class="qa-q" onclick="toggleQA('qos13')">13. What is virtual memory? Why does swapping hurt performance? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Virtual memory gives each process the illusion of having a large, contiguous private address space much larger than physical RAM. The OS maps virtual pages to physical RAM frames. When a page isn't in RAM, a page fault occurs — the OS fetches the page from disk (swap space). This is catastrophically slow: disk is ~10,000x slower than RAM. When a system regularly page-faults (called "thrashing"), performance degrades dramatically. Symptom: 100% disk utilization, high swap usage. Fix: add more RAM, reduce memory usage, limit concurrent process count. This is why monitoring memory usage and avoiding memory leaks matters in production services.</div></div>
+
+    <div class="qa" id="qos14"><div class="qa-q" onclick="toggleQA('qos14')">14. How does Node.js handle a CPU-heavy task? What's the fix? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>A CPU-heavy synchronous task (image resize, encryption, large sort) blocks the event loop — the single thread is busy, no callbacks can execute, all pending requests time out. Fix options: (1) <code>worker_threads</code> module: create a Worker that runs the heavy computation on a separate OS thread. Main thread + event loop stay free for other requests. (2) <code>cluster</code> module: fork the Node process across all CPU cores. Multiple event loops, a master process distributes requests. (3) Dedicated microservice: move CPU-heavy work to a Python/Go/Rust service, have Node proxy to it via HTTP. (4) Streaming + chunking: if possible, break the work into small async chunks using setImmediate to yield between chunks.</div></div>
+
+    <div class="qa" id="qos15"><div class="qa-q" onclick="toggleQA('qos15')">15. What is libuv? Why does Node.js use a thread pool for some operations? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>libuv is a cross-platform C library providing async I/O capabilities to Node.js. It implements the event loop. For network I/O (TCP, UDP), libuv uses the OS's native async APIs (epoll on Linux, kqueue on macOS, IOCP on Windows) — truly non-blocking, no extra threads needed. For file I/O and some other operations, libuv uses its own thread pool (4 threads by default, configurable via UV_THREADPOOL_SIZE) because file operations don't have consistent native async support across all platforms. When I/O completes, libuv places the callback in the event queue for the main thread to pick up and execute.</div></div>
+
+    <div class="qa" id="qos16"><div class="qa-q" onclick="toggleQA('qos16')">16. What is the convoy effect? How does Round Robin fix it? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Convoy effect occurs in FCFS scheduling when a long process (needing 500ms CPU) blocks many short processes (needing 2ms each) waiting behind it. The short processes wait 500ms when they could each complete in 2ms. Average wait time is terrible. Round Robin fixes this by preempting the long process after each time quantum (e.g., 10ms). Short processes get their 2ms of CPU time quickly, without waiting for the long process to finish. The long process gets its total CPU time eventually (in multiple 10ms slices), but short processes aren't blocked.</div></div>
+
+    <div class="qa" id="qos17"><div class="qa-q" onclick="toggleQA('qos17')">17. How do databases handle deadlocks? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Databases use two approaches: (1) Detection: The DB maintains a "wait-for" graph where nodes are transactions and edges are "A is waiting for a lock held by B." If a cycle exists, deadlock is detected. The DB selects a "victim" transaction (usually the one with fewer locks or less work done), rolls it back, and allows the other to proceed. The rolled-back transaction is typically retried automatically. (2) Timeout: simpler — if a transaction can't acquire a lock within N milliseconds, assume possible deadlock, roll it back, and retry. PostgreSQL uses both. MySQL uses timeout by default. Application code should handle "deadlock detected" errors with retry logic.</div></div>
+
+    <div class="qa" id="qos18"><div class="qa-q" onclick="toggleQA('qos18')">18. What is a critical section? What are the three requirements for a correct solution? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>A critical section is code that accesses shared resources and must not execute concurrently. Three requirements: (1) Mutual Exclusion: only one thread in the critical section at a time. (2) Progress: if no thread is in the critical section and some threads want to enter, the selection of which enters next cannot be postponed indefinitely — a thread must eventually enter. (3) Bounded Waiting: after a thread requests to enter the critical section, there's an upper bound on how many times other threads can enter before this thread is allowed. This prevents starvation within the synchronization solution itself.</div></div>
+
+    <div class="qa" id="qos19"><div class="qa-q" onclick="toggleQA('qos19')">19. What is the difference between preemptive and non-preemptive scheduling? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Preemptive scheduling: the OS can interrupt a running process and switch to another, even if the running process hasn't finished its work or yielded voluntarily. Triggered by: timer interrupt (time quantum expired in Round Robin), higher-priority process becomes ready, I/O completion. All modern OS use preemptive scheduling. Non-preemptive (cooperative) scheduling: a process runs until it voluntarily yields the CPU (by doing I/O, calling yield(), or finishing). More predictable but a single misbehaving process can monopolize the CPU. Old Mac OS, early Windows 3.x used cooperative scheduling. Today only used in embedded systems and some game engines.</div></div>
+
+    <div class="qa" id="qos20"><div class="qa-q" onclick="toggleQA('qos20')">20. Is JavaScript affected by race conditions? Explain with an example. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>For CPU-level operations: no. JavaScript is single-threaded — two JS operations cannot execute simultaneously. No two functions race to modify the same variable at the CPU instruction level. However, async operations create logical race conditions. Example: two Express route handlers serve "book last seat." Both read <code>seats = 1</code> from DB. Both check <code>seats > 0</code>. Both insert a booking. Both decrement seats. Result: seats = -1, two people booked the last seat. Fix: database-level locking (SELECT FOR UPDATE), atomic DB operations, or optimistic locking with version numbers. The race isn't between CPU instructions — it's between async DB operations that need to be atomic at the database level.</div></div>
+  </div>
+
+  <div class="rev">
+    <h4>OS Complete — Phase 0 OS is done when you can...</h4>
+    <ul>
+      <li>Explain process vs thread, with Chrome and Node.js as examples, in under 90 seconds</li>
+      <li>Explain how Node.js handles concurrent requests (event loop, non-blocking I/O, libuv) clearly</li>
+      <li>Draw the deadlock scenario and explain prevention via lock ordering</li>
+      <li>Explain mutex vs semaphore with a real example for each (synchronized keyword, DB connection pool)</li>
+      <li>Explain the event loop execution order: sync → microtasks → macrotasks, and write the output of an async code snippet correctly</li>
+      <li>Answer all 20 questions above without peeking for more than 5 seconds</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+function toggleQA(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+document.querySelectorAll('.nav-pill').forEach(pill => {
+  pill.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+window.addEventListener('scroll', () => {
+  const concepts = document.querySelectorAll('.concept[id]');
+  const pills = document.querySelectorAll('.nav-pill');
+  let active = '';
+  concepts.forEach(c => { if (c.getBoundingClientRect().top < 100) active = c.id; });
+  pills.forEach(p => { p.classList.toggle('active', p.getAttribute('href') === '#' + active); });
+});
+</script>
+</body>
+</html>
