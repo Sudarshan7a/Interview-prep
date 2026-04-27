@@ -1,0 +1,1363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 4 — Interview Prep + Job Hunt</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap');
+:root{
+  --bg:#09090b;--s1:#111113;--s2:#18181b;--s3:#27272a;--b1:#3f3f46;--b2:#52525b;
+  --t1:#fafafa;--t2:#a1a1aa;--t3:#52525b;
+  --mono:'Space Mono',monospace;--sans:'Space Grotesk',sans-serif;
+  --gold:#fbbf24;--green:#4ade80;--blue:#60a5fa;--red:#f87171;--purple:#c084fc;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--t1);font-family:var(--sans);font-size:14px;line-height:1.6;}
+
+.topbar{padding:28px 32px 24px;border-bottom:1px solid var(--s3);}
+.topbar h1{font-size:22px;font-weight:700;margin-bottom:6px;}
+.topbar p{font-size:13px;color:var(--t2);max-width:640px;}
+.tagrow{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;}
+.tag{font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:4px;border:1px solid var(--b1);color:var(--t2);}
+.tag.hi{border-color:var(--gold);color:var(--gold);}
+
+.tabs{display:flex;overflow-x:auto;border-bottom:1px solid var(--s3);scrollbar-width:none;padding:0 32px;}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{font-family:var(--mono);font-size:10px;padding:12px 16px;border:none;background:none;color:var(--t3);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;display:flex;align-items:center;gap:6px;transition:color 0.15s;letter-spacing:0.04em;}
+.tab:hover{color:var(--t2);}
+.tab.on{color:var(--t1);border-bottom-color:currentColor;}
+.tdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+.panel{display:none;padding:32px;max-width:980px;}
+.panel.on{display:block;}
+
+.sh{display:flex;align-items:flex-start;gap:16px;margin-bottom:28px;padding-bottom:20px;border-bottom:1px solid var(--s3);}
+.sh-badge{width:48px;height:48px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.sh h2{font-size:20px;font-weight:700;margin-bottom:4px;}
+.sh p{font-size:12px;color:var(--t2);line-height:1.6;max-width:600px;}
+
+.sec-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--s3);}
+
+.topic{background:var(--s1);border:1px solid var(--s3);border-radius:10px;margin-bottom:8px;overflow:hidden;}
+.topic-head{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;cursor:pointer;}
+.topic-head:hover{background:var(--s2);}
+.t-check{width:20px;height:20px;border-radius:5px;border:1.5px solid var(--b1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:11px;color:transparent;margin-top:1px;cursor:pointer;transition:all 0.15s;}
+.topic.done .t-check{background:#16a34a;border-color:#16a34a;color:#fff;}
+.t-main{flex:1;}
+.t-name{font-size:13px;font-weight:600;color:var(--t1);margin-bottom:3px;}
+.topic.done .t-name{color:var(--t3);text-decoration:line-through;}
+.t-sub{font-size:12px;color:var(--t2);}
+.topic.done .t-sub{color:var(--t3);}
+.t-badge{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;white-space:nowrap;flex-shrink:0;}
+.b-must{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3);}
+.b-high{background:rgba(59,130,246,0.15);color:#60a5fa;border:1px solid rgba(59,130,246,0.3);}
+
+.topic-body{display:none;padding:0 16px 16px;border-top:1px solid var(--s3);}
+.topic.open .topic-body{display:block;}
+
+.tb-sec{margin-top:14px;}
+.tb-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-bottom:8px;}
+
+.learn-list{list-style:none;display:flex;flex-direction:column;gap:5px;}
+.learn-list li{font-size:12px;color:var(--t2);padding-left:14px;position:relative;line-height:1.5;}
+.learn-list li::before{content:'→';position:absolute;left:0;color:var(--b2);font-size:11px;}
+.learn-list li strong{color:var(--t1);font-weight:500;}
+
+.info-card{padding:14px 16px;background:var(--s1);border:1px solid var(--s3);border-radius:10px;margin-bottom:10px;}
+.info-card.warn{border-left:3px solid var(--gold);}
+.info-card.good{border-left:3px solid var(--green);}
+.info-card.info{border-left:3px solid var(--blue);}
+.info-card.red{border-left:3px solid var(--red);}
+.info-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.info-card.warn .info-title{color:var(--gold);}
+.info-card.good .info-title{color:var(--green);}
+.info-card.info .info-title{color:var(--blue);}
+.info-card.red .info-title{color:var(--red);}
+.info-text{font-size:12px;color:var(--t2);line-height:1.6;}
+
+/* Q&A accordion */
+.qa-box{border:1px solid var(--s3);border-radius:10px;overflow:hidden;margin-bottom:8px;}
+.qa-q{padding:13px 16px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;background:var(--s1);}
+.qa-q:hover{background:var(--s2);}
+.qa-arr{color:var(--t3);font-size:10px;flex-shrink:0;margin-top:2px;transition:transform 0.2s;}
+.qa-box.open .qa-arr{transform:rotate(180deg);}
+.qa-a{display:none;padding:14px 16px;background:var(--s2);border-top:1px solid var(--s3);font-size:12px;color:var(--t2);line-height:1.8;}
+.qa-box.open .qa-a{display:block;}
+.qa-a strong{color:var(--t1);}
+.qa-a .answer-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--green);margin-bottom:8px;display:block;}
+.qa-a .follow-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--gold);margin-top:12px;margin-bottom:6px;display:block;}
+
+/* Resume sections */
+.resume-block{background:var(--s1);border:1px solid var(--s3);border-radius:10px;overflow:hidden;margin-bottom:12px;}
+.rb-header{padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.rb-header:hover{background:var(--s2);}
+.rb-title{font-size:13px;font-weight:600;}
+.rb-pill{font-family:var(--mono);font-size:9px;padding:2px 8px;border-radius:4px;}
+.rb-body{display:none;padding:0 16px 16px;border-top:1px solid var(--s3);}
+.resume-block.open .rb-body{display:block;}
+.rb-arr{color:var(--t3);font-size:10px;transition:transform 0.2s;}
+.resume-block.open .rb-arr{transform:rotate(180deg);}
+
+/* Company cards */
+.company-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin-bottom:24px;}
+.co-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:16px;}
+.co-tier{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:6px;}
+.co-name{font-size:14px;font-weight:700;margin-bottom:4px;}
+.co-sal{font-family:var(--mono);font-size:11px;color:var(--green);margin-bottom:8px;}
+.co-tags{display:flex;gap:4px;flex-wrap:wrap;}
+.co-tag{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;background:var(--s2);color:var(--t3);}
+.co-tag.dsa{background:rgba(239,68,68,0.1);color:#f87171;}
+.co-tag.sd{background:rgba(168,85,247,0.1);color:#c084fc;}
+.co-tag.full{background:rgba(59,130,246,0.1);color:#60a5fa;}
+.co-tag.spring{background:rgba(109,179,63,0.1);color:#86cc4a;}
+
+/* Salary negotiation */
+.neg-step{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;margin-bottom:8px;}
+.neg-num{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--gold);flex-shrink:0;min-width:28px;}
+.neg-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.neg-text{font-size:12px;color:var(--t2);line-height:1.5;}
+
+/* Tracker table */
+.tracker-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:8px;}
+.tracker-table th{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);text-align:left;padding:8px 12px;border-bottom:1px solid var(--s3);background:var(--s2);}
+.tracker-table td{padding:8px 12px;border-bottom:1px solid var(--s3);color:var(--t2);}
+.tracker-table tr:last-child td{border-bottom:none;}
+.status-pill{font-family:var(--mono);font-size:9px;padding:2px 7px;border-radius:4px;}
+.s-applied{background:rgba(59,130,246,0.15);color:#60a5fa;}
+.s-interview{background:rgba(234,179,8,0.15);color:#fbbf24;}
+.s-offer{background:rgba(34,197,94,0.15);color:#4ade80;}
+.s-reject{background:rgba(239,68,68,0.1);color:#f87171;}
+
+/* Prompt */
+.prompt-block{background:#0a1000;border:1px solid rgba(74,222,128,0.2);border-radius:10px;padding:18px;position:relative;margin-top:8px;}
+.prompt-block pre{font-family:var(--mono);font-size:11px;color:#86efac;line-height:1.8;white-space:pre-wrap;}
+.copy-btn{position:absolute;top:12px;right:12px;font-family:var(--mono);font-size:9px;padding:4px 10px;border:1px solid rgba(74,222,128,0.3);border-radius:4px;background:none;color:#4ade80;cursor:pointer;}
+
+/* Code */
+.code-wrap{background:#0d1117;border:1px solid var(--s3);border-radius:8px;margin-top:8px;overflow:hidden;}
+.code-title{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);padding:8px 14px;border-bottom:1px solid var(--s3);}
+.code-wrap pre{font-family:var(--mono);font-size:11px;line-height:1.8;padding:12px 14px;color:#c9d1d9;overflow-x:auto;white-space:pre;}
+
+/* Overview grid */
+.ov-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:24px;}
+.ov-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:14px;cursor:pointer;transition:border-color 0.15s;}
+.ov-card:hover{border-color:var(--b1);}
+.ov-num{font-family:var(--mono);font-size:10px;color:var(--t3);margin-bottom:4px;}
+.ov-title{font-size:13px;font-weight:600;margin-bottom:4px;}
+.ov-meta{font-size:11px;color:var(--t2);}
+
+/* Done criteria */
+.done-item{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;margin-bottom:6px;}
+.done-check{color:var(--green);font-size:12px;flex-shrink:0;margin-top:1px;}
+.done-text{font-size:12px;color:var(--t2);line-height:1.5;}
+
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+@media(max-width:640px){.two-col{grid-template-columns:1fr;}.topbar,.tabs,.panel{padding-left:16px;padding-right:16px;}}
+
+/* weekly */
+.week-row{display:grid;grid-template-columns:80px 1fr;gap:12px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;font-size:12px;margin-bottom:6px;}
+.wr-week{font-family:var(--mono);font-size:10px;color:var(--t3);padding-top:2px;}
+.wr-col strong{color:var(--t1);font-weight:600;display:block;margin-bottom:3px;}
+.wr-col{color:var(--t2);}
+
+/* star method */
+.star-row{display:grid;grid-template-columns:80px 1fr;gap:12px;padding:10px 14px;border-bottom:1px solid var(--s3);}
+.star-row:last-child{border-bottom:none;}
+.star-letter{font-family:var(--mono);font-size:18px;font-weight:700;color:var(--gold);}
+.star-content{font-size:12px;color:var(--t2);line-height:1.5;}
+.star-content strong{color:var(--t1);}
+
+/* linkedin tips */
+.tip-item{display:flex;gap:12px;padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;margin-bottom:8px;}
+.tip-icon{font-size:16px;flex-shrink:0;}
+.tip-title{font-size:13px;font-weight:600;margin-bottom:3px;}
+.tip-text{font-size:12px;color:var(--t2);line-height:1.5;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1>Phase 4 — Interview Prep + Active Job Hunt</h1>
+  <p>The final sprint. Mock interviews, resume, behavioral prep, company targeting, LinkedIn strategy, salary negotiation. Everything between finishing your projects and getting an offer.</p>
+  <div class="tagrow">
+    <span class="tag hi">3–4 weeks</span>
+    <span class="tag">mock interviews daily</span>
+    <span class="tag">5–10 applications/week</span>
+    <span class="tag">resume + LinkedIn</span>
+    <span class="tag">salary negotiation</span>
+  </div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="go('overview',this)"><span class="tdot" style="background:#888"></span>Overview</button>
+  <button class="tab" onclick="go('mock',this)"><span class="tdot" style="background:var(--red)"></span>Mock Interviews</button>
+  <button class="tab" onclick="go('cs',this)"><span class="tdot" style="background:var(--blue)"></span>CS Questions</button>
+  <button class="tab" onclick="go('behavioral',this)"><span class="tdot" style="background:var(--purple)"></span>Behavioral</button>
+  <button class="tab" onclick="go('resume',this)"><span class="tdot" style="background:var(--green)"></span>Resume</button>
+  <button class="tab" onclick="go('companies',this)"><span class="tdot" style="background:var(--gold)"></span>Companies</button>
+  <button class="tab" onclick="go('linkedin',this)"><span class="tdot" style="background:#0a66c2)"></span>LinkedIn</button>
+  <button class="tab" onclick="go('salary',this)"><span class="tdot" style="background:var(--green)"></span>Salary</button>
+  <button class="tab" onclick="go('plan',this)"><span class="tdot" style="background:#f43f5e"></span>Plan</button>
+</div>
+
+<!-- OVERVIEW -->
+<div id="p-overview" class="panel on">
+  <div class="info-card info">
+    <div class="info-title">📌 What Phase 4 actually is</div>
+    <div class="info-text">You've built the skills. Phase 4 is about packaging and presenting them. Resume tells your story on paper. Mock interviews build the muscle memory to perform under pressure. Behavioral prep means you're not stumbling when asked "tell me about a time you failed." Apply while you prep — don't wait until you feel ready. You'll never feel fully ready.</div>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">What this phase covers</div>
+  <div class="ov-grid">
+    <div class="ov-card" onclick="go('mock',document.querySelectorAll('.tab')[1])">
+      <div class="ov-num">Daily practice</div>
+      <div class="ov-title" style="color:var(--red)">Mock Interviews</div>
+      <div class="ov-meta">2 full mock rounds per week. Live coding, CS theory, project deep-dive.</div>
+    </div>
+    <div class="ov-card" onclick="go('cs',document.querySelectorAll('.tab')[2])">
+      <div class="ov-num">Round 2 prep</div>
+      <div class="ov-title" style="color:var(--blue)">CS Questions</div>
+      <div class="ov-meta">30 questions across OOP, OS, DBMS, Networks — with full answers.</div>
+    </div>
+    <div class="ov-card" onclick="go('behavioral',document.querySelectorAll('.tab')[3])">
+      <div class="ov-num">HR rounds</div>
+      <div class="ov-title" style="color:var(--purple)">Behavioral Prep</div>
+      <div class="ov-meta">STAR method. 8 stories. Tell me about yourself. Why this company.</div>
+    </div>
+    <div class="ov-card" onclick="go('resume',document.querySelectorAll('.tab')[4])">
+      <div class="ov-num">First filter</div>
+      <div class="ov-title" style="color:var(--green)">Resume</div>
+      <div class="ov-meta">1 page, ATS-friendly. Projects section is everything. Bullet formula.</div>
+    </div>
+    <div class="ov-card" onclick="go('companies',document.querySelectorAll('.tab')[5])">
+      <div class="ov-num">Target list</div>
+      <div class="ov-title" style="color:var(--gold)">Companies</div>
+      <div class="ov-meta">Tier 1/2/3 Bangalore companies. What each one tests. Where to apply.</div>
+    </div>
+    <div class="ov-card" onclick="go('linkedin',document.querySelectorAll('.tab')[6])">
+      <div class="ov-num">Inbound leads</div>
+      <div class="ov-title" style="color:#60a5fa">LinkedIn</div>
+      <div class="ov-meta">Profile optimization, posting strategy, referral outreach scripts.</div>
+    </div>
+    <div class="ov-card" onclick="go('salary',document.querySelectorAll('.tab')[7])">
+      <div class="ov-num">Final step</div>
+      <div class="ov-title" style="color:var(--green)">Salary Negotiation</div>
+      <div class="ov-meta">How to evaluate an offer. Scripts for negotiating. When to walk away.</div>
+    </div>
+  </div>
+
+  <div class="info-card warn">
+    <div class="info-title">⚠️ The #1 mistake in Phase 4</div>
+    <div class="info-text">Waiting until you "feel ready" to apply. You will never feel ready. The interview process itself is the best preparation — real rejection teaches you more than any mock. Apply to Tier 3 companies in week 1. Use them as practice for Tier 1 in week 3. Treat every interview as a learning session, not a life-or-death test.</div>
+  </div>
+</div>
+
+<!-- MOCK INTERVIEWS -->
+<div id="p-mock" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(248,113,113,0.15);">🎯</div>
+    <div>
+      <h2>Mock Interviews — Build the Muscle</h2>
+      <p>You can know everything and still fail interviews if you've never practiced performing under pressure. 2 full mock rounds per week minimum. The feedback loop: attempt → get feedback → fix the gap → repeat.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">The 3 types of rounds — prepare for all</div>
+
+  <div class="topic" id="m-1">
+    <div class="topic-head" onclick="expand('m-1')">
+      <div class="t-check" onclick="check(event,'m-1')">✓</div>
+      <div class="t-main">
+        <div class="t-name">DSA Round — live coding under pressure</div>
+        <div class="t-sub">2 problems, 45 minutes total. Explain thinking out loud. Handle edge cases.</div>
+      </div>
+      <span class="t-badge b-must">must · every company has this</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">What to do differently in a real interview vs practice</div>
+        <ul class="learn-list">
+          <li><strong>Read the problem twice</strong> before writing anything. Misunderstanding costs more time than re-reading.</li>
+          <li><strong>Clarify before coding</strong>: "Can the array be empty? Can values be negative? Should I handle duplicates?" — shows thoroughness.</li>
+          <li><strong>State your approach first</strong>: "I'm going to use a sliding window — expand right, shrink left when condition violated. Time O(n), space O(k). Let me code it." Interviewer can stop you if approach is wrong.</li>
+          <li><strong>Think out loud</strong>: don't go silent for 5 minutes. Say what you're considering even if you're not sure. "I'm thinking about using a HashMap here to get O(1) lookup..."</li>
+          <li><strong>Write clean code</strong>: meaningful variable names, not i/j for everything. add spaces. Interviewers read your code.</li>
+          <li><strong>Test before declaring done</strong>: trace through your code with the given example. Then test an edge case (empty input, single element, all same values).</li>
+          <li><strong>If stuck</strong>: start with brute force. Say: "The brute force is O(n²) — let me think about how to optimize." Never sit silent.</li>
+        </ul>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">DSA mock interview prompt — run this 3x per week</div>
+        <div class="prompt-block">
+          <button class="copy-btn" onclick="copyText(this)">copy</button>
+          <pre>Simulate a DSA interview round at a Bangalore product company (CRED/PhonePe/Swiggy level) for a fresher full stack role. Language: JavaScript.
+
+Format:
+- 2 problems in 45 minutes (25 min each)
+- Mix: 1 medium + 1 medium-hard
+- Topics from: arrays, graphs, trees, DP, sliding window, binary search (any from phases 1-2)
+
+Rules:
+- Give me the problem, then wait for me to ask clarifying questions
+- I'll state my approach before coding — tell me if it's on the right track
+- After I share my solution, give me: correctness score (0-10), time/space complexity check, edge cases I missed, cleaner approach if mine is suboptimal
+- At the end: overall rating and "would you advance this candidate?" with reasoning
+
+Start with problem 1. State it like a real interviewer would.</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic" id="m-2">
+    <div class="topic-head" onclick="expand('m-2')">
+      <div class="t-check" onclick="check(event,'m-2')">✓</div>
+      <div class="t-main">
+        <div class="t-name">CS Theory Round — OOP, OS, DBMS, Networks</div>
+        <div class="t-sub">10–15 questions, 30 minutes. Mix of definitions and "explain with example."</div>
+      </div>
+      <span class="t-badge b-must">must · round 2 at every company</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">How CS theory rounds work at Bangalore companies</div>
+        <ul class="learn-list">
+          <li>Questions start broad ("what is a deadlock?") and get specific with follow-ups ("how would you prevent it in your Node.js app?")</li>
+          <li>Always connect theory to your <strong>projects</strong>. "In my CollabDocs project, I used Redis for session storage — here's how that connects to the concept of shared memory between processes."</li>
+          <li>If you don't know something: say "I'm not certain about the exact implementation but here's how I understand it conceptually..." — partial credit is better than silence</li>
+          <li>They test if you understand WHY, not just WHAT. "Why does Node.js use non-blocking I/O?" not just "what is non-blocking I/O?"</li>
+        </ul>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">CS theory mock prompt</div>
+        <div class="prompt-block">
+          <button class="copy-btn" onclick="copyText(this)">copy</button>
+          <pre>Simulate a CS fundamentals interview round for a fresher full stack developer role at a Bangalore product company.
+
+Mix questions from: OOP (Java + JavaScript), Operating Systems, DBMS, Computer Networks.
+Ask 12 questions — increasing difficulty.
+
+Format:
+- Ask one question at a time
+- Wait for my full answer
+- Then: tell me what I got right, what I missed, what the ideal answer includes
+- Note if my answer shows I understand the concept deeply or just memorized a definition
+- After all 12: give me a list of topics where my answers were weak
+
+Start with question 1. Make it a definitional question about OOP.</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic" id="m-3">
+    <div class="topic-head" onclick="expand('m-3')">
+      <div class="t-check" onclick="check(event,'m-3')">✓</div>
+      <div class="t-main">
+        <div class="t-name">Project Deep-Dive Round</div>
+        <div class="t-sub">Interviewer asks about your projects. Handle technical follow-ups, failure stories, design choices.</div>
+      </div>
+      <span class="t-badge b-must">must · almost always a round</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">What interviewers actually test in project rounds</div>
+        <ul class="learn-list">
+          <li><strong>Did you build it or copy it?</strong> They ask questions the tutorial doesn't answer. "Why did you choose MongoDB over PostgreSQL?" "What happens if your JWT secret is compromised?" Know your own code.</li>
+          <li><strong>Can you defend your decisions?</strong> "Why did you use Socket.io instead of plain WebSocket?" Have a clear reason for every tech choice.</li>
+          <li><strong>What would you do differently?</strong> Shows maturity. "Looking back, I'd add Redis caching to the aggregation queries — they're slow on large datasets." Interviewers love this.</li>
+          <li><strong>What broke and how did you fix it?</strong> Real engineering story. "I had a race condition where two users editing simultaneously corrupted data — here's how I found and fixed it."</li>
+        </ul>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">Project deep-dive mock prompt</div>
+        <div class="prompt-block">
+          <button class="copy-btn" onclick="copyText(this)">copy</button>
+          <pre>Act as a senior engineer interviewing me about my project at a product company in Bangalore. I'll describe my project briefly and you'll dig deep.
+
+My project: [DESCRIBE YOUR PROJECT — stack, features, what's interesting]
+
+Interview this project rigorously:
+1. Start with "tell me about this project" (let me pitch it)
+2. Ask increasingly specific technical questions about implementation details
+3. Challenge my architecture choices — "why not use X instead of Y?"
+4. Ask about failure scenarios — "what happens if Redis goes down?"
+5. Probe my scaling knowledge — "how does this handle 10x traffic?"
+6. Ask what I'd do differently
+
+After each answer: tell me if it was strong, acceptable, or weak — and why. Be honest. Don't be gentle.
+
+Start: "So tell me about your most interesting project."</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic" id="m-4">
+    <div class="topic-head" onclick="expand('m-4')">
+      <div class="t-check" onclick="check(event,'m-4')">✓</div>
+      <div class="t-main">
+        <div class="t-name">Full mock interview — all rounds in sequence</div>
+        <div class="t-sub">90 minutes, simulates a complete interview day. Do this weekly.</div>
+      </div>
+      <span class="t-badge b-high">high value</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">Full mock format</div>
+        <div class="prompt-block">
+          <button class="copy-btn" onclick="copyText(this)">copy</button>
+          <pre>Simulate a complete interview loop at a Bangalore mid-size product company (like Juspay, BrowserStack, Chargebee, or Niyo) for a Fresher Full Stack Engineer role.
+
+My profile: MERN + Spring Boot, 3 projects (DevTracker, CollabDocs, ShopFlow), DSA at LeetCode medium level, 0 work experience.
+
+Interview format:
+Round 1 (20 min): 1 DSA problem — medium difficulty
+Round 2 (20 min): 5 CS theory questions — OOP, OS, DBMS mix
+Round 3 (20 min): Project deep-dive on CollabDocs
+Round 4 (15 min): Behavioral — STAR format questions
+Round 5 (5 min): "Do you have any questions for us?"
+
+Rules:
+- Do one round at a time. Wait for me to say "next round" before moving on.
+- Score each round 1-5 after I complete it
+- At the end: overall hiring decision (Strong Yes / Yes / No) with detailed reasoning
+
+Begin Round 1. Give me the DSA problem.</pre>
+        </div>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">After every mock — the review process</div>
+        <ul class="learn-list">
+          <li>Write down: what went well, what went poorly, which question you couldn't answer</li>
+          <li>For DSA problems you failed: add to failed list, revisit in 3 days, don't move on until you can solve it clean</li>
+          <li>For CS questions you fumbled: study that topic for 30 minutes, then explain it out loud without notes</li>
+          <li>For behavioral answers that felt weak: rewrite the story using STAR, practice it 3 times aloud</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CS QUESTIONS -->
+<div id="p-cs" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(96,165,250,0.15);">🧠</div>
+    <div>
+      <h2>CS Fundamentals — 30 Interview Questions</h2>
+      <p>These are the actual questions that get asked at Bangalore product companies in round 2. Read the question, answer in your head or out loud, then reveal the full answer. If your answer missed key points — study that topic again.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">OOP — most asked first</div>
+
+  <div class="qa-box" id="q1">
+    <div class="qa-q" onclick="toggleQA('q1')">What is the difference between abstraction and encapsulation? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      <strong>Encapsulation</strong> is the mechanism of hiding internal data and exposing only what's necessary through a controlled interface (private fields + getters/setters). It's about HOW you protect data. <strong>Abstraction</strong> is about hiding complex implementation details and showing only relevant behavior — it's about WHAT the object exposes. Encapsulation implements abstraction. A car engine is abstracted (you use the accelerator, not the fuel injection system) and encapsulated (engine internals are not directly accessible). In Java: encapsulation = private fields, abstraction = interfaces and abstract classes.
+      <span class="follow-label">Likely follow-up</span>
+      "Can you have one without the other?" — Yes. A class can have private fields (encapsulation) without an abstract interface (abstraction). And you can have a public interface (abstraction) with all public fields (no encapsulation, bad practice).
+    </div>
+  </div>
+
+  <div class="qa-box" id="q2">
+    <div class="qa-q" onclick="toggleQA('q2')">Explain polymorphism. What's the difference between compile-time and runtime polymorphism? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      Polymorphism = same interface, different behavior. <strong>Compile-time (static)</strong>: method overloading — same name, different parameters. Resolved at compile time based on argument types. Java supports it, JavaScript does not (last definition wins). <strong>Runtime (dynamic)</strong>: method overriding — child redefines parent's method. Resolved at runtime via dynamic dispatch — Java checks the actual object type, not the reference type. Example: Shape[] shapes = [new Circle(), new Rect()]. Calling shape.area() on each calls the correct overridden version at runtime, even though the reference type is Shape.
+    </div>
+  </div>
+
+  <div class="qa-box" id="q3">
+    <div class="qa-q" onclick="toggleQA('q3')">Why is the 'this' keyword in JavaScript unpredictable? How do arrow functions fix it? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      In JavaScript, <code>this</code> is determined at call time (dynamic binding), not where the function is defined. When a method is detached from its object — <code>const fn = obj.method; fn()</code> — <code>this</code> becomes <code>undefined</code> (strict mode) because there's no object before the dot. Arrow functions solve this with <strong>lexical binding</strong>: they inherit <code>this</code> from the enclosing scope at definition time, not call time. This is why React class component event handlers need binding: <code>this.handleClick.bind(this)</code>, or use arrow function class fields which don't have their own <code>this</code>.
+    </div>
+  </div>
+
+  <div class="qa-box" id="q4">
+    <div class="qa-q" onclick="toggleQA('q4')">What is the Singleton pattern? Why is the basic implementation not thread-safe? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      Singleton ensures only one instance of a class exists globally. The basic <code>if (instance == null) create</code> is not thread-safe because two threads can simultaneously pass the null check before either creates the instance — resulting in two instances. Fixes: (1) synchronized method — works but slow on every call, (2) double-checked locking with volatile — better, (3) enum singleton — best in Java, JVM guarantees thread-safe enum instantiation. In JavaScript, modules are automatic singletons due to module caching — <code>require('./db')</code> always returns the same connection object.
+    </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">OS — frequently asked</div>
+
+  <div class="qa-box" id="q5">
+    <div class="qa-q" onclick="toggleQA('q5')">Node.js is single-threaded. How does it handle 10,000 concurrent requests without blocking? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      Node.js uses <strong>non-blocking I/O with an event loop</strong>. When a request needs I/O (database, file, network), instead of blocking the thread, Node registers a callback with libuv's thread pool and immediately moves to the next request. When I/O completes, the callback is queued in the event loop and executed. The single thread is never sitting idle — it's always processing. This is <strong>concurrency</strong> (not parallelism) — efficient for I/O-bound work. Where it breaks: CPU-heavy tasks (image processing) block the event loop — use worker_threads for those.
+      <span class="follow-label">Connection to your project</span>
+      "In CollabDocs, each Socket.io event handler is processed by this event loop — when a user sends an edit, the Node server receives it, broadcasts to the room, and can handle the next user's edit immediately without waiting."
+    </div>
+  </div>
+
+  <div class="qa-box" id="q6">
+    <div class="qa-q" onclick="toggleQA('q6')">What is a deadlock? Give a real-world example. How do you prevent it? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      Deadlock: two or more threads each waiting for a resource held by the other — permanently stuck. All 4 Coffman conditions must hold: mutual exclusion, hold-and-wait, no preemption, circular wait. <strong>Real example</strong>: A PhonePe transfer — Transaction A locks User X's account and wants User Y's. Transaction B locks User Y's account and wants User X's. Neither can proceed. <strong>Prevention</strong>: break the circular wait by always acquiring locks in the same fixed order. Databases handle it with timeouts — if a transaction can't acquire a lock in N seconds, it rolls back and retries automatically.
+    </div>
+  </div>
+
+  <div class="qa-box" id="q7">
+    <div class="qa-q" onclick="toggleQA('q7')">What is the difference between a process and a thread? When use which? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      <strong>Process</strong>: independent execution unit with own memory space (code, heap, stack). Isolated — crash doesn't affect others. Heavy to create. <strong>Thread</strong>: lightweight unit within a process, shares the heap and data segment, only has its own stack. Cheaper to create, risky (shared state → race conditions). Use <strong>processes</strong> when isolation matters (Chrome tabs, microservices — crash one without killing others). Use <strong>threads</strong> when shared state and low overhead matter (web server handling multiple requests that share the same application state and DB connection pool).
+    </div>
+  </div>
+
+  <div class="qa-box" id="q8">
+    <div class="qa-q" onclick="toggleQA('q8')">What causes memory leaks in JavaScript/React? How do you detect and fix them? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      Common JS memory leaks: (1) <strong>Forgotten timers</strong> — setInterval keeps closure alive. (2) <strong>Event listeners not removed</strong> — DOM element removed but listener still references it. (3) <strong>Detached DOM nodes</strong> — removed from DOM but still referenced in JS variables. (4) <strong>React: setState after unmount</strong> — async operation completes after component unmounts and calls setState. Fix in React: return cleanup from useEffect — cancel timeouts, abort fetch requests, unsubscribe. Detect: Chrome DevTools → Memory tab → take heap snapshots before/after, compare → look for growing object counts.
+    </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">DBMS — most asked</div>
+
+  <div class="qa-box" id="q9">
+    <div class="qa-q" onclick="toggleQA('q9')">Explain ACID properties. Give a real payment example for each. <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer using PhonePe transfer</span>
+      <strong>Atomicity</strong>: Debit ₹500 from A AND credit to B — both happen or neither. If credit fails, debit is rolled back. <strong>Consistency</strong>: Total money stays the same. Balance ≥ 0 constraint never violated. DB moves from one valid state to another. <strong>Isolation</strong>: Two concurrent transfers involving same account don't see each other's intermediate state — T2 sees balance before T1 commits or after, never during. Achieved via locking or MVCC. <strong>Durability</strong>: Once you see "Transfer Successful" — the transaction is written to disk via WAL. Even if server dies immediately after COMMIT, data is safe.
+    </div>
+  </div>
+
+  <div class="qa-box" id="q10">
+    <div class="qa-q" onclick="toggleQA('q10')">What is database indexing? What are the trade-offs? When would you NOT add an index? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      An index is a separate B-Tree data structure that maps column values to row locations — enabling O(log n) lookup instead of O(n) full table scan. <strong>Clustered index</strong>: rows physically sorted by key — one per table (primary key in InnoDB). <strong>Non-clustered</strong>: separate structure with pointers — multiple allowed. <strong>Trade-off</strong>: indexes speed reads but slow every write (INSERT/UPDATE/DELETE must also update all indexes). <strong>When NOT to index</strong>: low-cardinality columns (gender M/F — index barely helps), frequently updated columns, small tables (full scan is faster than index overhead), columns rarely used in WHERE/JOIN/ORDER BY.
+    </div>
+  </div>
+
+  <div class="qa-box" id="q11">
+    <div class="qa-q" onclick="toggleQA('q11')">When would you choose NoSQL over SQL? Give a Bangalore product company example. <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      Use <strong>SQL</strong> for: financial transactions (ACID required — PhonePe payment records), user accounts (strict consistency), anything with complex relationships and joins. Use <strong>NoSQL</strong> for: flexible/evolving schema (Swiggy restaurant menus — every restaurant has different attributes), horizontal scale (Zepto user activity logs — billions of writes), eventual consistency OK (product catalog, search index). Real example: Swiggy likely uses PostgreSQL for orders/payments (ACID), MongoDB for menu catalog (flexible schema), Redis for cart/sessions (speed), Elasticsearch for restaurant search. CAP theorem: can't have all 3 — pick C+P (MongoDB strong reads) or A+P (Cassandra) in distributed systems.
+    </div>
+  </div>
+
+  <div class="qa-box" id="q12">
+    <div class="qa-q" onclick="toggleQA('q12')">Walk me through normalizing a table to 3NF. <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer — step by step</span>
+      Starting table: Orders(OrderID, Customer, CustomerCity, Product, Price) with comma-separated products. <strong>1NF</strong>: atomic values — split multi-valued Products into separate rows. Primary key: (OrderID, Product). <strong>2NF</strong>: remove partial dependencies — Customer and CustomerCity depend only on OrderID, not the full key. Split: Orders(OrderID, CustomerID) and Customers(CustomerID, Name, City). <strong>3NF</strong>: remove transitive dependencies — CustomerCity depends on Customer, not OrderID. Already fixed in 2NF by moving to Customers table. Result: 3 tables with no redundancy. If Ravi moves cities, update 1 row in Customers — not every order. Trade-off: more joins → slower reads. Denormalize when reads >> writes.
+    </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">Networks — full stack specific</div>
+
+  <div class="qa-box" id="q13">
+    <div class="qa-q" onclick="toggleQA('q13')">What happens when you type a URL in the browser? Full answer. <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer — 7 steps</span>
+      1. <strong>DNS resolution</strong>: browser cache → OS cache → ISP resolver → root NS → TLD NS → authoritative NS → IP returned. 2. <strong>TCP handshake</strong>: SYN → SYN-ACK → ACK. Connection established. 3. <strong>TLS handshake</strong> (HTTPS): cert verification with CA, asymmetric key exchange → symmetric session key. 4. <strong>HTTP GET</strong>: browser sends request with headers. 5. <strong>Server processes</strong>: NGINX receives → Node/Spring handles → DB query → response built. 6. <strong>Browser parses HTML</strong>: discovers CSS, JS, images → parallel requests for each. 7. <strong>Rendering</strong>: DOM + CSSOM → render tree → layout → paint → composite. Interviewers can ask follow-ups at any step — know each one.
+    </div>
+  </div>
+
+  <div class="qa-box" id="q14">
+    <div class="qa-q" onclick="toggleQA('q14')">What is CORS? Why does it exist? How do you configure it in your Express app? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      CORS (Cross-Origin Resource Sharing) is a browser security policy that prevents JavaScript on one origin (scheme+domain+port) from making requests to a different origin without explicit permission. It exists to prevent malicious sites from making authenticated API calls on behalf of users. Simple requests: browser adds Origin header, server responds with Access-Control-Allow-Origin. Preflight: for non-simple requests (PUT, DELETE, custom headers) browser sends OPTIONS first. Fix in Express: <code>app.use(cors({ origin: 'https://yourfrontend.com', credentials: true }))</code>. <strong>Critical</strong>: CORS is browser-only. Postman and curl bypass it — CORS is NOT API security. A malicious server can still call your API directly.
+    </div>
+  </div>
+
+  <div class="qa-box" id="q15">
+    <div class="qa-q" onclick="toggleQA('q15')">401 vs 403 status code — when does each apply? <span class="qa-arr">▼</span></div>
+    <div class="qa-a">
+      <span class="answer-label">Strong answer</span>
+      <strong>401 Unauthorized</strong>: server doesn't know who you are. No token, invalid token, expired token. "Please authenticate." The name is misleading — it's actually about authentication, not authorization. <strong>403 Forbidden</strong>: server knows who you are but you don't have permission for this resource. Valid token, but wrong role. "I know who you are — you just can't do this." Real example: 401 when JWT is missing or expired. 403 when a USER role tries to access an ADMIN-only endpoint. This is one of the most common interview gotchas — many developers confuse these.
+    </div>
+  </div>
+</div>
+
+<!-- BEHAVIORAL -->
+<div id="p-behavioral" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(192,132,252,0.15);">🗣️</div>
+    <div>
+      <h2>Behavioral Interview Prep</h2>
+      <p>Behavioral rounds test communication, self-awareness, and how you handle pressure. As a fresher you'll be asked about projects, learning experiences, and collaboration. Use STAR method for every answer.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">The STAR method — every behavioral answer uses this</div>
+  <div style="background:var(--s1);border:1px solid var(--s3);border-radius:10px;overflow:hidden;margin-bottom:24px;">
+    <div class="star-row"><div class="star-letter">S</div><div class="star-content"><strong>Situation</strong>: Set the context. What project, what problem. 2-3 sentences. "While building CollabDocs, I ran into a race condition..."</div></div>
+    <div class="star-row"><div class="star-letter">T</div><div class="star-content"><strong>Task</strong>: What was YOUR responsibility specifically. "My task was to ensure concurrent edits didn't corrupt the document state."</div></div>
+    <div class="star-row"><div class="star-letter">A</div><div class="star-content"><strong>Action</strong>: What YOU did. Concrete, specific steps. "I first identified the issue using console logs to trace the event sequence, then implemented a last-write-wins strategy with timestamps, and added a debounce to batch rapid edits."</div></div>
+    <div class="star-row"><div class="star-letter">R</div><div class="star-content"><strong>Result</strong>: What happened. Quantify if possible. "The race condition was eliminated — documents stayed consistent even under rapid concurrent edits. I also learned to always consider concurrency when designing real-time systems."</div></div>
+  </div>
+
+  <div class="sec-label">Prepare these 8 stories — they cover 90% of behavioral questions</div>
+
+  <div class="topic" id="b-1">
+    <div class="topic-head" onclick="expand('b-1')">
+      <div class="t-check" onclick="check(event,'b-1')">✓</div>
+      <div class="t-main">
+        <div class="t-name">"Tell me about yourself" — 2-minute intro</div>
+        <div class="t-sub">Not your life story. Education → skills → projects → what you're looking for.</div>
+      </div>
+      <span class="t-badge b-must">opens every interview</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">Template — customize with your details</div>
+        <div style="background:var(--s2);border-radius:8px;padding:14px;font-size:12px;color:var(--t2);line-height:1.8;">
+          "I'm [Name], a full stack developer based in Bangalore. I have a strong foundation in MERN stack — React, Node.js, MongoDB — and I'm also building Java full stack skills with Spring Boot. <br><br>
+          Over the past [X months], I've been deeply focused on building production-grade projects. I built <strong>CollabDocs</strong>, a real-time collaborative document editor using Socket.io and Redis — which gave me hands-on experience with WebSockets and distributed caching. I also built a <strong>Spring Boot order management API</strong> with PostgreSQL and Spring Security, which I use to demonstrate my Java backend skills.<br><br>
+          I've been solving DSA problems consistently — I'm comfortable with medium LeetCode problems across arrays, graphs, trees, and DP. I understand CS fundamentals deeply — OS, DBMS, networking — because I've connected them to real system design decisions in my projects.<br><br>
+          I'm looking for a full stack role where I can contribute meaningfully from day one, continue growing technically, and work on products that impact real users."
+        </div>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">Rules for this intro</div>
+        <ul class="learn-list">
+          <li>Keep it under 2 minutes. Practice with a timer.</li>
+          <li>Never start with "I am from..." or "I graduated from..." — start with your skills or what you build</li>
+          <li>Always end with what you're looking for — transitions the conversation to them</li>
+          <li>Customize the project you highlight based on the company — Spring Boot for Java-heavy companies, CollabDocs for companies that value real-time/distributed work</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic" id="b-2">
+    <div class="topic-head" onclick="expand('b-2')">
+      <div class="t-check" onclick="check(event,'b-2')">✓</div>
+      <div class="t-main">
+        <div class="t-name">A technical challenge you faced and overcame</div>
+        <div class="t-sub">The race condition in CollabDocs, the N+1 problem in Spring Boot, JWT refresh complexity.</div>
+      </div>
+      <span class="t-badge b-must">asked at every company</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">How to frame a strong answer</div>
+        <ul class="learn-list">
+          <li>Pick a challenge that shows <strong>debugging skill</strong> — you had to think systematically to find the root cause</li>
+          <li>Be specific: "The issue was that two Socket.io events fired within 10ms and both read the document state before either wrote" — not "there was a bug"</li>
+          <li>Show your process: how you identified it, what you tried, what worked</li>
+          <li>Include what you learned: "This taught me to always think about race conditions in any system where two users can affect the same resource simultaneously"</li>
+        </ul>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">Example story — CollabDocs race condition</div>
+        <div style="background:var(--s2);border-radius:8px;padding:14px;font-size:12px;color:var(--t2);line-height:1.8;">
+          <strong style="color:var(--t1);">S:</strong> While building CollabDocs, I noticed that when two users typed simultaneously, the document would sometimes end up with corrupted content — one user's changes would overwrite the other's even when they were editing different parts.<br><br>
+          <strong style="color:var(--t1);">T:</strong> I needed to identify why this was happening and implement a solution that kept documents consistent under concurrent edits.<br><br>
+          <strong style="color:var(--t1);">A:</strong> I added timestamps to every edit event and logged them on the server. I discovered both clients were reading the document state, then independently computing the new state, then both writing — the second write would erase the first. I implemented a last-write-wins strategy where each edit includes the timestamp and user ID, and the server serializes them in order. I also added a 500ms debounce to prevent rapid keystrokes from firing 50 separate events.<br><br>
+          <strong style="color:var(--t1);">R:</strong> The corruption issue disappeared. The debounce also reduced server load by 80% during typing. The lesson I took from this is to always design concurrent systems assuming multiple actors will modify the same resource simultaneously.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic" id="b-3">
+    <div class="topic-head" onclick="expand('b-3')">
+      <div class="t-check" onclick="check(event,'b-3')">✓</div>
+      <div class="t-main">
+        <div class="t-name">A time you learned something difficult quickly</div>
+        <div class="t-sub">Learning Spring Boot, picking up TypeScript, understanding JWT auth flow.</div>
+      </div>
+      <span class="t-badge b-must">shows learning ability</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">What interviewers are testing</div>
+        <ul class="learn-list">
+          <li>Freshers are hired for potential, not experience. This question = "can you learn what we need you to learn?"</li>
+          <li>Show your <strong>learning process</strong>, not just that you learned it. What resources did you use? How did you practice? How did you know when you understood it?</li>
+          <li>Connect to a <strong>concrete outcome</strong> — not "I learned Spring Boot" but "I learned enough Spring Boot to build a production-grade REST API with JWT auth and JPA in 3 weeks"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic" id="b-4">
+    <div class="topic-head" onclick="expand('b-4')">
+      <div class="t-check" onclick="check(event,'b-4')">✓</div>
+      <div class="t-main">
+        <div class="t-name">Why this company? Why this role?</div>
+        <div class="t-sub">Research the company before every interview. Generic answers get rejected.</div>
+      </div>
+      <span class="t-badge b-must">always asked</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">How to research a company properly (30 min before every interview)</div>
+        <ul class="learn-list">
+          <li>What does the company actually do? What's their core product? Who are the users?</li>
+          <li>Recent news: funding, new features, expansion. LinkedIn or Google "[company] news 2025"</li>
+          <li>Tech stack: check their engineering blog or job listings. Know what languages/frameworks they use.</li>
+          <li>Their scale: how many users? What are their technical challenges at this scale?</li>
+          <li>Your genuine interest: what excites you about their product specifically? (Don't fake this — find something real)</li>
+        </ul>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">Template answer — for Swiggy example</div>
+        <div style="background:var(--s2);border-radius:8px;padding:14px;font-size:12px;color:var(--t2);line-height:1.8;">
+          "I'm specifically interested in Swiggy because of the engineering challenges at the scale you operate — coordinating thousands of delivery partners, restaurants, and customers in real-time is a genuinely hard distributed systems problem. I read your engineering blog post about how you handle delivery partner assignment using geospatial algorithms, and that's the kind of problem I want to work on. The full stack role appeals to me because I enjoy working across the frontend-backend boundary, and from what I understand, Swiggy engineers own features end to end."
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic" id="b-5">
+    <div class="topic-head" onclick="expand('b-5')">
+      <div class="t-check" onclick="check(event,'b-5')">✓</div>
+      <div class="t-main">
+        <div class="t-name">A mistake or failure and what you learned</div>
+        <div class="t-sub">Show self-awareness. Don't pick something trivial. Show you actually changed after it.</div>
+      </div>
+      <span class="t-badge b-high">shows maturity</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">Rules for this story</div>
+        <ul class="learn-list">
+          <li>Don't pick a "humble brag" failure: "I worked too hard" or "I was too detail-oriented." Interviewers see through this immediately.</li>
+          <li>Pick a real failure that shows judgment — you made a decision that seemed reasonable at the time but turned out to be wrong</li>
+          <li>The learning must be <strong>specific and actionable</strong>: "I now always write tests before deploying" not "I learned to be more careful"</li>
+          <li>Example: "I skipped input validation on an API endpoint while building fast. A test user submitted a request that crashed the server. I learned to treat validation as a first-class concern, not an afterthought — now I add Zod validation middleware before writing any route logic."</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="topic" id="b-6">
+    <div class="topic-head" onclick="expand('b-6')">
+      <div class="t-check" onclick="check(event,'b-6')">✓</div>
+      <div class="t-main">
+        <div class="t-name">"Do you have any questions for us?"</div>
+        <div class="t-sub">Never say no. 3 good questions show genuine interest and intelligence.</div>
+      </div>
+      <span class="t-badge b-must">closes every interview</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">Strong questions to ask — pick 2-3</div>
+        <ul class="learn-list">
+          <li>"What does the onboarding process look like for a new engineer? What would my first month look like?"</li>
+          <li>"What's the tech stack I'd be working with day-to-day? Are there any major technical initiatives the team is working on?"</li>
+          <li>"What does good look like for someone in this role at the 6-month mark?"</li>
+          <li>"What's the biggest technical challenge the team is facing right now?"</li>
+          <li>"How does the team handle code reviews and technical debt?"</li>
+          <li>"Is there anything in my background you'd like me to elaborate on?" (Shows you want to address concerns)</li>
+        </ul>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">Questions NOT to ask in first/second round</div>
+        <ul class="learn-list">
+          <li>Don't ask about salary in the first round (unless they bring it up)</li>
+          <li>Don't ask questions that are answered on their website — shows you didn't research</li>
+          <li>Don't ask "will I definitely get this job?" or "what are my chances?"</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESUME -->
+<div id="p-resume" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(74,222,128,0.15);">📄</div>
+    <div>
+      <h2>Resume — 1 Page, Maximum Impact</h2>
+      <p>Your resume is the first filter. Most resumes get 10 seconds. The projects section is the most important part for freshers — it's the only real evidence you can actually build things. ATS compatibility matters for big companies.</p>
+    </div>
+  </div>
+
+  <div class="info-card warn">
+    <div class="info-title">⚠️ The 3 resume mistakes that kill freshers</div>
+    <div class="info-text">1. Projects section with basic to-do apps and no live links. 2. Skills section that lists every technology ever heard of — "HTML, CSS, JavaScript, Java, Python, React, Angular, Vue, Spring Boot, Django, Flask..." (This just looks like you're padding). 3. Resume longer than 1 page — nobody reads page 2.</div>
+  </div>
+
+  <div class="sec-label">Section by section — what goes where</div>
+
+  <div class="resume-block" id="res-1">
+    <div class="rb-header" onclick="toggleRes('res-1')">
+      <span class="rb-title">1. Header</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="rb-pill" style="background:rgba(74,222,128,0.15);color:var(--green);">easy</span>
+        <span class="rb-arr">▼</span>
+      </div>
+    </div>
+    <div class="rb-body">
+      <div class="tb-sec">
+        <ul class="learn-list">
+          <li><strong>Name</strong>: Large font (18-20pt). Your actual name, not a nickname.</li>
+          <li><strong>Contact</strong>: Email (professional — firstname.lastname@gmail.com), Phone, City (Bangalore, India), GitHub URL, LinkedIn URL</li>
+          <li><strong>No photo, no date of birth, no gender, no address</strong> — these are irrelevant and take space</li>
+          <li>GitHub link should go directly to your profile, not a specific repo</li>
+          <li>LinkedIn URL: customize it — linkedin.com/in/yourname (not linkedin.com/in/abc123xyz)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="resume-block" id="res-2">
+    <div class="rb-header" onclick="toggleRes('res-2')">
+      <span class="rb-title">2. Skills — keep it honest and relevant</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="rb-pill" style="background:rgba(234,179,8,0.15);color:var(--gold);">be careful</span>
+        <span class="rb-arr">▼</span>
+      </div>
+    </div>
+    <div class="rb-body">
+      <div class="tb-sec">
+        <div class="tb-label">What to include</div>
+        <ul class="learn-list">
+          <li><strong>Languages</strong>: JavaScript, TypeScript, Java, SQL</li>
+          <li><strong>Frontend</strong>: React, HTML/CSS</li>
+          <li><strong>Backend</strong>: Node.js, Express, Spring Boot, REST APIs</li>
+          <li><strong>Databases</strong>: MongoDB, PostgreSQL, Redis</li>
+          <li><strong>Tools</strong>: Git, Docker, GitHub Actions, AWS EC2</li>
+          <li><strong>CS Concepts</strong>: Data Structures & Algorithms, System Design (basics)</li>
+        </ul>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">Rules</div>
+        <ul class="learn-list">
+          <li>Only list what you can be asked about in an interview. If it's on your resume, expect questions on it.</li>
+          <li>Don't list proficiency levels (Beginner, Intermediate, Expert) — vague and meaningless</li>
+          <li>Don't list soft skills (team player, problem solver) — this section is for technical skills only</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="resume-block" id="res-3">
+    <div class="rb-header" onclick="toggleRes('res-3')">
+      <span class="rb-title">3. Projects — the most important section for freshers</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="rb-pill" style="background:rgba(239,68,68,0.15);color:var(--red);">critical</span>
+        <span class="rb-arr">▼</span>
+      </div>
+    </div>
+    <div class="rb-body">
+      <div class="tb-sec">
+        <div class="tb-label">The bullet point formula that works</div>
+        <div style="background:var(--s2);border-radius:8px;padding:14px;font-family:var(--mono);font-size:11px;color:#86efac;line-height:1.8;margin-bottom:12px;">
+          [Action verb] [what you built] using [tech] to [achieve outcome / solve problem]
+        </div>
+        <ul class="learn-list">
+          <li><strong>Bad</strong>: "Built a web application with React and Node.js" — says nothing</li>
+          <li><strong>Bad</strong>: "Responsible for implementing the frontend" — passive, vague</li>
+          <li><strong>Good</strong>: "Built real-time collaborative editing using Socket.io with presence indicators — multiple users edit simultaneously with &lt;100ms sync latency"</li>
+          <li><strong>Good</strong>: "Implemented JWT authentication with refresh token rotation stored in HttpOnly cookies, eliminating XSS-based token theft risk"</li>
+          <li><strong>Good</strong>: "Designed MongoDB aggregation pipeline for DSA streak calculation, reducing query time from O(n) application logic to a single DB round trip"</li>
+        </ul>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">Format for each project entry</div>
+        <div style="background:var(--s2);border-radius:8px;padding:14px;font-size:12px;line-height:1.8;color:var(--t2);">
+          <strong style="color:var(--t1);">CollabDocs</strong> — Real-time Collaborative Editor | <span style="color:#60a5fa">GitHub</span> | <span style="color:#60a5fa">Live Demo</span><br>
+          <em style="color:var(--t3);">React · TypeScript · Node.js · Socket.io · Redis · MongoDB · Docker · AWS EC2</em><br>
+          • Built real-time document editing with Socket.io, syncing changes across all connected clients in under 100ms<br>
+          • Implemented Redis-backed rate limiting (30 saves/minute/user) and session store using atomic INCR/EXPIRE operations<br>
+          • Containerized with Docker Compose (app + Redis + MongoDB) and deployed to AWS EC2 with NGINX reverse proxy<br>
+          • Added auto-save with debounce and version history (last 10 snapshots), enabling one-click document restoration
+        </div>
+      </div>
+      <div class="tb-sec">
+        <div class="tb-label">Rules</div>
+        <ul class="learn-list">
+          <li>3–5 bullet points per project. Every bullet must be substantive — cut fluff.</li>
+          <li>Include the tech stack as keywords — ATS scanners look for these</li>
+          <li>ALWAYS include a live link or GitHub link. Projects without links look incomplete.</li>
+          <li>List in reverse chronological order — newest/most impressive first</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="resume-block" id="res-4">
+    <div class="rb-header" onclick="toggleRes('res-4')">
+      <span class="rb-title">4. Education</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="rb-pill" style="background:rgba(59,130,246,0.15);color:var(--blue);">brief</span>
+        <span class="rb-arr">▼</span>
+      </div>
+    </div>
+    <div class="rb-body">
+      <div class="tb-sec">
+        <ul class="learn-list">
+          <li>Degree name, college name, graduation year, CGPA (if above 7.5 — if below, skip it)</li>
+          <li>Relevant coursework only if recent and relevant: Data Structures, DBMS, Computer Networks, OOP</li>
+          <li>For freshers: Education can come before Projects or after — depends on CGPA. If CGPA is strong, put it before. If projects are stronger, lead with projects.</li>
+          <li>No need to list 10th and 12th marks — only degree matters for tech roles</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="resume-block" id="res-5">
+    <div class="rb-header" onclick="toggleRes('res-5')">
+      <span class="rb-title">5. Optional sections</span>
+      <div style="display:flex;align-items:center;gap:10px;">
+        <span class="rb-pill" style="background:rgba(168,85,247,0.15);color:var(--purple);">if space</span>
+        <span class="rb-arr">▼</span>
+      </div>
+    </div>
+    <div class="rb-body">
+      <div class="tb-sec">
+        <ul class="learn-list">
+          <li><strong>Achievements</strong>: LeetCode contest rating if 1800+, competitive programming if relevant, hackathon wins. Skip if nothing notable.</li>
+          <li><strong>Open source contributions</strong>: if you have any merged PRs in real repositories — include them. This is rare among freshers and very impressive.</li>
+          <li><strong>Certifications</strong>: AWS Certified Developer or similar cloud certifications. Skip generic "JavaScript course" certificates.</li>
+          <li><strong>Summary/Objective</strong>: Usually skipped for technical roles — let your projects speak. If included: 2 sentences max, specific not generic.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-card good" style="margin-top:20px;">
+    <div class="info-title">✓ Use these free resume tools</div>
+    <div class="info-text">Build with: Overleaf (LaTeX template — Jake's Resume is the gold standard for CS), or Resumake.io, or Reactive Resume (open source). Test ATS parsing: paste your resume into Jobscan.co and check if keywords are detected. Target: 80%+ keyword match for any role you apply to. Check: can someone scan it in 10 seconds and know exactly what you built?</div>
+  </div>
+</div>
+
+<!-- COMPANIES -->
+<div id="p-companies" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(251,191,36,0.15);">🎯</div>
+    <div>
+      <h2>Bangalore Companies — Target List</h2>
+      <p>Apply to all 3 tiers simultaneously but in waves. Start with Tier 3 in week 1 to practice. Apply to Tier 1 targets in week 3 when you're warmed up. Referrals get you past ATS filters — prioritize getting them.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">Tier 1 — Dream companies (₹15–25 LPA for freshers)</div>
+  <div class="company-grid">
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--red)">Tier 1 · Hard</div>
+      <div class="co-name">Swiggy</div>
+      <div class="co-sal">₹18–25 LPA</div>
+      <div class="co-tags"><span class="co-tag dsa">Heavy DSA</span><span class="co-tag sd">SD basics</span><span class="co-tag full">Full stack</span></div>
+    </div>
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--red)">Tier 1 · Hard</div>
+      <div class="co-name">PhonePe</div>
+      <div class="co-sal">₹20–28 LPA</div>
+      <div class="co-tags"><span class="co-tag dsa">Heavy DSA</span><span class="co-tag spring">Spring Boot</span><span class="co-tag sd">SD</span></div>
+    </div>
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--red)">Tier 1 · Hard</div>
+      <div class="co-name">CRED</div>
+      <div class="co-sal">₹18–24 LPA</div>
+      <div class="co-tags"><span class="co-tag dsa">DSA</span><span class="co-tag full">Full stack depth</span></div>
+    </div>
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--red)">Tier 1 · Hard</div>
+      <div class="co-name">Razorpay</div>
+      <div class="co-sal">₹18–25 LPA</div>
+      <div class="co-tags"><span class="co-tag dsa">DSA</span><span class="co-tag sd">SD</span><span class="co-tag spring">Java/Go</span></div>
+    </div>
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--red)">Tier 1 · Hard</div>
+      <div class="co-name">Zepto</div>
+      <div class="co-sal">₹16–22 LPA</div>
+      <div class="co-tags"><span class="co-tag dsa">DSA</span><span class="co-tag full">Full stack</span></div>
+    </div>
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--red)">Tier 1 · Hard</div>
+      <div class="co-name">Groww</div>
+      <div class="co-sal">₹16–22 LPA</div>
+      <div class="co-tags"><span class="co-tag dsa">DSA</span><span class="co-tag spring">Java heavy</span></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Tier 2 — Strong product companies (₹10–18 LPA)</div>
+  <div class="company-grid">
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--gold)">Tier 2 · Medium</div>
+      <div class="co-name">BrowserStack</div>
+      <div class="co-sal">₹12–18 LPA</div>
+      <div class="co-tags"><span class="co-tag dsa">DSA</span><span class="co-tag full">Full stack</span></div>
+    </div>
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--gold)">Tier 2 · Medium</div>
+      <div class="co-name">Juspay</div>
+      <div class="co-sal">₹12–18 LPA</div>
+      <div class="co-tags"><span class="co-tag dsa">DSA</span><span class="co-tag spring">Haskell/Java</span></div>
+    </div>
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--gold)">Tier 2 · Medium</div>
+      <div class="co-name">Chargebee</div>
+      <div class="co-sal">₹10–16 LPA</div>
+      <div class="co-tags"><span class="co-tag full">Full stack</span><span class="co-tag dsa">Moderate DSA</span></div>
+    </div>
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--gold)">Tier 2 · Medium</div>
+      <div class="co-name">Postman</div>
+      <div class="co-sal">₹12–18 LPA</div>
+      <div class="co-tags"><span class="co-tag full">Full stack</span><span class="co-tag dsa">DSA</span></div>
+    </div>
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--gold)">Tier 2 · Medium</div>
+      <div class="co-name">Setu</div>
+      <div class="co-sal">₹10–15 LPA</div>
+      <div class="co-tags"><span class="co-tag full">Full stack</span><span class="co-tag spring">Java/Go</span></div>
+    </div>
+    <div class="co-card">
+      <div class="co-tier" style="color:var(--gold)">Tier 2 · Medium</div>
+      <div class="co-name">Multiplier</div>
+      <div class="co-sal">₹10–15 LPA</div>
+      <div class="co-tags"><span class="co-tag full">Full stack</span><span class="co-tag dsa">Moderate DSA</span></div>
+    </div>
+  </div>
+
+  <div class="sec-label">Tier 3 — Practice + backup (₹6–12 LPA)</div>
+  <div class="info-card info">
+    <div class="info-title">Apply here first — week 1 of job hunt</div>
+    <div class="info-text">Use Tier 3 interviews as paid practice. TCS Digital, Infosys SP, Wipro Elite, Capgemini Select, Accenture Advanced Technology tracks. These have predictable patterns — OOP, DBMS basics, 1-2 easy DSA problems. Get an offer here first for psychological safety, then negotiate upward with Tier 2/1 offers.</div>
+  </div>
+
+  <div class="sec-label" style="margin-top:20px;">Where to find and apply</div>
+  <div style="display:flex;flex-direction:column;gap:8px;">
+    <div style="padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;display:grid;grid-template-columns:120px 1fr;gap:12px;font-size:12px;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--blue);">LinkedIn</span>
+      <span style="color:var(--t2);">Best for Tier 1-2. Set job alerts for "Software Engineer Fresher Bangalore". Easy Apply + referrals. Most important platform.</span>
+    </div>
+    <div style="padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;display:grid;grid-template-columns:120px 1fr;gap:12px;font-size:12px;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--gold);">Instahyre</span>
+      <span style="color:var(--t2);">Curated platform — companies apply to you based on your profile. Strong for Tier 1-2 product companies. Takes 10 min to set up, worth it.</span>
+    </div>
+    <div style="padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;display:grid;grid-template-columns:120px 1fr;gap:12px;font-size:12px;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--purple);">Cutshort</span>
+      <span style="color:var(--t2);">Good for startups. Skill-based matching. Create a strong profile with GitHub and project links.</span>
+    </div>
+    <div style="padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;display:grid;grid-template-columns:120px 1fr;gap:12px;font-size:12px;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--red);">Naukri</span>
+      <span style="color:var(--t2);">Best for Tier 3 companies. Set up a profile with the exact job titles they search for. Update your profile weekly — recent updates get better visibility.</span>
+    </div>
+    <div style="padding:12px 14px;background:var(--s1);border:1px solid var(--s3);border-radius:8px;display:grid;grid-template-columns:120px 1fr;gap:12px;font-size:12px;">
+      <span style="font-family:var(--mono);font-size:10px;color:var(--green);">Company websites</span>
+      <span style="color:var(--t2);">Apply directly on company careers pages for Tier 1 companies. Less competition than LinkedIn. Check Swiggy/PhonePe/CRED careers pages weekly.</span>
+    </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">The referral strategy — most underused</div>
+  <div class="info-card good">
+    <div class="info-title">✓ Referrals bypass ATS and land you in the interview pile</div>
+    <div class="info-text">Most Tier 1 companies give employees referral bonuses. Engineers are happy to refer strong candidates — it's money for them. Find engineers at your target companies on LinkedIn → connect with a personalized note → share your profile + 1 impressive project. Aim for 5 referral asks per week. Success rate is low but the payoff is high — 1 referral is worth 20 cold applications. Template is in the LinkedIn tab.</div>
+  </div>
+</div>
+
+<!-- LINKEDIN -->
+<div id="p-linkedin" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(10,102,194,0.15);">💼</div>
+    <div>
+      <h2>LinkedIn — Your Inbound Lead Machine</h2>
+      <p>60–70% of Tier 1 Bangalore tech jobs are filled through LinkedIn referrals and recruiter outreach — not Naukri. An optimized profile + weekly posts + targeted outreach = recruiters reaching out to you.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">Profile optimization — do these first</div>
+
+  <div class="tip-item">
+    <span class="tip-icon">📸</span>
+    <div>
+      <div class="tip-title">Professional photo</div>
+      <div class="tip-text">Plain background, clear face, professional but not stiff. Profiles with photos get 21x more views. Take one with your phone in natural light.</div>
+    </div>
+  </div>
+  <div class="tip-item">
+    <span class="tip-icon">📝</span>
+    <div>
+      <div class="tip-title">Headline — not just "Student" or "Fresher"</div>
+      <div class="tip-text">Write: "Full Stack Developer | React · Node.js · Spring Boot · DSA | Building CollabDocs & ShopFlow | Open to SWE roles in Bangalore". This shows skills and intent — not just a job title.</div>
+    </div>
+  </div>
+  <div class="tip-item">
+    <span class="tip-icon">🗒️</span>
+    <div>
+      <div class="tip-title">About section — 3 paragraphs</div>
+      <div class="tip-text">Para 1: Who you are and what you build. Para 2: Your 2 most impressive projects with 1 technical detail each. Para 3: What you're looking for + skills list. End with your email. Keep it specific — not "passionate about technology."</div>
+    </div>
+  </div>
+  <div class="tip-item">
+    <span class="tip-icon">🔗</span>
+    <div>
+      <div class="tip-title">Featured section — pin your best project</div>
+      <div class="tip-text">Pin your GitHub + live demo link for CollabDocs. Recruiters who click your profile see this first. Include a 2-sentence description of what it does.</div>
+    </div>
+  </div>
+  <div class="tip-item">
+    <span class="tip-icon">🎓</span>
+    <div>
+      <div class="tip-title">Open to Work — set it, but choose "recruiters only"</div>
+      <div class="tip-text">Set "Open to Work" with roles: Software Engineer, Full Stack Engineer, Backend Developer. Choose "Recruiters only" — not the green banner (looks desperate). Target locations: Bengaluru.</div>
+    </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">Posting strategy — 1 post per week</div>
+
+  <div class="info-card info">
+    <div class="info-title">Why posting works — even with 0 followers</div>
+    <div class="info-text">LinkedIn posts reach people beyond your connections. A good technical post can get 5,000-50,000 views even if you have 200 connections. Recruiters actively search for people posting about specific technologies. Every post is an inbound job application you didn't have to write.</div>
+  </div>
+
+  <div class="two-col" style="margin-bottom:20px;">
+    <div>
+      <div class="tb-label">Post ideas that perform well</div>
+      <ul class="learn-list" style="margin-top:8px;">
+        <li><strong>Project showcase</strong>: "Built a real-time collaborative editor — here's how WebSocket + Redis works together [GIF of feature]"</li>
+        <li><strong>Learning insight</strong>: "The N+1 problem in JPA — I hit this in production and here's how I fixed it"</li>
+        <li><strong>Before/after optimization</strong>: "My MongoDB query took 2.3 seconds. Added an index. Now it's 12ms. Here's why."</li>
+        <li><strong>Concept explained simply</strong>: "The difference between 401 and 403 — most developers I've asked get this wrong"</li>
+        <li><strong>DSA insight</strong>: "This is why the sliding window pattern works and when to recognize it"</li>
+      </ul>
+    </div>
+    <div>
+      <div class="tb-label">Post format that works</div>
+      <ul class="learn-list" style="margin-top:8px;">
+        <li><strong>Opening line</strong>: Hook in first 2 lines — most people only see this in feed. "I built [thing] and learned [insight]" or "Most people misunderstand [concept]"</li>
+        <li><strong>Body</strong>: Short paragraphs or bullet points. No walls of text. Code snippets or screenshots perform well.</li>
+        <li><strong>Closing</strong>: What you're working on + tag 2-3 relevant hashtags (#react #fullstackdevelopment #javascript)</li>
+        <li><strong>Length</strong>: 150-400 words. Not too short (no substance), not too long (loses engagement)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="sec-label">Referral outreach — the script that works</div>
+  <div class="prompt-block">
+    <button class="copy-btn" onclick="copyText(this)">copy</button>
+    <pre>Hi [Name],
+
+I'm [Your Name], a fresher full stack developer in Bangalore actively exploring SWE roles. I came across your profile while researching [Company] and noticed you work on [team/product area].
+
+I've built a few projects I'm proud of — including a real-time collaborative editor using Socket.io + Redis, and a Spring Boot REST API with JWT auth. I'm a strong MERN stack developer and I'm also working with Java/Spring Boot.
+
+I'd really appreciate it if you could refer me for the [Role] opening at [Company], or even just point me to the right application channel if a referral isn't possible.
+
+Here's my resume and GitHub if it's helpful: [link] | [link]
+
+No pressure at all — thanks for your time.
+
+[Your Name]</pre>
+  </div>
+
+  <div class="info-card warn" style="margin-top:12px;">
+    <div class="info-title">⚠️ Rules for outreach</div>
+    <div class="info-text">Personalize each message — mention something specific about the company or their work. Don't mass-send the same template. Connect first, send the message 1-2 days later (not in the same connection request). Target engineers who graduated from similar backgrounds or worked at similar types of companies — they're more likely to empathize and respond.</div>
+  </div>
+</div>
+
+<!-- SALARY -->
+<div id="p-salary" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(74,222,128,0.15);">💰</div>
+    <div>
+      <h2>Salary Negotiation</h2>
+      <p>Never accept the first offer. Always negotiate — the worst they can say is no and the offer stands. A 10-minute negotiation conversation can add ₹1–3 LPA to your package. You have nothing to lose.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">Before you negotiate — understand what you're looking at</div>
+
+  <div class="topic" id="sal-1">
+    <div class="topic-head" onclick="expand('sal-1')">
+      <div class="t-check" onclick="check(event,'sal-1')">✓</div>
+      <div class="t-main">
+        <div class="t-name">How to read a job offer — CTC vs take-home</div>
+        <div class="t-sub">CTC includes components you never see in your account. Know what you're actually getting.</div>
+      </div>
+      <span class="t-badge b-must">must</span>
+    </div>
+    <div class="topic-body">
+      <div class="tb-sec">
+        <div class="tb-label">CTC breakdown — example for ₹12 LPA offer</div>
+        <div style="background:var(--s2);border-radius:8px;overflow:hidden;margin-top:4px;">
+          <table style="width:100%;border-collapse:collapse;font-size:12px;">
+            <tr style="border-bottom:1px solid var(--s3);"><td style="padding:8px 12px;color:var(--t2);">Base salary</td><td style="padding:8px 12px;color:var(--t1);font-weight:600;text-align:right;">₹7.5 LPA</td></tr>
+            <tr style="border-bottom:1px solid var(--s3);"><td style="padding:8px 12px;color:var(--t2);">Variable/performance bonus (if targets met)</td><td style="padding:8px 12px;color:var(--t1);text-align:right;">₹1.5 LPA</td></tr>
+            <tr style="border-bottom:1px solid var(--s3);"><td style="padding:8px 12px;color:var(--t2);">PF (employer contribution — you never see this cash)</td><td style="padding:8px 12px;color:var(--t1);text-align:right;">₹1.08 LPA</td></tr>
+            <tr style="border-bottom:1px solid var(--s3);"><td style="padding:8px 12px;color:var(--t2);">Gratuity, health insurance, other benefits</td><td style="padding:8px 12px;color:var(--t1);text-align:right;">~₹1 LPA</td></tr>
+            <tr style="font-weight:700;"><td style="padding:8px 12px;color:var(--t1);">CTC total</td><td style="padding:8px 12px;color:var(--green);text-align:right;">₹12 LPA</td></tr>
+            <tr style=""><td style="padding:8px 12px;color:var(--t2);">Your actual monthly take-home (after tax ~30%)</td><td style="padding:8px 12px;color:var(--gold);text-align:right;">~₹45,000/month</td></tr>
+          </table>
+        </div>
+      </div>
+      <div class="tb-sec">
+        <ul class="learn-list">
+          <li>Ask for the breakdown before evaluating. "Can you share the component-wise CTC breakup?"</li>
+          <li>Focus on <strong>fixed monthly take-home</strong> — variable bonuses often don't materialize, especially in the first year</li>
+          <li>Stock options (ESOPs): for early-stage startups, ESOPs can be significant. For Series B+, understand the vesting schedule (usually 4-year vesting with 1-year cliff)</li>
+          <li>Joining bonus: if offered, understand if it's clawed back if you leave early (common — usually 1 year)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">The negotiation — step by step</div>
+
+  <div class="neg-step">
+    <span class="neg-num">1</span>
+    <div>
+      <div class="neg-title">Never give a number first</div>
+      <div class="neg-text">When they ask "what are your salary expectations?" early in the process: "I'm flexible and open to a fair offer based on the role and responsibilities. Could you share the budget for this position?" If they push: "I'd prefer to evaluate the complete offer — compensation, growth opportunity, and the role itself together."</div>
+    </div>
+  </div>
+
+  <div class="neg-step">
+    <span class="neg-num">2</span>
+    <div>
+      <div class="neg-title">When you get the offer — do not accept on the spot</div>
+      <div class="neg-text">"Thank you so much for the offer — I'm genuinely excited about this opportunity. Could I have 48-72 hours to review it carefully?" This is standard, expected, and gives you time to evaluate and negotiate. Any company that pressures you to accept immediately is a red flag.</div>
+    </div>
+  </div>
+
+  <div class="neg-step">
+    <span class="neg-num">3</span>
+    <div>
+      <div class="neg-title">Research the market before you counter</div>
+      <div class="neg-text">Check: levels.fyi for salary data (filter by India, company, role), Glassdoor, LinkedIn Salary, and ask in communities (TeamBlind, relevant Discord/Telegram groups). Know what the range is for this role at this company. Your counter should be backed by data.</div>
+    </div>
+  </div>
+
+  <div class="neg-step">
+    <span class="neg-num">4</span>
+    <div>
+      <div class="neg-title">The counter offer script</div>
+      <div class="neg-text">"I'm very enthusiastic about joining [Company] and this role. After reviewing the offer, I was hoping we could discuss the base salary. Based on my research and the skills I'm bringing — specifically [mention 1-2 specific skills: Spring Boot + JWT auth system, Docker deployment experience] — I was expecting something closer to [your target]. Is there flexibility there?" — Then stop talking. Don't justify further. Wait for their response.</div>
+    </div>
+  </div>
+
+  <div class="neg-step">
+    <span class="neg-num">5</span>
+    <div>
+      <div class="neg-title">When to negotiate harder — competing offers</div>
+      <div class="neg-text">If you have multiple offers: "I'm very interested in [Company] as my top choice, but I do have another offer at [X amount]. If you can match or get closer to that, I'd be excited to accept today." This is the most powerful negotiation position. Always try to get at least 2 offers simultaneously — this is why you apply broadly from week 1.</div>
+    </div>
+  </div>
+
+  <div class="neg-step">
+    <span class="neg-num">6</span>
+    <div>
+      <div class="neg-title">What to do if they say the offer is fixed</div>
+      <div class="neg-text">Try non-salary items: joining bonus, earlier performance review (6 months instead of 12), additional stock options, remote work flexibility, specific team preference. If truly fixed and you want the job: ask "What would I need to achieve in the first 6 months to reach the next compensation level?" — this signals you're thinking long-term and sets expectations for a fast-track raise.</div>
+    </div>
+  </div>
+
+  <div class="info-card good" style="margin-top:20px;">
+    <div class="info-title">✓ The rule about competing offers</div>
+    <div class="info-text">Get an offer from a Tier 3 company first, even if you don't want it. Use it as a floor. When Tier 2 or Tier 1 offers come in, you have leverage. You're not desperate. Desperation is visible in negotiation and weakens your position. An offer in hand = confidence in the negotiation room.</div>
+  </div>
+</div>
+
+<!-- PLAN -->
+<div id="p-plan" class="panel">
+  <div class="sh">
+    <div class="sh-badge" style="background:rgba(244,63,94,0.15);">📅</div>
+    <div>
+      <h2>4-Week Plan</h2>
+      <p>Apply from day 1. Don't wait until week 4 to start applying. The earlier you apply, the earlier the offers come, the more time you have to negotiate with multiple options.</p>
+    </div>
+  </div>
+
+  <div class="sec-label">Week-by-week</div>
+
+  <div class="week-row">
+    <div class="wr-week">WEEK 1</div>
+    <div class="wr-col">
+      <strong>Resume + LinkedIn + Applications</strong>
+      Finalize resume. Optimize LinkedIn profile. Apply to 5-8 Tier 3 companies (TCS Digital, Infosys SP, Wipro Elite). Set up job alerts on LinkedIn + Instahyre + Naukri. Start referral outreach (5 messages to engineers at target companies).
+    </div>
+  </div>
+
+  <div class="week-row">
+    <div class="wr-week">WEEK 2</div>
+    <div class="wr-col">
+      <strong>Mock interviews + Tier 2 applications</strong>
+      2 full mock interview sessions (AI). 1 post on LinkedIn (project showcase). Apply to 5 Tier 2 companies. Prepare STAR stories — write out all 6 behavioral answers. Continue referral outreach.
+    </div>
+  </div>
+
+  <div class="week-row">
+    <div class="wr-week">WEEK 3</div>
+    <div class="wr-col">
+      <strong>Tier 1 applications + real interview experience</strong>
+      Apply to 3-5 Tier 1 companies (Swiggy, PhonePe, CRED, Razorpay). By now Tier 3 interviews should be happening — treat them as practice. Post week 2 LinkedIn post. 2 more mock sessions.
+    </div>
+  </div>
+
+  <div class="week-row">
+    <div class="wr-week">WEEK 4+</div>
+    <div class="wr-col">
+      <strong>Keep pushing — don't stop</strong>
+      Keep applying 5-7 new companies per week. Keep doing 2 DSA problems per day — don't let it lapse. Analyze every real interview — what questions came up? Update your prep. Negotiate offers carefully. The process takes time — hiring timelines are 3-6 weeks from application to offer.
+    </div>
+  </div>
+
+  <div class="sec-label" style="margin-top:24px;">Application tracker — maintain this spreadsheet</div>
+  <div style="overflow-x:auto;">
+    <table class="tracker-table">
+      <tr><th>Company</th><th>Role</th><th>Applied via</th><th>Date</th><th>Status</th><th>Next step</th><th>Notes</th></tr>
+      <tr><td>Swiggy</td><td>SWE-1</td><td>LinkedIn</td><td>Jan 15</td><td><span class="status-pill s-applied">Applied</span></td><td>Wait for response</td><td>Referral from Priya in Eng team</td></tr>
+      <tr><td>BrowserStack</td><td>Full Stack</td><td>Direct</td><td>Jan 16</td><td><span class="status-pill s-interview">Interview</span></td><td>DSA round Jan 22</td><td>Prep: graphs + DP</td></tr>
+      <tr><td>Chargebee</td><td>SDE-1</td><td>Instahyre</td><td>Jan 12</td><td><span class="status-pill s-offer">Offer</span></td><td>Negotiate by Jan 20</td><td>₹10 LPA offer, negotiate to 12</td></tr>
+      <tr><td>TCS Digital</td><td>SDE</td><td>Naukri</td><td>Jan 10</td><td><span class="status-pill s-reject">Rejected</span></td><td>—</td><td>DSA was weak — practice more graphs</td></tr>
+    </table>
+  </div>
+  <div style="font-size:11px;color:var(--t3);margin-top:6px;font-family:var(--mono);">Build this in Notion or Google Sheets. Review it every Sunday. It shows you patterns in what's working and what's not.</div>
+
+  <div class="sec-label" style="margin-top:24px;">Phase 4 done when</div>
+  <div class="done-item"><span class="done-check">✓</span><span class="done-text">Resume finalized and reviewed — no fluff, clear project bullets, all live links work</span></div>
+  <div class="done-item"><span class="done-check">✓</span><span class="done-text">LinkedIn profile fully optimized — profile picture, headline with skills, featured projects pinned</span></div>
+  <div class="done-item"><span class="done-check">✓</span><span class="done-text">All 6 behavioral stories written out in STAR format and practiced out loud at least 3 times each</span></div>
+  <div class="done-item"><span class="done-check">✓</span><span class="done-text">Completed 4 full mock interview sessions — score improving each time</span></div>
+  <div class="done-item"><span class="done-check">✓</span><span class="done-text">Applied to 15+ companies across all tiers — application tracker is active and updated</span></div>
+  <div class="done-item"><span class="done-check">✓</span><span class="done-text">At least 1 offer in hand — even if not the dream offer — gives negotiation leverage</span></div>
+  <div class="done-item"><span class="done-check">✓</span><span class="done-text">Can answer all 15 CS questions in this guide without notes — clean, clear, connected to projects</span></div>
+
+  <div class="info-card good" style="margin-top:20px;">
+    <div class="info-title">✓ Final truth about the job hunt</div>
+    <div class="info-text">Rejection is information, not judgment. Every "no" tells you something: DSA was too slow, projects weren't strong enough, behavioral answers were vague. Log every rejection, find the pattern, fix the gap. The engineers who land offers aren't the smartest — they're the ones who treat the process systematically, iterate fast, and don't quit after 10 rejections. You've done the work. Now execute.</div>
+  </div>
+</div>
+
+<script>
+function go(name, btn) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+  document.getElementById('p-' + name).classList.add('on');
+  btn.classList.add('on');
+  window.scrollTo(0,0);
+}
+function expand(id) {
+  const t = document.getElementById(id);
+  if (!t.classList.contains('done')) t.classList.toggle('open');
+}
+function check(e, id) {
+  e.stopPropagation();
+  const t = document.getElementById(id);
+  t.classList.toggle('done');
+  if (t.classList.contains('done')) t.classList.remove('open');
+}
+function toggleQA(id) { document.getElementById(id).classList.toggle('open'); }
+function toggleRes(id) { document.getElementById(id).classList.toggle('open'); }
+function copyText(btn) {
+  const pre = btn.nextElementSibling;
+  navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+    btn.textContent = 'copied!';
+    setTimeout(() => btn.textContent = 'copy', 2000);
+  });
+}
+</script>
+</body>
+</html>
