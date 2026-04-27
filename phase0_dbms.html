@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 0 · DBMS — Complete Teaching Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+:root{
+  --bg:#f8f7ff;--ink:#1a1828;--ink2:#484660;--ink3:#8a88a0;
+  --paper:#fff;--rule:#e4e2f4;--rule2:#c8c6e0;
+  --mono:'IBM Plex Mono',monospace;--head:'Syne',sans-serif;--body:'Inter',sans-serif;
+  --db:#5c2d82;--db-l:#f4eeff;--db-b:#c8a8f0;
+  --warn-bg:#fff8e8;--warn-b:#f0d060;--warn-t:#3a2800;
+  --good-bg:#eefff4;--good-b:#60d090;--good-t:#003818;
+  --key-bg:#f0eaff;--key-b:#b890f0;--key-t:#1a0040;
+  --sql-bg:#e8f8ff;--sql-b:#60b8e0;--sql-t:#001828;
+  --int-bg:#f0ebff;--int-b:#b090e0;--int-t:#1a003a;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.75;max-width:880px;margin:0 auto;}
+
+.top-nav{background:var(--ink);color:#fff;padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:100;flex-wrap:wrap;}
+.nav-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);white-space:nowrap;}
+.nav-pills{display:flex;gap:5px;flex-wrap:wrap;}
+.nav-pill{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);cursor:pointer;text-decoration:none;transition:all 0.15s;}
+.nav-pill:hover,.nav-pill.active{border-color:rgba(255,255,255,0.7);color:#fff;}
+
+.hero{padding:52px 40px 40px;border-bottom:2px solid var(--ink);}
+.hero-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--db);margin-bottom:12px;}
+.hero h1{font-family:var(--head);font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:14px;}
+.hero h1 em{font-style:normal;color:var(--db);}
+.hero-desc{font-size:14px;color:var(--ink2);max-width:540px;line-height:1.7;}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.meta-chip{font-family:var(--mono);font-size:10px;padding:4px 12px;border-radius:6px;border:1px solid var(--rule2);color:var(--ink2);}
+.meta-chip.hi{border-color:var(--db);color:var(--db);font-weight:700;}
+
+.concept{padding:40px;border-bottom:1px solid var(--rule);}
+.concept-num{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;}
+.concept h2{font-family:var(--head);font-size:26px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;}
+.concept-sub{font-size:13px;color:var(--ink2);margin-bottom:20px;line-height:1.6;}
+
+.explain{font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:14px;}
+.explain strong{color:var(--ink);}
+.explain code{font-family:var(--mono);font-size:12px;background:var(--rule);padding:1px 6px;border-radius:4px;color:var(--db);}
+
+.step-marker{display:flex;align-items:center;gap:12px;margin:28px 0 14px;}
+.step-num{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--rule2);}
+.step-line{flex:1;height:1px;background:var(--rule);}
+.step-text{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);}
+
+.analogy{background:var(--key-bg);border-left:3px solid #9060d0;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--key-t);line-height:1.6;}
+.analogy strong{font-weight:600;}
+.warn{background:var(--warn-bg);border-left:3px solid #d09000;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--warn-t);line-height:1.6;}
+.warn strong{font-weight:600;}
+.good-box{background:var(--good-bg);border-left:3px solid #20a060;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--good-t);line-height:1.6;}
+.good-box strong{font-weight:600;}
+.sql-box{background:var(--sql-bg);border-left:3px solid #2090c0;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--sql-t);line-height:1.6;}
+.sql-box strong{font-weight:600;}
+
+.diagram{background:#1a1828;border-radius:10px;padding:20px 24px;margin:16px 0;overflow-x:auto;}
+.diagram pre{font-family:var(--mono);font-size:12px;line-height:1.7;color:#c8c4e8;white-space:pre;}
+.d-hl{color:#c090ff;}.d-ok{color:#60e0a0;}.d-warn{color:#f0d060;}.d-err{color:#f06060;}.d-cmt{color:#6a6880;font-style:italic;}
+
+pre.code{background:#1a1828;border-radius:10px;padding:18px 20px;font-family:var(--mono);font-size:12px;line-height:1.8;color:#c8c4e8;overflow-x:auto;margin:14px 0;white-space:pre;}
+.cm{color:#6a6880;font-style:italic;}.ck{color:#ff8080;}.ct{color:#c090ff;}.cs{color:#80e880;}.cf{color:#f0d060;}.cn{color:#60c8ff;}.co{color:#ff9060;}
+
+.cmp{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;}
+.cmp th{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:8px 12px;border-bottom:2px solid var(--rule2);background:var(--bg);}
+.cmp td{padding:9px 12px;border-bottom:1px solid var(--rule);color:var(--ink2);vertical-align:top;line-height:1.5;}
+.cmp tr:hover td{background:var(--bg);}
+.cmp td:first-child{color:var(--ink);font-weight:500;}
+.cmp td code{font-family:var(--mono);font-size:11px;background:var(--rule);padding:1px 5px;border-radius:3px;}
+
+.interview-section{background:var(--int-bg);border:1px solid var(--int-b);border-radius:12px;padding:20px;margin:24px 0;}
+.int-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--db);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.int-label::after{content:'';flex:1;height:1px;background:var(--int-b);}
+.qa{margin-bottom:10px;background:#fff;border:1px solid var(--int-b);border-radius:8px;overflow:hidden;}
+.qa:last-child{margin-bottom:0;}
+.qa-q{padding:12px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.qa-q:hover{background:var(--int-bg);}
+.qa-arr{color:var(--ink3);font-size:10px;flex-shrink:0;margin-top:2px;transition:transform 0.2s;}
+.qa.open .qa-arr{transform:rotate(180deg);}
+.qa-a{display:none;padding:12px 14px;border-top:1px solid var(--int-b);font-size:13px;color:var(--ink2);line-height:1.75;background:var(--int-bg);}
+.qa.open .qa-a{display:block;}
+.qa-a strong{color:var(--ink);}
+.qa-a .label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--db);display:block;margin-bottom:6px;}
+.qa-a .follow{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#804000;display:block;margin-top:10px;margin-bottom:4px;}
+.qa-a code{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:3px;}
+
+.rev{background:var(--ink);color:#fff;border-radius:12px;padding:22px;margin:24px 0;}
+.rev h4{font-family:var(--head);font-size:15px;margin-bottom:12px;color:#fff;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:8px;}
+.rev ul{list-style:none;}
+.rev ul li{font-size:12px;color:rgba(255,255,255,0.75);padding:4px 0 4px 16px;position:relative;line-height:1.5;}
+.rev ul li::before{content:'✓';position:absolute;left:0;color:rgba(255,255,255,0.4);font-size:10px;margin-top:1px;}
+
+.progress-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px;}
+.must{background:#ffeee8;color:#8a2000;border:1px solid #f0c0a0;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:99px;}
+.high{background:#e8f0ff;color:#001880;border:1px solid #a0b8f0;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:99px;}
+
+/* Normal-form steps */
+.nf-step{background:var(--paper);border:1px solid var(--rule2);border-radius:10px;margin:10px 0;overflow:hidden;}
+.nf-head{padding:12px 16px;background:var(--db-l);border-bottom:1px solid var(--db-b);display:flex;align-items:center;gap:12px;}
+.nf-badge{font-family:var(--mono);font-size:11px;font-weight:700;padding:3px 10px;border-radius:5px;background:var(--db);color:#fff;white-space:nowrap;}
+.nf-title{font-size:13px;font-weight:600;}
+.nf-body{padding:14px 16px;}
+
+@media(max-width:640px){.concept,.hero{padding:24px 20px;}.top-nav{padding:10px 16px;}}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="nav-label">Phase 0 · DBMS</span>
+  <div class="nav-pills">
+    <a class="nav-pill" href="#keys">Keys</a>
+    <a class="nav-pill" href="#normalization">Normalization</a>
+    <a class="nav-pill" href="#acid">ACID</a>
+    <a class="nav-pill" href="#isolation">Isolation</a>
+    <a class="nav-pill" href="#indexing">Indexing</a>
+    <a class="nav-pill" href="#nosql">SQL vs NoSQL</a>
+    <a class="nav-pill" href="#cap">CAP</a>
+    <a class="nav-pill" href="#locking">Locking</a>
+    <a class="nav-pill" href="#interview">All Q&amp;A</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Phase 0 · Subject 3 of 6 · Complete Teaching Guide</div>
+  <h1>Database<br><em>Management Systems</em></h1>
+  <p class="hero-desc">The most-asked CS subject at Bangalore product companies. ACID with a PhonePe example. Normalization step by step. Indexing internals. CAP theorem. Every concept taught to interview depth.</p>
+  <div class="hero-meta">
+    <span class="meta-chip hi">5 days</span>
+    <span class="meta-chip">#1 most asked at Bangalore product cos</span>
+    <span class="meta-chip">ACID + normalization are non-negotiable</span>
+    <span class="meta-chip">All interview Q&amp;A included</span>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 1: KEYS ══ -->
+<div class="concept" id="keys">
+  <div class="concept-num">Concept 01 of 08</div>
+  <h2>Keys in RDBMS</h2>
+  <div class="concept-sub">Primary, Foreign, Candidate, Composite, Surrogate. Every interview starts here. Know the difference between surrogate and natural keys — it's a design question.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Foundation for everything else</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">All key types with real examples</span></div>
+
+  <table class="cmp">
+    <tr><th>Key Type</th><th>Definition</th><th>Real Example</th><th>Constraint</th></tr>
+    <tr>
+      <td>Primary Key</td>
+      <td>Uniquely identifies each row. Never null.</td>
+      <td><code>user_id</code> in Users table</td>
+      <td>UNIQUE + NOT NULL. One per table.</td>
+    </tr>
+    <tr>
+      <td>Foreign Key</td>
+      <td>References primary key of another table. Enforces referential integrity.</td>
+      <td><code>orders.user_id</code> references <code>users.user_id</code></td>
+      <td>Must match an existing PK or be NULL. Prevents orphan records.</td>
+    </tr>
+    <tr>
+      <td>Candidate Key</td>
+      <td>Any column(s) that COULD be the primary key — unique + not null.</td>
+      <td>Both <code>email</code> AND <code>phone</code> uniquely identify a user. Both are candidate keys.</td>
+      <td>UNIQUE + NOT NULL. One chosen as PK, others remain as unique constraints.</td>
+    </tr>
+    <tr>
+      <td>Composite Key</td>
+      <td>A primary key made of TWO or MORE columns.</td>
+      <td><code>(student_id, course_id)</code> in Enrollment table — neither alone is unique, but together they are.</td>
+      <td>Combination must be UNIQUE + NOT NULL.</td>
+    </tr>
+    <tr>
+      <td>Surrogate Key</td>
+      <td>Artificial, system-generated key — not from real business data. Auto-increment ID.</td>
+      <td><code>id SERIAL PRIMARY KEY</code> — just a number, means nothing in the real world.</td>
+      <td>Auto-generated. Never changes. Not visible to users.</td>
+    </tr>
+    <tr>
+      <td>Natural Key</td>
+      <td>Key derived from real-world data that naturally identifies the entity.</td>
+      <td>email address, phone number, Aadhaar number, ISBN, PAN card number</td>
+      <td>Already meaningful. Problem: can change (email changes, phone changes).</td>
+    </tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Surrogate vs Natural Key — the design question</span></div>
+
+  <p class="explain">
+    This is a real design decision you'll make on every project and potentially be asked about in interviews.
+  </p>
+
+  <table class="cmp">
+    <tr><th></th><th>Surrogate Key (<code>id = 12345</code>)</th><th>Natural Key (<code>email = "ravi@gmail.com"</code>)</th></tr>
+    <tr><td>Stability</td><td>Never changes — just a number</td><td>Can change (person changes email)</td></tr>
+    <tr><td>Privacy</td><td>Safe to expose in URLs</td><td>Exposing email in URL is a privacy issue</td></tr>
+    <tr><td>Performance</td><td>Integer join — fast B-tree lookup</td><td>String join — slower, larger index</td></tr>
+    <tr><td>Business meaning</td><td>None — purely technical</td><td>Meaningful to business domain</td></tr>
+    <tr><td>When to prefer</td><td>Almost always (production standard)</td><td>When natural key is truly stable and required externally (ISBN, country code)</td></tr>
+  </table>
+
+  <div class="warn">
+    <strong>Interview question:</strong> "Why use surrogate keys instead of email as primary key?" — Email can change. If email is the PK, changing it requires updating every foreign key reference in every related table (orders, sessions, logs). With a surrogate key, you update email in one place (users table) and nothing else changes. Also: integer JOINs are faster than string JOINs.
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Referential Integrity — why foreign keys matter</span></div>
+
+  <p class="explain">
+    <strong>Referential integrity</strong> means you can't have an orphan record — a row that references something that doesn't exist. Foreign key constraints enforce this at the database level.
+  </p>
+
+<pre class="code">
+<span class="cm">-- Referential integrity in action</span>
+<span class="ck">CREATE TABLE</span> users (
+    id    <span class="ct">SERIAL</span> <span class="ck">PRIMARY KEY</span>,
+    name  <span class="ct">VARCHAR</span>(<span class="co">100</span>) <span class="ck">NOT NULL</span>
+);
+
+<span class="ck">CREATE TABLE</span> orders (
+    id      <span class="ct">SERIAL</span> <span class="ck">PRIMARY KEY</span>,
+    user_id <span class="ct">INT</span> <span class="ck">NOT NULL</span> <span class="ck">REFERENCES</span> users(id) <span class="ck">ON DELETE CASCADE</span>,
+    amount  <span class="ct">DECIMAL</span>(<span class="co">10</span>,<span class="co">2</span>)
+);
+
+<span class="cm">-- INSERT INTO orders (user_id, amount) VALUES (9999, 500);</span>
+<span class="cm">-- → ERROR: insert or update on table "orders" violates foreign key constraint</span>
+<span class="cm">-- → user_id=9999 doesn't exist in users table</span>
+
+<span class="cm">-- ON DELETE CASCADE: if user is deleted, all their orders are deleted too</span>
+<span class="cm">-- ON DELETE SET NULL: if user deleted, order's user_id becomes NULL</span>
+<span class="cm">-- ON DELETE RESTRICT (default): cannot delete user if they have orders</span>
+</pre>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Keys</div>
+    <div class="qa" id="q-k1">
+      <div class="qa-q" onclick="toggleQA('q-k1')">What is the difference between primary key and unique key? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>Both enforce uniqueness — no two rows can have the same value. The differences: (1) A table can have only ONE primary key but MULTIPLE unique keys. (2) A primary key column cannot be NULL; a unique key column CAN be NULL (one NULL is allowed, since NULL ≠ NULL in SQL). (3) The primary key is the main identifier for the table — foreign keys in other tables reference it. Unique keys are additional uniqueness constraints (e.g., users table might have PK on <code>id</code> and UNIQUE on <code>email</code> — both enforced, but <code>id</code> is what other tables reference).</div>
+    </div>
+    <div class="qa" id="q-k2">
+      <div class="qa-q" onclick="toggleQA('q-k2')">When would you use a composite primary key vs a surrogate key? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>Use a composite key when the table represents a many-to-many relationship — e.g., Enrollment(student_id, course_id) where each student-course pair is unique and meaningful. The composite of both columns IS the identity. Use a surrogate key when: the entity needs its own identity beyond relationships, you want simple integer foreign key references from other tables, or the combination of natural columns would be verbose as a PK. In practice, even junction tables often get a surrogate PK for simplicity in applications and ORM frameworks like Hibernate/JPA that expect single-column PKs.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Keys — 60-second revision</h4>
+    <ul>
+      <li>Primary Key: UNIQUE + NOT NULL. One per table. Main identifier.</li>
+      <li>Foreign Key: references another table's PK. Enforces referential integrity. Prevents orphan records.</li>
+      <li>Candidate Key: any column that COULD be PK (unique + not null). Multiple can exist — one chosen as PK.</li>
+      <li>Composite Key: PK made of 2+ columns. Used in junction tables (student_id + course_id).</li>
+      <li>Surrogate Key: auto-increment integer. Stable, fast, safe. Production standard.</li>
+      <li>Natural Key: from real data (email, phone). Problem: can change, privacy risk.</li>
+      <li>Referential integrity: FK enforces "referenced row must exist." ON DELETE CASCADE/RESTRICT/SET NULL.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 2: NORMALIZATION ══ -->
+<div class="concept" id="normalization">
+  <div class="concept-num">Concept 02 of 08</div>
+  <h2>Normalization — 1NF, 2NF, 3NF</h2>
+  <div class="concept-sub">Step-by-step normalization of a real messy table. This is the concept most freshers can define but can't apply. You need to apply it cold in an interview.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Normalize a table from scratch — asked at CRED, PhonePe level</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Why normalize? The problems it solves.</span></div>
+
+  <p class="explain">
+    Normalization eliminates <strong>data redundancy</strong> (same data stored multiple places) and prevents <strong>update anomalies</strong>.
+  </p>
+
+  <table class="cmp">
+    <tr><th>Anomaly</th><th>What happens</th><th>Example</th></tr>
+    <tr><td>Update anomaly</td><td>Updating one fact requires changing multiple rows. Miss one → inconsistent data.</td><td>Ravi moves cities. Must update every order row that has "Ravi, Bangalore". Miss one → some orders show old city.</td></tr>
+    <tr><td>Insert anomaly</td><td>Can't insert data without unrelated data being present.</td><td>Can't add a new product category without having a product in it.</td></tr>
+    <tr><td>Delete anomaly</td><td>Deleting one fact accidentally deletes unrelated data.</td><td>Delete the last order from a customer → lose the customer's contact info too.</td></tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">The messy starting table — normalize this step by step</span></div>
+
+  <div class="diagram">
+    <pre>
+  <span class="d-warn">UNNORMALIZED TABLE: Orders</span>
+  ┌──────────┬──────────┬───────────────┬──────────────────────────┬────────────────┐
+  │ OrderID  │ Customer │ CustomerCity  │ Products                 │ Prices         │
+  ├──────────┼──────────┼───────────────┼──────────────────────────┼────────────────┤
+  │ 1        │ Ravi     │ Bangalore     │ Phone, Charger, Case     │ 999, 199, 49   │
+  │ 2        │ Priya    │ Mumbai        │ Laptop                   │ 45000          │
+  │ 3        │ Ravi     │ Bangalore     │ Headphones               │ 1299           │
+  └──────────┴──────────┴───────────────┴──────────────────────────┴────────────────┘
+
+  <span class="d-err">Problems:</span>
+  1. Products column has multiple values in one cell (violates atomicity)
+  2. Ravi/Bangalore duplicated in rows 1 and 3 (redundancy)
+  3. If Ravi moves: must update rows 1 AND 3 (update anomaly)
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">1NF — First Normal Form</span></div>
+
+  <div class="nf-step">
+    <div class="nf-head">
+      <span class="nf-badge">1NF</span>
+      <span class="nf-title">Rule: Each column must have atomic (single) values. No repeating groups. Each row must be unique.</span>
+    </div>
+    <div class="nf-body">
+      <p class="explain"><strong>Problem in our table:</strong> The Products column contains multiple values ("Phone, Charger, Case"). This is not atomic — one cell has multiple items. Fix: split into separate rows.</p>
+      <div class="diagram">
+        <pre>
+  <span class="d-ok">AFTER 1NF:</span> Split multi-valued columns into separate rows
+  ┌──────────┬──────────┬───────────────┬─────────────┬────────┐
+  │ OrderID  │ Customer │ CustomerCity  │ Product     │ Price  │
+  ├──────────┼──────────┼───────────────┼─────────────┼────────┤
+  │ 1        │ Ravi     │ Bangalore     │ Phone       │ 999    │
+  │ 1        │ Ravi     │ Bangalore     │ Charger     │ 199    │
+  │ 1        │ Ravi     │ Bangalore     │ Case        │ 49     │
+  │ 2        │ Priya    │ Mumbai        │ Laptop      │ 45000  │
+  │ 3        │ Ravi     │ Bangalore     │ Headphones  │ 1299   │
+  └──────────┴──────────┴───────────────┴─────────────┴────────┘
+
+  Primary Key must be composite: <span class="d-hl">(OrderID, Product)</span>
+  — neither alone uniquely identifies a row.
+
+  <span class="d-warn">Still has problems:</span> Ravi/Bangalore still repeated 3 times. Update anomaly still exists.
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">2NF — Second Normal Form</span></div>
+
+  <div class="nf-step">
+    <div class="nf-head">
+      <span class="nf-badge">2NF</span>
+      <span class="nf-title">Rule: Must be in 1NF + No partial dependency. Every non-key column must depend on the WHOLE primary key, not just part of it.</span>
+    </div>
+    <div class="nf-body">
+      <p class="explain"><strong>What is a partial dependency?</strong> In our table, the PK is (OrderID, Product). Customer and CustomerCity depend only on OrderID — not on Product. Knowing the Product doesn't tell you the Customer. This is a partial dependency — a non-key column depends on PART of the composite key.</p>
+      <p class="explain"><strong>Fix:</strong> Split into two tables. Move columns that depend on only part of the PK into their own table.</p>
+      <div class="diagram">
+        <pre>
+  <span class="d-ok">AFTER 2NF:</span> Split into two tables
+
+  <span class="d-hl">Orders table:</span>           <span class="d-hl">OrderItems table:</span>
+  ┌─────────┬──────────┬──────────────┐   ┌─────────┬─────────────┬────────┐
+  │OrderID  │Customer  │CustomerCity  │   │OrderID  │Product      │Price   │
+  │(PK)     │          │              │   │(FK)     │             │        │
+  ├─────────┼──────────┼──────────────┤   ├─────────┼─────────────┼────────┤
+  │ 1       │ Ravi     │ Bangalore    │   │ 1       │ Phone       │ 999    │
+  │ 2       │ Priya    │ Mumbai       │   │ 1       │ Charger     │ 199    │
+  │ 3       │ Ravi     │ Bangalore    │   │ 1       │ Case        │ 49     │
+  └─────────┴──────────┴──────────────┘   │ 2       │ Laptop      │ 45000  │
+                                          │ 3       │ Headphones  │ 1299   │
+                                          └─────────┴─────────────┴────────┘
+
+  OrderItems PK: <span class="d-hl">(OrderID, Product)</span> — both needed to identify an item
+  Price depends on which product is in which order → depends on FULL PK ✓
+
+  <span class="d-warn">Still has a problem:</span> CustomerCity depends on Customer, not on OrderID.
+  Customer Ravi appears in rows 1 and 3 → CustomerCity "Bangalore" is stored twice.
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-marker"><span class="step-num">05</span><span class="step-line"></span><span class="step-text">3NF — Third Normal Form</span></div>
+
+  <div class="nf-step">
+    <div class="nf-head">
+      <span class="nf-badge">3NF</span>
+      <span class="nf-title">Rule: Must be in 2NF + No transitive dependency. Non-key columns must depend ONLY on the primary key — not on other non-key columns.</span>
+    </div>
+    <div class="nf-body">
+      <p class="explain"><strong>What is a transitive dependency?</strong> In the Orders table: OrderID → Customer → CustomerCity. CustomerCity depends on Customer (a non-key column), not directly on OrderID. This is a transitive dependency — CustomerCity gets to OrderID only through Customer.</p>
+      <p class="explain"><strong>Fix:</strong> Move Customer data to its own table. Orders table just stores the customer's ID as a foreign key.</p>
+      <div class="diagram">
+        <pre>
+  <span class="d-ok">AFTER 3NF:</span> Three clean tables
+
+  <span class="d-hl">Customers table:</span>      <span class="d-hl">Orders table:</span>          <span class="d-hl">OrderItems table:</span>
+  ┌──────┬───────┬──────┐  ┌───────┬──────────┐     ┌───────┬─────────────┬────────┐
+  │CustID│Name   │City  │  │OrdID  │CustomerID│     │OrdID  │Product      │Price   │
+  │(PK)  │       │      │  │(PK)   │(FK→Cust) │     │(FK)   │             │        │
+  ├──────┼───────┼──────┤  ├───────┼──────────┤     ├───────┼─────────────┼────────┤
+  │  1   │ Ravi  │Blore │  │  1    │  1       │     │  1    │ Phone       │ 999    │
+  │  2   │ Priya │Mumbai│  │  2    │  2       │     │  1    │ Charger     │ 199    │
+  └──────┴───────┴──────┘  │  3    │  1       │     │  2    │ Laptop      │ 45000  │
+                           └───────┴──────────┘     └───────┴─────────────┴────────┘
+
+  Now if Ravi moves: update ONE row in Customers. Done. ✓
+  No redundancy. No update anomaly. No insert anomaly.
+
+  Each non-key column depends ONLY on the primary key of its table:
+  • Name, City depend on CustID ✓
+  • CustomerID depends on OrdID ✓
+  • Price depends on (OrdID, Product) ✓
+        </pre>
+      </div>
+    </div>
+  </div>
+
+  <div class="step-marker"><span class="step-num">06</span><span class="step-line"></span><span class="step-text">Denormalization — when to break the rules</span></div>
+
+  <p class="explain">
+    Normalization is great for write-heavy, consistency-critical systems. But heavily normalized data requires many JOINs for reads — and JOINs are expensive at scale.
+  </p>
+
+  <table class="cmp">
+    <tr><th></th><th>Normalized (3NF)</th><th>Denormalized</th></tr>
+    <tr><td>Read performance</td><td>Slow (many JOINs)</td><td>Fast (data pre-joined)</td></tr>
+    <tr><td>Write performance</td><td>Fast (update one place)</td><td>Slow (update multiple copies)</td></tr>
+    <tr><td>Storage</td><td>Minimal (no redundancy)</td><td>More (duplicate data)</td></tr>
+    <tr><td>Data consistency</td><td>Guaranteed (one source of truth)</td><td>Risk of inconsistency</td></tr>
+    <tr><td>Use when</td><td>OLTP (transactions, e-commerce, banking)</td><td>OLAP (analytics, reporting, data warehouses)</td></tr>
+    <tr><td>Example</td><td>Swiggy orders DB, PhonePe transactions</td><td>Analytics dashboard showing "total revenue by restaurant per day"</td></tr>
+  </table>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Normalization</div>
+    <div class="qa" id="q-nf1">
+      <div class="qa-q" onclick="toggleQA('q-nf1')">Walk me through normalizing a table to 3NF. What is a transitive dependency? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>Starting with Orders(OrderID, Customer, CustomerCity, Product, Price): <strong>1NF</strong>: each cell one value — split multi-valued Products into separate rows. PK becomes (OrderID, Product). <strong>2NF</strong>: no partial dependencies — Customer and CustomerCity depend only on OrderID, not on Product. Move them to an Orders table with PK=OrderID. OrderItems keeps (OrderID, Product, Price). <strong>3NF</strong>: no transitive dependencies — CustomerCity depends on Customer (non-key), not OrderID. CustomerCity → Customer → OrderID is transitive. Fix: move Customer to its own Customers table with PK=CustomerID. Orders stores CustomerID as FK. Now: if Ravi moves, update ONE row in Customers. No anomalies. A transitive dependency is when A → B → C (C depends on B which depends on PK A, but C doesn't directly depend on A).</div>
+    </div>
+    <div class="qa" id="q-nf2">
+      <div class="qa-q" onclick="toggleQA('q-nf2')">When would you intentionally denormalize a database? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>When read performance matters more than write consistency — typically in analytics and reporting systems. Example: a dashboard showing "total revenue per restaurant per day" on Swiggy. Fully normalized, this requires JOINing orders, order_items, restaurants, and doing aggregations — expensive on billions of rows. Denormalized: pre-compute and store "daily_restaurant_revenue" with restaurant_name and revenue already combined. Reads are instant, but every order write must also update this summary. Trade-off: faster reads, more complex writes, risk of stale data. Data warehouses (Amazon Redshift, BigQuery) are built on denormalized star schemas for exactly this reason. OLTP systems (transactional) → normalize. OLAP systems (analytics) → denormalize.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Normalization — 60-second revision</h4>
+    <ul>
+      <li>Goal: eliminate redundancy, prevent update/insert/delete anomalies.</li>
+      <li>1NF: atomic values (one value per cell), unique rows. No arrays in a column.</li>
+      <li>2NF: 1NF + no partial dependency. Non-key columns depend on the WHOLE composite PK.</li>
+      <li>3NF: 2NF + no transitive dependency. Non-key depends only on PK, not on other non-key columns.</li>
+      <li>Test for 3NF: "Does every non-key column directly and only depend on the primary key?"</li>
+      <li>Denormalize for OLAP/analytics (read performance). Keep normalized for OLTP (transaction integrity).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 3: ACID ══ -->
+<div class="concept" id="acid">
+  <div class="concept-num">Concept 03 of 08</div>
+  <h2>ACID Properties</h2>
+  <div class="concept-sub">Atomicity, Consistency, Isolation, Durability. Don't just memorize the acronym — understand each property with a real PhonePe payment example. Interviewers follow up with "what implements durability?" and "what is consistency really?"</div>
+  <div class="progress-row"><span class="must">must know</span><span>Asked at every product company, every round</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">The scenario — PhonePe transfer of ₹500</span></div>
+
+  <p class="explain">
+    Ravi sends ₹500 to Priya via PhonePe. This requires two operations: debit ₹500 from Ravi's account, credit ₹500 to Priya's account. ACID ensures this works correctly under all circumstances.
+  </p>
+
+<pre class="code">
+<span class="ck">BEGIN TRANSACTION</span>;
+
+<span class="ck">UPDATE</span> accounts <span class="ck">SET</span> balance = balance - <span class="co">500</span> <span class="ck">WHERE</span> user_id = <span class="cs">'ravi'</span>;    <span class="cm">-- debit Ravi</span>
+<span class="ck">UPDATE</span> accounts <span class="ck">SET</span> balance = balance + <span class="co">500</span> <span class="ck">WHERE</span> user_id = <span class="cs">'priya'</span>;   <span class="cm">-- credit Priya</span>
+<span class="ck">INSERT INTO</span> transaction_log (from_user, to_user, amount) <span class="ck">VALUES</span> (<span class="cs">'ravi'</span>, <span class="cs">'priya'</span>, <span class="co">500</span>);
+
+<span class="ck">COMMIT</span>;   <span class="cm">-- or ROLLBACK if anything failed</span>
+</pre>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">A — Atomicity: All or Nothing</span></div>
+
+  <p class="explain">
+    <strong>Atomicity</strong>: All operations in a transaction either ALL succeed or ALL fail. There is no "partial success."
+  </p>
+  <p class="explain">
+    If the server crashes after debiting Ravi but before crediting Priya — Atomicity guarantees the debit is ROLLED BACK. Ravi doesn't lose ₹500. The transaction either completes fully or doesn't happen at all.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  Scenario: Server crashes after DEBIT but before CREDIT
+
+  Without Atomicity:        With Atomicity (ROLLBACK):
+  Ravi:  -₹500  ← done     Ravi:  ₹0 change  ← rolled back
+  Priya: no change          Priya: ₹0 change  ← never happened
+  → ₹500 LOST              → Transaction as if it never occurred
+
+  Implementation: UNDO log (write-ahead logging)
+  Before changing data: write what the old value was to the log.
+  If crash: read UNDO log → restore old values.
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">C — Consistency: Valid State to Valid State</span></div>
+
+  <p class="explain">
+    <strong>Consistency</strong>: A transaction takes the database from one valid state to another valid state. All constraints (NOT NULL, CHECK, FOREIGN KEY, business rules) are satisfied before AND after the transaction.
+  </p>
+  <p class="explain">
+    In our example: the constraint is <code>balance >= 0</code> (can't have negative balance). If Ravi has ₹400 and tries to send ₹500 — the transaction violates the consistency constraint. The DB should reject it.
+  </p>
+  <p class="explain">
+    Also: total money in the system must be conserved. Before transaction: Ravi₹1000 + Priya₹500 = ₹1500. After transaction: Ravi₹500 + Priya₹1000 = ₹1500. The sum is consistent.
+  </p>
+
+  <div class="warn">
+    <strong>Common misconception:</strong> Consistency in ACID is about database constraints, not about distributed systems consistency (like in CAP theorem). In ACID, C means "constraints are not violated." In CAP, C means "all nodes see the same data." Different concepts, same letter.
+  </div>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">I — Isolation: Concurrent Transactions Don't See Each Other's Work</span></div>
+
+  <p class="explain">
+    <strong>Isolation</strong>: concurrent transactions execute as if they were serial (one after another). Each transaction is unaware of other in-flight transactions.
+  </p>
+  <p class="explain">
+    Without isolation: while Transaction A is deducting from Ravi's account (but not yet committed), Transaction B might read Ravi's balance as already-deducted — seeing data that hasn't been committed yet (a "dirty read").
+  </p>
+  <p class="explain">
+    Implementation: <strong>locking</strong> (readers block writers or vice versa) or <strong>MVCC</strong> (Multi-Version Concurrency Control — each transaction sees a consistent snapshot of the data as of when the transaction started, without blocking other readers).
+  </p>
+
+  <div class="step-marker"><span class="step-num">05</span><span class="step-line"></span><span class="step-text">D — Durability: Committed = Permanent</span></div>
+
+  <p class="explain">
+    <strong>Durability</strong>: once a transaction is committed (COMMIT executed, success returned to user), the changes are permanent — even if the server crashes immediately after.
+  </p>
+  <p class="explain">
+    Once Ravi sees "Transfer Successful" on his PhonePe screen, that transaction has been committed. Even if the server dies at that exact moment, the data is safe.
+  </p>
+  <p class="explain">
+    Implementation: <strong>Write-Ahead Logging (WAL)</strong>. Before applying any change to the actual data files, the change is first written to a persistent log on disk. On restart after a crash, the DB reads the WAL log and replays any committed transactions that weren't fully applied to data files.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  WRITE-AHEAD LOGGING (WAL):
+  ┌──────────────────────────────────────────────────────────┐
+  │  Transaction commits:                                    │
+  │  1. Write record to WAL log (on disk): "SET balance=500" │
+  │  2. WAL log flushed (fsync) — data on physical disk      │
+  │  3. Return "SUCCESS" to client                           │
+  │  4. Apply change to actual data files (can be deferred)  │
+  │                                                          │
+  │  If crash between steps 3 and 4:                        │
+  │  → On restart: WAL log shows committed transaction       │
+  │  → DB replays it → data files updated → consistent       │
+  └──────────────────────────────────────────────────────────┘
+    </pre>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — ACID</div>
+    <div class="qa" id="q-ac1">
+      <div class="qa-q" onclick="toggleQA('q-ac1')">Explain ACID properties with a real payment example. <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer — the complete answer</span><strong>Atomicity</strong>: PhonePe transfer — debit Ravi AND credit Priya. If server crashes after debit: rollback. Ravi doesn't lose money. All-or-nothing. Implemented via UNDO log. <strong>Consistency</strong>: constraints never violated. Balance can't go negative. Total money before = total after. DB moves from one valid state to another. <strong>Isolation</strong>: two concurrent transfers don't see each other's uncommitted changes. Transaction B reading Ravi's balance doesn't see T1's partial debit. Implemented via locking or MVCC. <strong>Durability</strong>: once COMMIT returns success, the data is on disk permanently. Even if server dies 1ms after commit, data is safe. Implemented via WAL (Write-Ahead Log) — changes logged to disk before being confirmed.</div>
+    </div>
+    <div class="qa" id="q-ac2">
+      <div class="qa-q" onclick="toggleQA('q-ac2')">What is the difference between Atomicity and Durability? Both seem to handle crashes. <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>They handle different crash scenarios: <strong>Atomicity</strong> handles crashes that occur DURING a transaction (before commit). It ensures partial work is undone. "If I started and didn't finish, act like I never started." <strong>Durability</strong> handles crashes that occur AFTER a committed transaction. It ensures completed work survives. "If I finished and said so, the data must survive." Atomicity uses UNDO logs (to reverse partial work). Durability uses REDO logs / WAL (to replay committed work that hasn't hit the data files yet). Both use Write-Ahead Logging — the WAL log serves both purposes: undo for uncommitted, redo for committed.</div>
+    </div>
+    <div class="qa" id="q-ac3">
+      <div class="qa-q" onclick="toggleQA('q-ac3')">NoSQL databases (like MongoDB) are often said to not be ACID. Is that still true? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>This was true of early NoSQL databases but is increasingly outdated. MongoDB supports ACID transactions at the single-document level since version 4.0 (2018) and multi-document ACID transactions since 4.0 (replica sets) and 4.2 (sharded clusters). Cassandra offers configurable consistency but is inherently eventual consistency — not ACID by default. Redis supports atomic operations on single keys and Lua scripts for multi-key atomicity but no full ACID transactions. The distinction now is less "SQL=ACID, NoSQL=not-ACID" and more about the default semantics and guarantees each system provides. For financial data requiring strict ACID guarantees, PostgreSQL/MySQL remain the standard choice. But saying "MongoDB is not ACID" is outdated for modern versions.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>ACID — 60-second revision</h4>
+    <ul>
+      <li>Atomicity: all or nothing. Crash during transaction → rollback. UNDO log.</li>
+      <li>Consistency: constraints never violated. Valid state → valid state. Balance ≥ 0. Sum conserved.</li>
+      <li>Isolation: concurrent transactions don't see each other's uncommitted work. Locking or MVCC.</li>
+      <li>Durability: committed = permanent. Survives crashes. Write-Ahead Logging (WAL).</li>
+      <li>Atomicity vs Durability: Atomicity handles crash DURING transaction. Durability handles crash AFTER commit.</li>
+      <li>ACID ≠ ACID in CAP: Consistency in ACID = constraint satisfaction. Consistency in CAP = all nodes see same data.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 4: ISOLATION LEVELS ══ -->
+<div class="concept" id="isolation">
+  <div class="concept-num">Concept 04 of 08</div>
+  <h2>Transaction Isolation Levels</h2>
+  <div class="concept-sub">Four levels, three problems they prevent. Which is MySQL default? Which is PostgreSQL default? This separates candidates who memorized ACID from those who actually understand it.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Interviewers ask which level prevents which problem</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">The three concurrency problems</span></div>
+
+  <table class="cmp">
+    <tr><th>Problem</th><th>What happens</th><th>Example</th></tr>
+    <tr>
+      <td>Dirty Read</td>
+      <td>T1 reads data that T2 has modified but NOT yet committed. T2 later rolls back — T1 read data that never existed.</td>
+      <td>T2 debits Ravi's account to ₹500 (uncommitted). T1 reads ₹500. T2 rolls back — Ravi's balance is still ₹1000. T1 made a decision based on a value that never committed.</td>
+    </tr>
+    <tr>
+      <td>Non-Repeatable Read</td>
+      <td>T1 reads a row. T2 updates that row and commits. T1 reads the SAME row again — gets different value.</td>
+      <td>T1 reads Ravi's balance: ₹1000. T2 debits ₹500 and commits. T1 reads again: ₹500. Same query, different result within the same transaction.</td>
+    </tr>
+    <tr>
+      <td>Phantom Read</td>
+      <td>T1 reads a SET of rows matching a condition. T2 inserts new rows matching that condition and commits. T1 re-queries — sees new "phantom" rows.</td>
+      <td>T1 counts orders over ₹1000: 5 results. T2 inserts a new ₹5000 order and commits. T1 counts again: 6 results. The phantom row appeared.</td>
+    </tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">The four isolation levels</span></div>
+
+  <table class="cmp">
+    <tr><th>Isolation Level</th><th>Dirty Read</th><th>Non-Repeatable</th><th>Phantom Read</th><th>Performance</th><th>Default in</th></tr>
+    <tr><td>Read Uncommitted</td><td>✗ Possible</td><td>✗ Possible</td><td>✗ Possible</td><td>Fastest (no locking)</td><td>Rarely used</td></tr>
+    <tr><td>Read Committed</td><td>✓ Prevented</td><td>✗ Possible</td><td>✗ Possible</td><td>Good</td><td>PostgreSQL, Oracle</td></tr>
+    <tr><td>Repeatable Read</td><td>✓ Prevented</td><td>✓ Prevented</td><td>✗ Possible*</td><td>Moderate</td><td>MySQL InnoDB</td></tr>
+    <tr><td>Serializable</td><td>✓ Prevented</td><td>✓ Prevented</td><td>✓ Prevented</td><td>Slowest (heavy locking)</td><td>Financial transactions</td></tr>
+  </table>
+
+  <p class="explain" style="margin-top:10px;font-size:12px;color:var(--ink3);">* MySQL InnoDB's Repeatable Read actually prevents phantom reads through gap locks, but the SQL standard says Repeatable Read allows phantoms.</p>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">How each level is implemented</span></div>
+
+  <p class="explain"><strong>Read Committed</strong>: Takes a read snapshot at the start of each statement. Each new query within a transaction sees the latest committed data. Dirty reads prevented (only committed data visible). But between two queries in the same transaction, other transactions can commit changes — non-repeatable reads possible.</p>
+  <p class="explain"><strong>Repeatable Read</strong>: Takes a snapshot at the start of the entire transaction. All reads within the transaction see the data as it was when the transaction began. Even if other transactions commit during this time, this transaction's reads are stable.</p>
+  <p class="explain"><strong>Serializable</strong>: Strongest. Transactions execute as if they were serial — one after another, no concurrent execution. Implemented with range locks or predicate locks. Prevents all anomalies. Slowest due to locking overhead.</p>
+
+  <div class="analogy">
+    <strong>Repeatable Read analogy:</strong> You take a photo of a spreadsheet at 10 AM. For the rest of the day, you only look at that photo — even as colleagues update the original spreadsheet. Your reads are "repeatable" — you always see 10 AM's data. The downside: you might miss important updates others have committed.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Isolation Levels</div>
+    <div class="qa" id="q-il1">
+      <div class="qa-q" onclick="toggleQA('q-il1')">What is a dirty read? Which isolation level prevents it? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>A dirty read is when Transaction T1 reads data that Transaction T2 has modified but NOT yet committed. If T2 later rolls back, T1 has read data that never officially existed. Example: T2 sets Ravi's balance to ₹500 (uncommitted). T1 reads ₹500 and approves a loan based on this. T2 rolls back — Ravi still has ₹1000. T1 approved a loan based on a ghost value. <strong>Prevention</strong>: READ COMMITTED isolation level and above. READ COMMITTED only shows committed data — T2's uncommitted change is invisible to T1. READ UNCOMMITTED allows dirty reads (essentially no isolation). In financial systems, READ COMMITTED is the minimum acceptable isolation level.</div>
+    </div>
+    <div class="qa" id="q-il2">
+      <div class="qa-q" onclick="toggleQA('q-il2')">What is MVCC? How does it differ from locking? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>MVCC (Multi-Version Concurrency Control): instead of locking rows when they're read, the DB maintains multiple versions of each row. Each transaction sees a consistent snapshot based on when it started. Readers never block writers, writers never block readers. PostgreSQL and MySQL InnoDB use MVCC. <strong>Traditional locking</strong>: when T1 reads a row, it acquires a shared lock. T2 trying to write that row must wait for T1's lock to release. Readers block writers, writers block readers. MVCC advantage: much higher read concurrency — no reader ever waits for a writer. MVCC disadvantage: must store multiple versions of rows (more storage) and periodically vacuum/clean up old versions (PostgreSQL VACUUM).</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Isolation Levels — 60-second revision</h4>
+    <ul>
+      <li>Dirty Read: read uncommitted data that might be rolled back. Prevented by READ COMMITTED+.</li>
+      <li>Non-Repeatable Read: same row read twice in same transaction gives different values. Prevented by REPEATABLE READ+.</li>
+      <li>Phantom Read: same query returns different rows (new rows inserted by concurrent transaction). Prevented by SERIALIZABLE.</li>
+      <li>READ UNCOMMITTED → READ COMMITTED → REPEATABLE READ → SERIALIZABLE. More isolation = less concurrency = slower.</li>
+      <li>PostgreSQL default: READ COMMITTED. MySQL InnoDB default: REPEATABLE READ.</li>
+      <li>MVCC: multiple row versions. Readers don't block writers. PostgreSQL + MySQL use it.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 5: INDEXING ══ -->
+<div class="concept" id="indexing">
+  <div class="concept-num">Concept 05 of 08</div>
+  <h2>Database Indexing</h2>
+  <div class="concept-sub">B-Tree structure. Clustered vs non-clustered. When to add an index and when NOT to. The write penalty. EXPLAIN / EXPLAIN ANALYZE. Composite index prefix rule.</div>
+  <div class="progress-row"><span class="must">must know</span><span>"Your query is slow — how do you fix it?" is always asked</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Why indexes exist — the problem they solve</span></div>
+
+  <p class="explain">
+    Without an index, every query on a non-PK column does a <strong>full table scan</strong> — check every single row. On a 10 million row table, that's 10 million comparisons for every query. Catastrophically slow.
+  </p>
+  <p class="explain">
+    An index is a separate data structure that allows the DB to find rows in O(log n) instead of O(n). Like a book's index — instead of reading the whole book to find "REST API", you check the index for the page numbers.
+  </p>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">B-Tree — the internal structure</span></div>
+
+  <div class="diagram">
+    <pre>
+  B-Tree index on "email" column (simplified):
+
+                      [M]
+                    /     \
+              [D–H]         [N–Z]
+             /     \       /     \
+           [D]   [E–H]  [N]   [O–Z]
+                   ↓
+               Leaf node: contains email value + pointer to actual row
+
+  Key properties:
+  • Balanced tree — all leaf nodes at same depth
+  • Each lookup: O(log n) — about 23 comparisons for 10M rows
+  • Range queries: O(log n + k) — find start, scan forward
+  • Without index: O(n) = 10,000,000 comparisons for 10M rows
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Clustered vs Non-Clustered Index</span></div>
+
+  <table class="cmp">
+    <tr><th></th><th>Clustered Index</th><th>Non-Clustered Index</th></tr>
+    <tr><td>What it is</td><td>The data rows ARE physically sorted by the index key. The index IS the table.</td><td>A separate data structure with pointers to the actual rows.</td></tr>
+    <tr><td>Count per table</td><td>ONE only — data can only be sorted one way</td><td>MULTIPLE allowed (up to ~64 in SQL Server, effectively unlimited in PostgreSQL)</td></tr>
+    <tr><td>Lookup speed</td><td>Fastest — leaf nodes ARE the data rows. One lookup.</td><td>Two lookups: index → row pointer → actual row (key lookup)</td></tr>
+    <tr><td>In MySQL InnoDB</td><td>Primary Key is always the clustered index</td><td>All other indexes are non-clustered, store PK value instead of row pointer</td></tr>
+    <tr><td>In PostgreSQL</td><td>No traditional clustered index — heap storage. CLUSTER command to reorganize once, but not maintained automatically.</td><td>All indexes are heap-based, use tuple ID (ctid) as pointer</td></tr>
+  </table>
+
+  <div class="analogy">
+    <strong>Dictionary analogy:</strong> Clustered index = dictionary — words ARE in alphabetical order. The book is the index. Non-clustered = book's index at the back — alphabetical list of topics with page numbers. The data (pages) are not sorted by topic.
+  </div>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">When to add an index — and when NOT to</span></div>
+
+  <table class="cmp">
+    <tr><th>ADD index when column is in</th><th>DO NOT index when</th></tr>
+    <tr><td>WHERE clause (especially equality: = or range: &gt;, &lt;, BETWEEN)</td><td>Table is small — full scan faster than index overhead</td></tr>
+    <tr><td>JOIN ON condition</td><td>Column has very low cardinality (boolean, gender M/F — index rarely helps filter much)</td></tr>
+    <tr><td>ORDER BY clause</td><td>Column is written far more than read — index slows every write</td></tr>
+    <tr><td>High cardinality column (email, user_id, phone)</td><td>Too many indexes — each one slows INSERT/UPDATE/DELETE</td></tr>
+    <tr><td>Foreign key columns (prevent slow cascading lookups)</td><td>Wildcard leading queries — <code>LIKE '%text'</code> can't use index (leading wildcard)</td></tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">05</span><span class="step-line"></span><span class="step-text">The write penalty — indexes slow writes</span></div>
+
+  <p class="explain">
+    Every time you INSERT, UPDATE, or DELETE a row, <strong>every index on that table must also be updated</strong>. If you have 10 indexes on a table, every write operation must update 10 B-Trees. This is why over-indexing is a performance problem — too many indexes hurts write-heavy tables.
+  </p>
+
+<pre class="code">
+<span class="cm">-- Create an index</span>
+<span class="ck">CREATE INDEX</span> idx_users_email <span class="ck">ON</span> users(email);
+<span class="ck">CREATE INDEX</span> idx_users_phone <span class="ck">ON</span> users(phone);
+<span class="ck">CREATE INDEX</span> idx_users_city  <span class="ck">ON</span> users(city);
+
+<span class="cm">-- This INSERT must update ALL three indexes</span>
+<span class="ck">INSERT INTO</span> users (name, email, phone, city) <span class="ck">VALUES</span> (<span class="cs">'Ravi'</span>, <span class="cs">'ravi@gmail.com'</span>, <span class="cs">'9876543210'</span>, <span class="cs">'Bangalore'</span>);
+<span class="cm">-- → updates users table row + idx_users_email B-tree + idx_users_phone B-tree + idx_users_city B-tree</span>
+
+<span class="cm">-- COMPOSITE INDEX: column order matters!</span>
+<span class="ck">CREATE INDEX</span> idx_orders_user_date <span class="ck">ON</span> orders(user_id, created_at);
+<span class="cm">-- Helps: WHERE user_id = 5 (leftmost prefix)</span>
+<span class="cm">-- Helps: WHERE user_id = 5 AND created_at > '2024-01-01'</span>
+<span class="cm">-- DOES NOT help: WHERE created_at > '2024-01-01' (not leftmost)</span>
+
+<span class="cm">-- EXPLAIN to see if index is being used</span>
+<span class="ck">EXPLAIN ANALYZE SELECT</span> * <span class="ck">FROM</span> users <span class="ck">WHERE</span> email = <span class="cs">'ravi@gmail.com'</span>;
+<span class="cm">-- Without index: "Seq Scan" → full table scan → slow</span>
+<span class="cm">-- With index:    "Index Scan" → B-tree lookup → fast</span>
+</pre>
+
+  <div class="step-marker"><span class="step-num">06</span><span class="step-line"></span><span class="step-text">When indexes aren't used — gotchas</span></div>
+
+<pre class="code">
+<span class="cm">-- GOTCHA 1: Leading wildcard — index on 'email' NOT used</span>
+<span class="ck">SELECT</span> * <span class="ck">FROM</span> users <span class="ck">WHERE</span> email <span class="ck">LIKE</span> <span class="cs">'%gmail.com'</span>;  <span class="cm">-- full scan!</span>
+<span class="ck">SELECT</span> * <span class="ck">FROM</span> users <span class="ck">WHERE</span> email <span class="ck">LIKE</span> <span class="cs">'ravi%'</span>;       <span class="cm">-- index CAN be used</span>
+
+<span class="cm">-- GOTCHA 2: Function on indexed column — index NOT used</span>
+<span class="ck">SELECT</span> * <span class="ck">FROM</span> users <span class="ck">WHERE</span> <span class="cf">LOWER</span>(email) = <span class="cs">'ravi@gmail.com'</span>; <span class="cm">-- full scan!</span>
+<span class="cm">-- Fix: store emails lowercase always, OR create functional index</span>
+<span class="ck">CREATE INDEX</span> idx_lower_email <span class="ck">ON</span> users(<span class="cf">LOWER</span>(email));
+
+<span class="cm">-- GOTCHA 3: OR conditions — may prevent index use</span>
+<span class="ck">SELECT</span> * <span class="ck">FROM</span> users <span class="ck">WHERE</span> city = <span class="cs">'Bangalore'</span> <span class="ck">OR</span> city = <span class="cs">'Mumbai'</span>;
+<span class="cm">-- May or may not use index. Better: WHERE city IN ('Bangalore', 'Mumbai')</span>
+
+<span class="cm">-- GOTCHA 4: Composite index leftmost prefix rule</span>
+<span class="ck">CREATE INDEX</span> idx_abc <span class="ck">ON</span> t(a, b, c);
+<span class="cm">-- Works: WHERE a=1       (prefix a)</span>
+<span class="cm">-- Works: WHERE a=1 AND b=2    (prefix a,b)</span>
+<span class="cm">-- Works: WHERE a=1 AND b=2 AND c=3</span>
+<span class="cm">-- FAILS: WHERE b=2       (skips a — not leftmost prefix)</span>
+<span class="cm">-- FAILS: WHERE c=3       (skips a and b)</span>
+</pre>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Indexing</div>
+    <div class="qa" id="q-idx1">
+      <div class="qa-q" onclick="toggleQA('q-idx1')">Your query on a 10M row table is slow. How do you debug and fix it? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>Step 1: Run EXPLAIN ANALYZE on the slow query — look for "Seq Scan" (full table scan, bad) vs "Index Scan" (uses index, good). Also look at the "actual time" and "rows" fields — where is most time being spent? Step 2: Check the WHERE clause — which column is the filter? Does an index exist on it? If not, CREATE INDEX. If yes, is it being used? Step 3: Check for index gotchas — LIKE with leading wildcard, function on the column, wrong column order in composite index. Step 4: Check cardinality — is the indexed column very low cardinality? (e.g., is_deleted = true/false — an index here is nearly useless, DB might prefer a seq scan anyway). Step 5: Consider composite index — if you always filter by user_id + created_at together, a composite index (user_id, created_at) is better than two separate indexes.</div>
+    </div>
+    <div class="qa" id="q-idx2">
+      <div class="qa-q" onclick="toggleQA('q-idx2')">What is the difference between clustered and non-clustered index? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>A <strong>clustered index</strong> physically sorts the data rows by the index key — the leaf nodes of the B-tree ARE the actual data rows. Only one allowed per table (data can only be sorted one way). In MySQL InnoDB, the primary key is always the clustered index. Fastest lookup — one step from index to data. A <strong>non-clustered index</strong> is a separate B-tree structure where leaf nodes contain the index key value plus a pointer back to the actual row. Multiple allowed per table. Lookup requires two steps: index → pointer → row data (unless covering index is used). Dictionary analogy: clustered = dictionary (words physically sorted alphabetically, book IS the index). Non-clustered = book's back-of-book index (separate list pointing to page numbers).</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Indexing — 60-second revision</h4>
+    <ul>
+      <li>Without index: O(n) full scan. With index: O(log n) B-tree lookup. 10M rows = 23 comparisons.</li>
+      <li>Clustered: rows physically sorted by key. One per table. Fastest. MySQL InnoDB PK is clustered.</li>
+      <li>Non-clustered: separate B-tree with row pointers. Multiple per table. Two lookups needed.</li>
+      <li>Write penalty: every INSERT/UPDATE/DELETE must update all indexes on the table. Over-indexing hurts writes.</li>
+      <li>Add index on: WHERE columns, JOIN columns, ORDER BY columns, high-cardinality columns, FK columns.</li>
+      <li>Don't index: small tables, low-cardinality columns (boolean), frequently updated columns.</li>
+      <li>Composite index: leftmost prefix rule. (a,b,c) index helps WHERE a, WHERE a+b, WHERE a+b+c. Not WHERE b or WHERE c alone.</li>
+      <li>Indexes not used: LIKE '%text' (leading wildcard), LOWER(email)=... (function on column).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 6: SQL vs NoSQL ══ -->
+<div class="concept" id="nosql">
+  <div class="concept-num">Concept 06 of 08</div>
+  <h2>SQL vs NoSQL</h2>
+  <div class="concept-sub">Not "which is better" — it's "which fits the use case." Every real production system uses both. Know when each is appropriate and why companies like Swiggy use both simultaneously.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Asked at every product company — connect to real products</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">SQL (Relational) — characteristics and use cases</span></div>
+
+  <p class="explain">
+    <strong>SQL databases</strong> (PostgreSQL, MySQL, Oracle, SQL Server): structured schema defined upfront. Tables with rows and columns. Relationships via foreign keys. ACID transactions. Joins. Vertical scaling (bigger server).
+  </p>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">NoSQL types — there are four, not one</span></div>
+
+  <table class="cmp">
+    <tr><th>Type</th><th>Examples</th><th>Data Model</th><th>Use When</th></tr>
+    <tr><td>Document</td><td>MongoDB, CouchDB</td><td>JSON/BSON documents, nested objects</td><td>Product catalogs (different attributes per product type), user profiles, CMS</td></tr>
+    <tr><td>Key-Value</td><td>Redis, DynamoDB</td><td>Key → arbitrary value (string, hash, list)</td><td>Sessions, caching, feature flags, rate limiting counters, shopping carts</td></tr>
+    <tr><td>Column-Family</td><td>Cassandra, HBase</td><td>Rows with dynamic columns, wide rows</td><td>Time-series data, IoT sensor readings, write-heavy analytics at massive scale</td></tr>
+    <tr><td>Graph</td><td>Neo4j, Amazon Neptune</td><td>Nodes + edges</td><td>Social graphs (friends of friends), recommendation engines, fraud detection networks</td></tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">The comparison — when each shines</span></div>
+
+  <table class="cmp">
+    <tr><th></th><th>SQL (PostgreSQL/MySQL)</th><th>NoSQL (MongoDB/Cassandra)</th></tr>
+    <tr><td>Schema</td><td>Rigid — defined upfront. ALTER TABLE for changes.</td><td>Flexible — each document can have different fields.</td></tr>
+    <tr><td>Transactions</td><td>Full ACID. Multi-table, multi-row.</td><td>Usually single-document atomic. Multi-doc ACID added later (MongoDB 4.0).</td></tr>
+    <tr><td>Scaling</td><td>Vertical (bigger machine). Horizontal sharding is complex.</td><td>Horizontal — designed for it. Add nodes, data distributes automatically (Cassandra).</td></tr>
+    <tr><td>Queries</td><td>Complex joins, aggregations. SQL is expressive.</td><td>Simple queries optimized for known access patterns. Joins are expensive/not supported.</td></tr>
+    <tr><td>Consistency</td><td>Strong (ACID)</td><td>Eventual by default (tunable in some)</td></tr>
+    <tr><td>Schema evolution</td><td>Painful — requires migrations</td><td>Easy — just add new fields</td></tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">Real Swiggy-like system — uses BOTH</span></div>
+
+  <div class="diagram">
+    <pre>
+  <span class="d-hl">Swiggy-like architecture — polyglot persistence:</span>
+
+  <span class="d-ok">PostgreSQL</span> (ACID required):
+  → Users, Authentication, Payments, Orders (financial data)
+  → "Debit customer, credit restaurant" — must be atomic
+
+  <span class="d-ok">MongoDB</span> (flexible schema):
+  → Restaurant catalog (each restaurant has different menu structure)
+  → User profiles (different users have different preferences)
+  → Content management (banners, promotions with varying fields)
+
+  <span class="d-ok">Redis</span> (speed + TTL):
+  → User sessions (key=session_token, value=user_data, TTL=24h)
+  → Cart (key=user_id, value=cart_items)
+  → Rate limiting (key=user_id:endpoint, value=count, TTL=60s)
+  → Caching hot restaurant data (reduce DB queries)
+
+  <span class="d-ok">Cassandra</span> (write-heavy time-series):
+  → Delivery partner location updates (high write rate, time-series)
+  → User activity logs (millions of events per second)
+  → Order status history (append-only, never updated)
+
+  <span class="d-cmt">Key insight: No single database fits all use cases.
+  The skill is knowing which DB to use for which data and why.</span>
+    </pre>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — SQL vs NoSQL</div>
+    <div class="qa" id="q-ns1">
+      <div class="qa-q" onclick="toggleQA('q-ns1')">When would you choose NoSQL over SQL? Give a real product example. <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>I'd choose NoSQL when: (1) <strong>Schema is flexible/evolving</strong> — Swiggy's restaurant menu catalog. Every restaurant has a different structure (some have combos, some have variants, some have customizations). SQL would need a complex EAV pattern or constant schema changes. MongoDB handles this naturally — each restaurant document can have different fields. (2) <strong>Massive write throughput</strong> — delivery partner location updates. Partners update location every 3 seconds × 100,000 active partners = 33,000 writes/second. Cassandra's distributed write-optimized architecture handles this. A single PostgreSQL instance would struggle. (3) <strong>Caching and sessions</strong> — Redis. Sub-millisecond reads, TTL support, specialized data structures (sorted sets for leaderboards, pub/sub for real-time notifications). But for payments, transactions, and anything requiring ACID: PostgreSQL. The answer isn't NoSQL vs SQL — it's using the right tool for each data type.</div>
+    </div>
+    <div class="qa" id="q-ns2">
+      <div class="qa-q" onclick="toggleQA('q-ns2')">What is eventual consistency? When is it acceptable? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>Eventual consistency means: given no new updates, all nodes in a distributed system will eventually converge to the same value — but reads immediately after a write might return stale data. Example: Swiggy restaurant rating. You give a 5-star review. Due to eventual consistency, another user in a different region might see the old rating for a few seconds before the update propagates. This is acceptable — the cost of strong consistency (blocking all reads until all nodes agree) would dramatically slow the system for a feature where 1-second staleness doesn't matter. But for financial transactions: eventual consistency is unacceptable. If PhonePe shows your balance as ₹1000 when it's actually ₹0 (due to stale read), you might spend money you don't have. ACID strong consistency is required there.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>SQL vs NoSQL — 60-second revision</h4>
+    <ul>
+      <li>SQL: rigid schema, ACID, joins, vertical scale. Use for: transactions, financial data, anything with complex relationships.</li>
+      <li>Document (MongoDB): flexible schema, JSON documents, nested data. Use for: catalogs, profiles, CMS content.</li>
+      <li>Key-Value (Redis): speed, TTL, simple structures. Use for: sessions, cache, rate limiting, real-time features.</li>
+      <li>Column-family (Cassandra): horizontal scale, write-heavy, time-series. Use for: logs, IoT data, append-heavy workloads.</li>
+      <li>Graph (Neo4j): relationships between entities. Use for: social graphs, recommendation engines, fraud detection.</li>
+      <li>Real systems use ALL of these — choose based on data characteristics and access patterns.</li>
+      <li>Eventual consistency: fine for ratings, social feeds. Unacceptable for financial transactions.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 7: CAP THEOREM ══ -->
+<div class="concept" id="cap">
+  <div class="concept-num">Concept 07 of 08</div>
+  <h2>CAP Theorem</h2>
+  <div class="concept-sub">Distributed systems can only guarantee 2 of 3: Consistency, Availability, Partition Tolerance. Network partitions always happen — so you really choose between C and A. Know where MongoDB, Cassandra, and PostgreSQL fall.</div>
+  <div class="progress-row"><span class="high">high value</span><span>Asked when discussing distributed systems and system design</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">The three properties</span></div>
+
+  <table class="cmp">
+    <tr><th>Property</th><th>What it means</th><th>Real scenario</th></tr>
+    <tr>
+      <td><strong>C</strong> — Consistency</td>
+      <td>Every read receives the most recent write (or an error). All nodes see the same data at the same time.</td>
+      <td>After Ravi transfers ₹500, EVERY server in the cluster immediately shows the new balance. No stale reads possible.</td>
+    </tr>
+    <tr>
+      <td><strong>A</strong> — Availability</td>
+      <td>Every request receives a response (not necessarily the most recent data). The system never refuses to answer.</td>
+      <td>Even during partial failures, the system responds — might return slightly stale data, but always responds.</td>
+    </tr>
+    <tr>
+      <td><strong>P</strong> — Partition Tolerance</td>
+      <td>The system continues operating even when some nodes can't communicate with others (network partition).</td>
+      <td>The network cable between two data centers is cut. The system keeps working — doesn't go down.</td>
+    </tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Why you MUST choose P — and then decide between C and A</span></div>
+
+  <p class="explain">
+    Network partitions are an unavoidable reality in distributed systems. Network cables get cut, switches fail, AWS availability zones lose connectivity. You CANNOT say "I'll build a distributed system that never partitions" — it will happen. So <strong>Partition Tolerance is not a choice — it's a requirement</strong>.
+  </p>
+  <p class="explain">
+    Given that P is always chosen, the real choice is: when a network partition occurs, do you sacrifice <strong>Consistency</strong> (allow stale reads) or <strong>Availability</strong> (refuse requests until consistent)?
+  </p>
+
+  <div class="diagram">
+    <pre>
+  NETWORK PARTITION SCENARIO:
+  Node A ←—✗—→ Node B   (network cut between them)
+
+  A client writes to Node A: "balance = ₹500"
+  Node A cannot replicate to Node B (partition!)
+
+  Another client reads from Node B:
+  
+  CP system (Consistency + Partition Tolerance):
+  → Node B refuses to answer (returns error)
+  → "I can't guarantee I have the latest data. I won't serve stale data."
+  → System is unavailable during partition
+  → MongoDB (with majority write concern), HBase, Zookeeper
+
+  AP system (Availability + Partition Tolerance):
+  → Node B returns ₹1000 (old value, stale)
+  → "I'll answer, but my data might be outdated."
+  → System is available but inconsistent during partition
+  → Cassandra, CouchDB, DynamoDB (by default)
+
+  <span class="d-cmt">Traditional single-node SQL: CA (no partition tolerance)
+  → Works perfectly when there's no distributed component
+  → But you can't "distribute" an SQL DB without choosing C or A</span>
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Where each database falls</span></div>
+
+  <table class="cmp">
+    <tr><th>Database</th><th>CAP Category</th><th>Reasoning</th></tr>
+    <tr><td>PostgreSQL / MySQL (single node)</td><td>CA</td><td>No distribution, so no partition. Full consistency and availability on one node.</td></tr>
+    <tr><td>MongoDB (with majority reads/writes)</td><td>CP</td><td>During partition, won't return potentially stale data — returns error instead. Prioritizes consistency.</td></tr>
+    <tr><td>Cassandra</td><td>AP</td><td>Always responds (high availability), eventual consistency. During partition, might return stale data.</td></tr>
+    <tr><td>DynamoDB</td><td>AP (by default)</td><td>Eventual consistency by default. Strongly consistent reads available but slower and more expensive.</td></tr>
+    <tr><td>Redis (single node)</td><td>CA</td><td>Single node. Redis Cluster introduces P trade-offs.</td></tr>
+    <tr><td>Zookeeper</td><td>CP</td><td>Consensus-based. Returns error rather than stale data during partition.</td></tr>
+  </table>
+
+  <div class="warn">
+    <strong>CAP is not a strict trichotomy:</strong> Real systems are more nuanced — they often tune consistency levels per operation. Cassandra lets you configure CONSISTENCY = QUORUM (stronger) or ONE (weaker) per query. DynamoDB lets you request strongly consistent reads. The CAP theorem describes the theoretical limits — modern systems tune between them based on the importance of each operation.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — CAP</div>
+    <div class="qa" id="q-cap1">
+      <div class="qa-q" onclick="toggleQA('q-cap1')">Explain the CAP theorem. Where does MongoDB sit? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>CAP theorem states a distributed system can only guarantee two of three: Consistency (every read gets the latest write), Availability (every request gets a response), Partition Tolerance (system works despite network failures). Since network partitions are unavoidable in any distributed system (hardware fails, networks get congested), Partition Tolerance is a requirement — not a choice. The real decision is: during a partition, do you sacrifice Consistency (serve stale data) or Availability (refuse to serve)? MongoDB is traditionally CP — with majority write concern, during a partition, secondaries won't serve reads that might be stale, preferring consistency. However, MongoDB allows tuning: with lower consistency settings, it can behave more like AP. This is why CAP is really a spectrum, not a hard trichotomy.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>CAP Theorem — 60-second revision</h4>
+    <ul>
+      <li>C: all nodes see the same data. A: system always responds. P: works despite network failures.</li>
+      <li>P is required — network partitions always happen in distributed systems. Real choice: C or A during partition.</li>
+      <li>CP: refuse requests during partition (return error). Consistent but less available. MongoDB, Zookeeper, HBase.</li>
+      <li>AP: serve possibly stale data during partition. Available but eventually consistent. Cassandra, CouchDB, DynamoDB.</li>
+      <li>CA: single-node systems. PostgreSQL, MySQL single-node. No partition tolerance.</li>
+      <li>CAP is a spectrum — most systems allow tuning consistency level per operation.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 8: LOCKING ══ -->
+<div class="concept" id="locking">
+  <div class="concept-num">Concept 08 of 08</div>
+  <h2>Optimistic vs Pessimistic Locking</h2>
+  <div class="concept-sub">Two strategies for handling concurrent updates. Know when each applies. Spring Boot's @Version annotation implements optimistic locking automatically.</div>
+  <div class="progress-row"><span class="high">high value</span><span>Connects directly to your Spring Boot project</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Pessimistic Locking — assume conflict will happen</span></div>
+
+  <p class="explain">
+    <strong>Pessimistic locking</strong>: lock the row as soon as you read it. Hold the lock until the transaction completes. No other transaction can read or write that row while you hold the lock.
+  </p>
+  <p class="explain">
+    <strong>Use when:</strong> contention is high — many concurrent transactions likely to modify the same data. Example: Zepto ordering the last item in stock. Multiple users simultaneously trying to buy it. Pessimistic locking prevents overselling.
+  </p>
+
+<pre class="code">
+<span class="cm">-- Pessimistic locking: SELECT FOR UPDATE</span>
+<span class="ck">BEGIN</span>;
+<span class="ck">SELECT</span> * <span class="ck">FROM</span> products <span class="ck">WHERE</span> id = <span class="co">42</span> <span class="ck">FOR UPDATE</span>;
+<span class="cm">-- ^ Acquires exclusive row lock. Other transactions trying SELECT FOR UPDATE on row 42 → BLOCK.</span>
+
+<span class="ck">UPDATE</span> products <span class="ck">SET</span> stock = stock - <span class="co">1</span> <span class="ck">WHERE</span> id = <span class="co">42</span>;
+<span class="ck">COMMIT</span>;  <span class="cm">-- lock released here</span>
+
+<span class="cm">-- Trade-off: high contention → many transactions waiting → throughput limited</span>
+<span class="cm">-- Risk: if transaction takes long → deadlock possible</span>
+</pre>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Optimistic Locking — assume conflict is rare</span></div>
+
+  <p class="explain">
+    <strong>Optimistic locking</strong>: no lock on read. Instead, add a <code>version</code> column. When you read a row, note the version. When you write, check that the version hasn't changed. If it has (someone else modified it) — conflict! Retry.
+  </p>
+  <p class="explain">
+    <strong>Use when:</strong> contention is low — conflicts are rare, most updates succeed without conflict. Example: user profile update. Very unlikely two users update the same profile simultaneously.
+  </p>
+
+<pre class="code">
+<span class="cm">-- Optimistic locking: version column</span>
+<span class="cm">-- Schema: products table has a 'version' column</span>
+
+<span class="cm">-- Step 1: Read, note the version</span>
+<span class="ck">SELECT</span> id, price, stock, version <span class="ck">FROM</span> products <span class="ck">WHERE</span> id = <span class="co">42</span>;
+<span class="cm">-- Returns: id=42, price=999, stock=5, version=3</span>
+
+<span class="cm">-- Step 2: Update with version check</span>
+<span class="ck">UPDATE</span> products
+<span class="ck">SET</span> stock = <span class="co">4</span>, version = version + <span class="co">1</span>
+<span class="ck">WHERE</span> id = <span class="co">42</span> <span class="ck">AND</span> version = <span class="co">3</span>;  <span class="cm">-- ← condition on version</span>
+
+<span class="cm">-- Check rows affected:</span>
+<span class="cm">-- rows_affected = 1 → SUCCESS: version was still 3, nobody else modified it</span>
+<span class="cm">-- rows_affected = 0 → CONFLICT: version changed (someone else updated first) → RETRY</span>
+
+<span class="cm">-- Spring Boot JPA — @Version annotation handles this automatically</span>
+<span class="cm">// @Entity</span>
+<span class="cm">// public class Product {</span>
+<span class="cm">//     @Id private Long id;</span>
+<span class="cm">//     private int stock;</span>
+<span class="cm">//     @Version  ← Spring JPA manages version automatically</span>
+<span class="cm">//     private int version;</span>
+<span class="cm">// }</span>
+<span class="cm">// JPA automatically adds AND version=? to UPDATE queries</span>
+<span class="cm">// Throws OptimisticLockException if conflict detected</span>
+</pre>
+
+  <table class="cmp">
+    <tr><th></th><th>Pessimistic Locking</th><th>Optimistic Locking</th></tr>
+    <tr><td>Mechanism</td><td>Lock on read. Hold until commit.</td><td>No lock on read. Check version on write.</td></tr>
+    <tr><td>Best for</td><td>High contention (many conflicts likely)</td><td>Low contention (conflicts rare)</td></tr>
+    <tr><td>Throughput</td><td>Low (waiters queue up)</td><td>High (no blocking on reads)</td></tr>
+    <tr><td>Risk</td><td>Deadlock if transactions hold multiple locks</td><td>Retry storms if contention unexpectedly high</td></tr>
+    <tr><td>Use case</td><td>Last seat booking, stock deduction, bank transfers</td><td>User profile updates, document editing, configuration changes</td></tr>
+    <tr><td>Spring Boot</td><td><code>@Lock(PESSIMISTIC_WRITE)</code> on repository method</td><td><code>@Version</code> annotation on entity field</td></tr>
+  </table>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Locking</div>
+    <div class="qa" id="q-lk1">
+      <div class="qa-q" onclick="toggleQA('q-lk1')">When would you use optimistic vs pessimistic locking? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span><strong>Pessimistic locking</strong>: when conflicts are frequent and the cost of a conflict is high — like deducting inventory for Zepto's last item, or a bank transfer. SELECT FOR UPDATE ensures only one transaction processes the item at a time. Prevents overselling but reduces throughput (others wait). <strong>Optimistic locking</strong>: when conflicts are rare — like a user updating their profile settings. No lock on read means high throughput. The @Version check on write catches the occasional conflict, and the retry is usually fast. In Spring Boot: add @Version field to the entity. JPA automatically appends AND version=? to UPDATEs and throws OptimisticLockException if another transaction modified the row. Application code catches this and retries the operation. Trade-off: optimistic locking with high conflict rates causes retry storms — if conflicts are actually frequent, pessimistic is better despite lower throughput.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Locking — 60-second revision</h4>
+    <ul>
+      <li>Pessimistic: lock on read (SELECT FOR UPDATE). Hold till commit. Blocks others. High contention scenarios.</li>
+      <li>Optimistic: no lock on read. version column check on write. Retry on conflict. Low contention scenarios.</li>
+      <li>Spring Boot: @Version → JPA handles optimistic locking. @Lock(PESSIMISTIC_WRITE) → pessimistic.</li>
+      <li>Optimistic advantage: high read throughput — no blocking. Disadvantage: retry cost if conflicts are frequent.</li>
+      <li>Pessimistic advantage: guaranteed consistency, no retries. Disadvantage: deadlock risk, lower throughput.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ MASTER INTERVIEW Q&A ══ -->
+<div class="concept" id="interview">
+  <div class="concept-num">Master Review</div>
+  <h2>All DBMS Interview Questions</h2>
+  <div class="concept-sub">20 questions across all DBMS topics. Answer out loud without looking. If you stumble — re-study that concept section.</div>
+
+  <div class="interview-section" style="margin-top:20px;">
+    <div class="int-label">Complete DBMS Q&amp;A bank — 20 questions</div>
+
+    <div class="qa" id="qdb1"><div class="qa-q" onclick="toggleQA('qdb1')">1. What is the difference between primary key and unique key? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Both enforce uniqueness. Differences: (1) One PK per table, multiple UNIQUE keys allowed. (2) PK cannot be NULL, UNIQUE key can have one NULL (since NULL ≠ NULL in SQL). (3) PK is the main identifier, referenced by foreign keys. UNIQUE ensures no duplicates on alternate columns (e.g., email, phone alongside the PK id).</div></div>
+
+    <div class="qa" id="qdb2"><div class="qa-q" onclick="toggleQA('qdb2')">2. Why use surrogate keys instead of natural keys? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Natural keys (email, phone) can change — updating would require changing every FK reference in every related table. Integer surrogate key is stable, never changes. Also: integer JOINs are faster than string JOINs. Surrogate keys are smaller (4-8 bytes vs 100+ bytes for email). Privacy: exposing a surrogate ID in URLs is safe; exposing email in URLs is not.</div></div>
+
+    <div class="qa" id="qdb3"><div class="qa-q" onclick="toggleQA('qdb3')">3. Explain the three normal forms and the problems they solve. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>1NF: atomic values — no arrays or lists in a column. Eliminates repeating groups. PK must uniquely identify each row. 2NF: 1NF + no partial dependency. In composite PK tables, every non-key column must depend on the WHOLE PK, not just part. Eliminates redundancy from columns depending on partial PK. 3NF: 2NF + no transitive dependency. Non-key columns must depend only on the PK, not on other non-key columns (A→B→C, fix by separating B and C). Each normal form eliminates a class of anomaly: update anomalies, insert anomalies, delete anomalies.</div></div>
+
+    <div class="qa" id="qdb4"><div class="qa-q" onclick="toggleQA('qdb4')">4. What is a transitive dependency? Give an example. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>A transitive dependency occurs when a non-key column depends on another non-key column rather than directly on the primary key. Example: Orders(OrderID, CustomerID, CustomerCity). CustomerCity → CustomerID → OrderID. CustomerCity depends on CustomerID (non-key), which depends on OrderID (PK). This is transitive: OrderID → CustomerID → CustomerCity. Fix: move Customer info to a separate Customers table. CustomerCity then depends directly on CustomerID (its own PK). 3NF eliminates transitive dependencies.</div></div>
+
+    <div class="qa" id="qdb5"><div class="qa-q" onclick="toggleQA('qdb5')">5. Explain ACID with a PhonePe payment example. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Atomicity: debit Ravi + credit Priya — both or neither. Server crash after debit → UNDO log rolls back debit. Consistency: balance ≥ 0 constraint never violated, total money conserved. Isolation: concurrent transfers don't see each other's uncommitted changes — T2 doesn't see T1's intermediate debit. Implemented via MVCC or locking. Durability: once COMMIT returns success, data is on disk permanently via WAL. Even if server dies 1ms after commit, data survives.</div></div>
+
+    <div class="qa" id="qdb6"><div class="qa-q" onclick="toggleQA('qdb6')">6. What is a dirty read? A non-repeatable read? A phantom read? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Dirty read: T1 reads T2's uncommitted change. T2 rolls back → T1 read data that never existed. Non-repeatable read: T1 reads a row, T2 updates+commits it, T1 reads again — different value. Same query, different result. Phantom read: T1 queries a set of rows (WHERE price > 100), T2 inserts a new row matching the condition and commits, T1 re-queries — new row appears. Prevented by: Read Committed (dirty reads). Repeatable Read (+ non-repeatable). Serializable (+ phantoms).</div></div>
+
+    <div class="qa" id="qdb7"><div class="qa-q" onclick="toggleQA('qdb7')">7. What is the default isolation level in PostgreSQL? MySQL? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>PostgreSQL default: READ COMMITTED — no dirty reads, but non-repeatable and phantom reads possible. MySQL InnoDB default: REPEATABLE READ — no dirty or non-repeatable reads. MySQL InnoDB also prevents phantom reads via gap locks (technically stronger than the SQL standard's Repeatable Read). Serializable is the strongest level — prevents all anomalies but has the highest locking overhead. Most applications run fine with Read Committed or Repeatable Read.</div></div>
+
+    <div class="qa" id="qdb8"><div class="qa-q" onclick="toggleQA('qdb8')">8. What is database indexing? What data structure is used? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Indexes allow O(log n) row lookup instead of O(n) full table scan. The data structure is a B-Tree (Balanced Tree). Leaf nodes contain the indexed column value and a pointer to the actual row (or for clustered indexes, the row itself). B-Tree properties: balanced (all leaf nodes at same depth), supports range queries (scan leaf nodes sequentially for BETWEEN, >, <). For 10M rows: full scan = 10M comparisons, B-tree = ~23 comparisons. Other index types: Hash (O(1) equality, no range queries), GiST/GIN (full-text search, PostGIS geometry).</div></div>
+
+    <div class="qa" id="qdb9"><div class="qa-q" onclick="toggleQA('qdb9')">9. What is the write penalty of indexes? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Every INSERT, UPDATE, or DELETE must update every index on the table. If a table has 10 indexes, every write operation updates 10 B-Trees — 10x write overhead. This is why over-indexing hurts write-heavy tables. Balance: index columns that are frequently queried (WHERE, JOIN, ORDER BY). Don't index: columns rarely used in queries, low-cardinality columns (boolean — index rarely helps), frequently updated columns (update overhead), small tables (full scan cheaper than index overhead + maintenance).</div></div>
+
+    <div class="qa" id="qdb10"><div class="qa-q" onclick="toggleQA('qdb10')">10. What is the composite index leftmost prefix rule? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>For a composite index on (a, b, c): the index can be used for queries that filter on the leftmost columns in order. Helps: WHERE a=1 (prefix a), WHERE a=1 AND b=2 (prefix a,b), WHERE a=1 AND b=2 AND c=3. Does NOT help: WHERE b=2 (skips a), WHERE c=3 (skips a and b). Why: B-tree is sorted by (a, then b within same a, then c within same a+b). Skipping a means you can't use the sorted structure. Therefore, design composite indexes with the most selective or most commonly filtered column first.</div></div>
+
+    <div class="qa" id="qdb11"><div class="qa-q" onclick="toggleQA('qdb11')">11. What is the difference between clustered and non-clustered index? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Clustered: rows physically sorted by index key. Leaf nodes ARE the data rows. One per table. Fastest lookup — one step. MySQL InnoDB PK is always clustered. Non-clustered: separate B-tree, leaf nodes contain index key + row pointer. Multiple per table. Requires two lookups: index → row pointer → actual data. Dictionary analogy: clustered = words sorted alphabetically in the dictionary itself. Non-clustered = index at the back of a book (alphabetical list pointing to page numbers). PostgreSQL doesn't maintain clustered indexes automatically; it has CLUSTER command but is one-time.</div></div>
+
+    <div class="qa" id="qdb12"><div class="qa-q" onclick="toggleQA('qdb12')">12. When would you use MongoDB over PostgreSQL? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>MongoDB fits when: (1) Schema is flexible or frequently changing — product catalog where different products have different attributes. (2) Data is naturally hierarchical/nested — user profiles with embedded address, preferences, etc. (3) You're storing documents as-is (JSON from external API). (4) Schema evolution is frequent (startup phase, rapid iteration). PostgreSQL fits when: (1) ACID transactions required (financial, orders). (2) Complex queries with multiple JOINs. (3) Schema is stable and well-defined. (4) Data integrity constraints are important. Real answer: use both. Swiggy uses PostgreSQL for orders/payments, MongoDB for restaurant menus/content.</div></div>
+
+    <div class="qa" id="qdb13"><div class="qa-q" onclick="toggleQA('qdb13')">13. Explain the CAP theorem. Where does Cassandra fall? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>CAP: distributed system guarantees only 2 of 3. Consistency (all nodes see same data), Availability (always responds), Partition Tolerance (works despite network failures). Since partitions always happen, P is required — real choice is C or A during partition. Cassandra is AP: during a network partition, Cassandra will serve potentially stale data rather than refuse to respond. This makes sense for its use cases (activity logs, IoT data, social feeds) where slight staleness is acceptable but downtime is not. MongoDB is CP: during partition, MongoDB refuses reads that might be stale, preferring consistency — appropriate for data where accuracy matters more than availability.</div></div>
+
+    <div class="qa" id="qdb14"><div class="qa-q" onclick="toggleQA('qdb14')">14. What is optimistic locking? How does @Version work in Spring Boot? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Optimistic locking assumes conflicts are rare — no lock on read. Instead, a version column is checked on write. Read a row (version=3), compute update, then: UPDATE ... WHERE id=42 AND version=3 SET version=4. If rows_affected=1: success. If rows_affected=0: another transaction modified the row first — throw exception, let application retry. Spring Boot: add @Version annotation to an entity field. JPA automatically appends AND version=? to all UPDATE SQL, increments the version in the SET clause, and throws OptimisticLockException if rows_affected=0. Perfect for low-contention scenarios like user profile updates.</div></div>
+
+    <div class="qa" id="qdb15"><div class="qa-q" onclick="toggleQA('qdb15')">15. What is MVCC? How does it improve concurrency? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>MVCC (Multi-Version Concurrency Control): the DB maintains multiple versions of each row, each with a timestamp or transaction ID. When a transaction reads, it sees the version of the data as of when its transaction started. Writers create new versions rather than overwriting. Readers never block writers; writers never block readers. This dramatically improves read concurrency vs traditional locking where readers and writers block each other. Used by: PostgreSQL (all versions), MySQL InnoDB (all versions), Oracle. Downside: requires periodic cleanup of old versions. PostgreSQL's VACUUM process removes dead row versions. Under heavy write load, VACUUM can't keep up → table bloat.</div></div>
+
+    <div class="qa" id="qdb16"><div class="qa-q" onclick="toggleQA('qdb16')">16. What is referential integrity? What does ON DELETE CASCADE do? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Referential integrity ensures no orphan records — every FK value must reference an existing PK. If orders.user_id = 5 must exist in users.id = 5. ON DELETE CASCADE: when a user is deleted, all their orders are automatically deleted too. ON DELETE SET NULL: when user deleted, orders.user_id becomes NULL (order exists without a user). ON DELETE RESTRICT (default): prevents deleting a user if they have any orders — foreign key constraint violation. Choose based on business logic: CASCADE for dependent child records (user's sessions, logs). SET NULL when the reference is optional. RESTRICT when deletion shouldn't happen if children exist (protecting data integrity).</div></div>
+
+    <div class="qa" id="qdb17"><div class="qa-q" onclick="toggleQA('qdb17')">17. What is denormalization? When would you use it? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Denormalization intentionally introduces redundancy to improve read performance. Instead of joining 5 tables for every analytics query, pre-compute and store the joined result. Example: instead of JOINing orders + order_items + restaurants to compute daily revenue, store daily_restaurant_revenue(date, restaurant_id, revenue) — updated by application on each order. Reads are instant, but writes must maintain the denormalized table. Use in OLAP/analytics systems where reads far outnumber writes and slight inconsistency windows are acceptable. Data warehouses (star schema, fact tables) are fully denormalized by design. OLTP systems (transactions) stay normalized for integrity.</div></div>
+
+    <div class="qa" id="qdb18"><div class="qa-q" onclick="toggleQA('qdb18')">18. What is a covering index? How does it help performance? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>A covering index is an index that contains all the columns a query needs — the DB can answer the query entirely from the index without accessing the actual table rows. Example: query SELECT email, name FROM users WHERE email = 'x'. If you create INDEX ON users(email, name), the index contains both email (for lookup) and name (for the SELECT). The DB never touches the users table — everything it needs is in the index. This eliminates the "key lookup" step (index → table) of non-clustered indexes, making the query much faster. Create covering indexes for your most performance-critical queries. Trade-off: larger indexes take more disk space and have higher write overhead.</div></div>
+
+    <div class="qa" id="qdb19"><div class="qa-q" onclick="toggleQA('qdb19')">19. What is the difference between WHERE and HAVING in SQL? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>WHERE filters rows BEFORE aggregation. HAVING filters groups AFTER aggregation. WHERE: operates on individual rows, cannot use aggregate functions (COUNT, SUM, AVG). HAVING: operates on grouped results, CAN use aggregate functions. Example: SELECT dept_id, COUNT(*) FROM employees WHERE salary > 30000 GROUP BY dept_id HAVING COUNT(*) > 5 — WHERE filters individual employees with salary > 30000 BEFORE grouping. HAVING then filters departments that have more than 5 such employees AFTER grouping. Trying WHERE COUNT(*) > 5 is a SQL error — aggregate in WHERE is invalid. Performance: WHERE reduces rows before grouping, so it's processed first and can use indexes. HAVING processes after the GROUP BY, on fewer rows.</div></div>
+
+    <div class="qa" id="qdb20"><div class="qa-q" onclick="toggleQA('qdb20')">20. What is a database transaction? How does ROLLBACK work? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>A transaction is a unit of work that executes atomically — all or nothing. Begin with BEGIN/START TRANSACTION. Execute SQL statements. End with COMMIT (make permanent) or ROLLBACK (undo all changes). ROLLBACK works via the UNDO log: before making any change to actual data, the DB writes what the old value was to the UNDO log. If ROLLBACK is called (or crash occurs before COMMIT), the DB reads the UNDO log and applies all the old values — reverting every change made in the transaction. SAVEPOINT allows partial rollback: ROLLBACK TO SAVEPOINT name undoes only changes after the savepoint, not the entire transaction. This is how nested transactions work in some databases.</div></div>
+  </div>
+
+  <div class="rev">
+    <h4>DBMS Complete — Phase 0 DBMS done when you can...</h4>
+    <ul>
+      <li>Normalize a given denormalized table to 3NF step by step, on paper, without notes</li>
+      <li>Explain all 4 ACID properties with a PhonePe payment example (not generic definitions)</li>
+      <li>Say which isolation level prevents which problem: dirty read → Read Committed, non-repeatable → Repeatable Read, phantom → Serializable</li>
+      <li>Explain the write penalty of indexes and when NOT to add one</li>
+      <li>Answer "which database would you use and why" for: financial transactions, product catalog, sessions, time-series logs</li>
+      <li>Explain CAP theorem and say where MongoDB and Cassandra fall with reasoning</li>
+      <li>Answer all 20 questions above without peeking for more than 5 seconds each</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+function toggleQA(id){document.getElementById(id).classList.toggle('open');}
+document.querySelectorAll('.nav-pill').forEach(p=>{
+  p.addEventListener('click',function(e){
+    e.preventDefault();
+    const t=document.querySelector(this.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+window.addEventListener('scroll',()=>{
+  const concepts=document.querySelectorAll('.concept[id]');
+  const pills=document.querySelectorAll('.nav-pill');
+  let active='';
+  concepts.forEach(c=>{if(c.getBoundingClientRect().top<100)active=c.id;});
+  pills.forEach(p=>{p.classList.toggle('active',p.getAttribute('href')==='#'+active);});
+});
+</script>
+</body>
+</html>
