@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 0 · Networks — Complete Teaching Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+:root{
+  --bg:#f6f9f6;--ink:#181e18;--ink2:#425042;--ink3:#7a8a7a;
+  --paper:#fff;--rule:#dce8dc;--rule2:#bcd0bc;
+  --mono:'IBM Plex Mono',monospace;--head:'Syne',sans-serif;--body:'Inter',sans-serif;
+  --net:#1a6e3a;--net-l:#eafaf0;--net-b:#7ad0a0;
+  --warn-bg:#fff8e8;--warn-b:#f0d060;--warn-t:#3a2800;
+  --good-bg:#e8fff0;--good-b:#60d090;--good-t:#003820;
+  --key-bg:#ecf0ff;--key-b:#9ab0f0;--key-t:#001040;
+  --http-bg:#fff0e8;--http-b:#f0b060;--http-t:#301000;
+  --int-bg:#e8f8ee;--int-b:#60c080;--int-t:#002818;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.75;max-width:880px;margin:0 auto;}
+
+.top-nav{background:var(--ink);color:#fff;padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:100;flex-wrap:wrap;}
+.nav-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);white-space:nowrap;}
+.nav-pills{display:flex;gap:5px;flex-wrap:wrap;}
+.nav-pill{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);cursor:pointer;text-decoration:none;transition:all 0.15s;}
+.nav-pill:hover,.nav-pill.active{border-color:rgba(255,255,255,0.7);color:#fff;}
+
+.hero{padding:52px 40px 40px;border-bottom:2px solid var(--ink);}
+.hero-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--net);margin-bottom:12px;}
+.hero h1{font-family:var(--head);font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:14px;}
+.hero h1 em{font-style:normal;color:var(--net);}
+.hero-desc{font-size:14px;color:var(--ink2);max-width:540px;line-height:1.7;}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.meta-chip{font-family:var(--mono);font-size:10px;padding:4px 12px;border-radius:6px;border:1px solid var(--rule2);color:var(--ink2);}
+.meta-chip.hi{border-color:var(--net);color:var(--net);font-weight:700;}
+
+.concept{padding:40px;border-bottom:1px solid var(--rule);}
+.concept-num{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;}
+.concept h2{font-family:var(--head);font-size:26px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;}
+.concept-sub{font-size:13px;color:var(--ink2);margin-bottom:20px;line-height:1.6;}
+
+.explain{font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:14px;}
+.explain strong{color:var(--ink);}
+.explain code{font-family:var(--mono);font-size:12px;background:var(--rule);padding:1px 6px;border-radius:4px;color:var(--net);}
+
+.step-marker{display:flex;align-items:center;gap:12px;margin:28px 0 14px;}
+.step-num{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--rule2);}
+.step-line{flex:1;height:1px;background:var(--rule);}
+.step-text{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);}
+
+.analogy{background:var(--key-bg);border-left:3px solid #5080d0;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--key-t);line-height:1.6;}
+.analogy strong{font-weight:600;}
+.warn{background:var(--warn-bg);border-left:3px solid #d09000;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--warn-t);line-height:1.6;}
+.warn strong{font-weight:600;}
+.good-box{background:var(--good-bg);border-left:3px solid #20a060;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--good-t);line-height:1.6;}
+.good-box strong{font-weight:600;}
+.http-box{background:var(--http-bg);border-left:3px solid #e08000;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--http-t);line-height:1.6;}
+.http-box strong{font-weight:600;}
+
+.diagram{background:#181e18;border-radius:10px;padding:20px 24px;margin:16px 0;overflow-x:auto;}
+.diagram pre{font-family:var(--mono);font-size:12px;line-height:1.7;color:#c0d0c0;white-space:pre;}
+.d-hl{color:#80e0a0;}.d-ok{color:#60c8ff;}.d-warn{color:#f0d060;}.d-err{color:#f06060;}.d-cmt{color:#5a7050;font-style:italic;}
+
+pre.code{background:#181e18;border-radius:10px;padding:18px 20px;font-family:var(--mono);font-size:12px;line-height:1.8;color:#c0d0c0;overflow-x:auto;margin:14px 0;white-space:pre;}
+.cm{color:#5a7050;font-style:italic;}.ck{color:#f08060;}.ct{color:#80e0a0;}.cs{color:#80d8ff;}.cf{color:#f0d060;}.cn{color:#c0a0ff;}.co{color:#ffb060;}
+
+.cmp{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;}
+.cmp th{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:8px 12px;border-bottom:2px solid var(--rule2);background:var(--bg);}
+.cmp td{padding:9px 12px;border-bottom:1px solid var(--rule);color:var(--ink2);vertical-align:top;line-height:1.5;}
+.cmp tr:hover td{background:var(--bg);}
+.cmp td:first-child{color:var(--ink);font-weight:500;}
+.cmp td code{font-family:var(--mono);font-size:11px;background:var(--rule);padding:1px 5px;border-radius:3px;}
+
+.interview-section{background:var(--int-bg);border:1px solid var(--int-b);border-radius:12px;padding:20px;margin:24px 0;}
+.int-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--net);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.int-label::after{content:'';flex:1;height:1px;background:var(--int-b);}
+.qa{margin-bottom:10px;background:#fff;border:1px solid var(--int-b);border-radius:8px;overflow:hidden;}
+.qa:last-child{margin-bottom:0;}
+.qa-q{padding:12px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.qa-q:hover{background:var(--int-bg);}
+.qa-arr{color:var(--ink3);font-size:10px;flex-shrink:0;margin-top:2px;transition:transform 0.2s;}
+.qa.open .qa-arr{transform:rotate(180deg);}
+.qa-a{display:none;padding:12px 14px;border-top:1px solid var(--int-b);font-size:13px;color:var(--ink2);line-height:1.75;background:var(--int-bg);}
+.qa.open .qa-a{display:block;}
+.qa-a strong{color:var(--ink);}
+.qa-a .label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--net);display:block;margin-bottom:6px;}
+.qa-a .follow{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#804000;display:block;margin-top:10px;margin-bottom:4px;}
+.qa-a code{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:3px;}
+
+.rev{background:var(--ink);color:#fff;border-radius:12px;padding:22px;margin:24px 0;}
+.rev h4{font-family:var(--head);font-size:15px;margin-bottom:12px;color:#fff;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:8px;}
+.rev ul{list-style:none;}
+.rev ul li{font-size:12px;color:rgba(255,255,255,0.75);padding:4px 0 4px 16px;position:relative;line-height:1.5;}
+.rev ul li::before{content:'✓';position:absolute;left:0;color:rgba(255,255,255,0.4);font-size:10px;margin-top:1px;}
+
+.progress-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px;}
+.must{background:#ffeee8;color:#8a2000;border:1px solid #f0c0a0;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:99px;}
+.high{background:#e8f0ff;color:#001880;border:1px solid #a0b8f0;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:99px;}
+
+/* HTTP Method/Status tables */
+.method-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin:14px 0;}
+.method-card{background:var(--paper);border:1px solid var(--rule2);border-radius:8px;padding:12px;}
+.method-name{font-family:var(--mono);font-size:12px;font-weight:700;margin-bottom:4px;}
+.method-desc{font-size:11px;color:var(--ink3);line-height:1.5;}
+.m-get{border-left:3px solid #20a060;}.m-post{border-left:3px solid #1080d0;}
+.m-put{border-left:3px solid #d08000;}.m-patch{border-left:3px solid #a020c0;}
+.m-del{border-left:3px solid #d02020;}
+
+.status-row{display:flex;align-items:flex-start;gap:12px;padding:9px 12px;border-bottom:1px solid var(--rule);font-size:12px;}
+.status-row:last-child{border-bottom:none;}
+.s-code{font-family:var(--mono);font-size:12px;font-weight:700;min-width:50px;flex-shrink:0;}
+.s-name{font-weight:600;color:var(--ink);margin-bottom:2px;}
+.s-desc{color:var(--ink3);font-size:11px;line-height:1.4;}
+.s-2xx{color:#20a060;}.s-3xx{color:#1080d0;}.s-4xx{color:#d08000;}.s-5xx{color:#d02020;}
+
+@media(max-width:640px){.concept,.hero{padding:24px 20px;}.top-nav{padding:10px 16px;}}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="nav-label">Phase 0 · Networks</span>
+  <div class="nav-pills">
+    <a class="nav-pill" href="#osi">OSI Model</a>
+    <a class="nav-pill" href="#tcp-ip">TCP vs UDP</a>
+    <a class="nav-pill" href="#http">HTTP</a>
+    <a class="nav-pill" href="#status">Status Codes</a>
+    <a class="nav-pill" href="#dns">DNS</a>
+    <a class="nav-pill" href="#url-flow">URL Flow</a>
+    <a class="nav-pill" href="#tls">HTTPS/TLS</a>
+    <a class="nav-pill" href="#cors">CORS</a>
+    <a class="nav-pill" href="#websocket">WebSocket</a>
+    <a class="nav-pill" href="#interview">All Q&amp;A</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Phase 0 · Subject 4 of 6 · Complete Teaching Guide</div>
+  <h1>Computer<br><em>Networks</em></h1>
+  <p class="hero-desc">HTTP methods, status codes, TCP handshake, DNS resolution, TLS/HTTPS, CORS, WebSocket — everything a full stack developer gets asked about networking in product company interviews.</p>
+  <div class="hero-meta">
+    <span class="meta-chip hi">3–4 days</span>
+    <span class="meta-chip">HTTP + CORS most asked</span>
+    <span class="meta-chip">Directly connects to your daily code</span>
+    <span class="meta-chip">All interview Q&amp;A included</span>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 1: OSI MODEL ══ -->
+<div class="concept" id="osi">
+  <div class="concept-num">Concept 01 of 09</div>
+  <h2>OSI Model — The 7 Layers</h2>
+  <div class="concept-sub">You don't need to memorize all 7 layers in detail. You need to understand what layering means, why it exists, and which layers matter for full stack work (Transport, Network, Application).</div>
+  <div class="progress-row"><span class="high">high value</span><span>Context for everything else in networking</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Why layers exist</span></div>
+
+  <p class="explain">
+    The OSI model divides network communication into 7 layers, each with a specific responsibility. <strong>The purpose: each layer only needs to know how to talk to the layer directly above and below it</strong>. HTTP doesn't know or care whether the underlying transport is TCP over WiFi or TCP over Ethernet — that's handled by lower layers.
+  </p>
+  <p class="explain">
+    This separation of concerns means you can change one layer (switch from WiFi to Ethernet) without touching others. A web developer works at the Application layer and lets the OS + hardware handle everything below.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  Layer  Name           Protocol examples      What it does
+  ─────────────────────────────────────────────────────────────────
+   7     <span class="d-hl">Application</span>    HTTP, HTTPS, FTP,       User-facing protocols.
+                         WebSocket, DNS,         Your Express routes live here.
+                         SMTP, gRPC
+
+   6     Presentation    TLS/SSL, JSON,          Data encoding, encryption,
+                         compression             compression before sending
+
+   5     Session         (often merged)          Manages sessions between hosts
+                                                 (WebSocket sessions, auth sessions)
+
+   4     <span class="d-hl">Transport</span>      <span class="d-ok">TCP</span>, <span class="d-warn">UDP</span>               End-to-end communication.
+                                                 Ports. Reliability. Flow control.
+
+   3     <span class="d-hl">Network</span>        IP (IPv4, IPv6),        Routing between networks.
+                         ICMP (ping)             IP addresses. "Best path" selection.
+
+   2     Data Link       Ethernet, WiFi          Local delivery within a network.
+                         (802.11), ARP           MAC addresses. Frames.
+
+   1     Physical        Cables, radio,          Bits on wire/air. Volts, signals.
+                         fiber optic
+
+  ─────────────────────────────────────────────────────────────────
+  As a full stack developer, you work at layers 4–7.
+  The OS handles layer 3–4. Hardware handles 1–2.
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">The layers that matter for interviews</span></div>
+
+  <p class="explain"><strong>Layer 4 (Transport) — TCP and UDP:</strong> TCP provides reliable, ordered delivery. UDP provides fast, connectionless delivery. Your choice of which to use depends on the application. HTTP/HTTPS use TCP. DNS and video streaming often use UDP.</p>
+  <p class="explain"><strong>Layer 3 (Network) — IP:</strong> Every device on the internet has an IP address. IP handles routing — figuring out how to get a packet from source to destination across many networks. IP doesn't guarantee delivery or order.</p>
+  <p class="explain"><strong>Layer 7 (Application) — HTTP:</strong> The protocol your Node.js and Spring Boot APIs speak. Defines request/response format, methods (GET, POST), status codes, headers.</p>
+
+  <div class="good-box">
+    <strong>The TCP/IP model (4 layers):</strong> In practice, you'll hear "TCP/IP model" more than "OSI model." It collapses OSI's 7 layers into 4: Application (OSI 5-7), Transport (OSI 4), Internet (OSI 3), Network Access (OSI 1-2). Same concepts, simpler mental model.
+  </div>
+
+  <div class="rev">
+    <h4>OSI Model — 60-second revision</h4>
+    <ul>
+      <li>7 layers: Physical → Data Link → Network → Transport → Session → Presentation → Application.</li>
+      <li>Mnemonic: "Please Do Not Throw Sausage Pizza Away" (bottom to top).</li>
+      <li>Layer 7 (Application): HTTP, WebSocket, DNS, SMTP — what your code uses.</li>
+      <li>Layer 4 (Transport): TCP (reliable, ordered) and UDP (fast, unreliable).</li>
+      <li>Layer 3 (Network): IP addresses, routing between networks.</li>
+      <li>Layering principle: each layer talks only to adjacent layers. Change one without touching others.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 2: TCP vs UDP ══ -->
+<div class="concept" id="tcp-ip">
+  <div class="concept-num">Concept 02 of 09</div>
+  <h2>TCP vs UDP + The Three-Way Handshake</h2>
+  <div class="concept-sub">TCP is reliable and ordered but slower. UDP is fast but unreliable. The three-way handshake is asked constantly. Know both with real use cases.</div>
+  <div class="progress-row"><span class="must">must know</span><span>The handshake question comes up in most network rounds</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">TCP — Transmission Control Protocol</span></div>
+
+  <p class="explain">
+    TCP guarantees: <strong>reliable delivery</strong> (packets are retransmitted if lost), <strong>ordered delivery</strong> (data arrives in the correct sequence even if packets arrive out of order), and <strong>flow control / congestion control</strong> (sender doesn't overwhelm receiver or the network).
+  </p>
+  <p class="explain">
+    The cost: TCP requires a <strong>connection setup</strong> (the three-way handshake), acknowledgment overhead for every segment, and retransmission delays. It's heavier than UDP but guarantees the data gets there intact.
+  </p>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">The TCP Three-Way Handshake</span></div>
+
+  <div class="diagram">
+    <pre>
+  CLIENT                              SERVER
+  ─────────────────────────────────────────────────────
+  
+  [CLOSED]                          [LISTEN] — waiting for connections
+
+  Step 1: SYN
+  Client: "I want to connect.           →  SYN (seq=100)
+          My sequence number starts at 100."
+
+  Step 2: SYN-ACK
+  Server: "OK! My seq starts at 300.    ← SYN-ACK (seq=300, ack=101)
+          I acknowledge your seq 100."
+
+  Step 3: ACK
+  Client: "Got it. I acknowledge        →  ACK (ack=301)
+          your seq 300."
+
+  ─────────────────────────────────────────────────────
+  [ESTABLISHED]                     [ESTABLISHED]
+
+  Now data can flow in both directions.
+
+  <span class="d-cmt">Why 3 steps (not 2)?</span>
+  <span class="d-cmt">2 steps only confirms server can receive from client.</span>
+  <span class="d-cmt">3rd step (client ACK) confirms client received server's SYN.</span>
+  <span class="d-cmt">Both sides must verify they can both SEND and RECEIVE.</span>
+
+  Connection teardown: 4-way handshake (FIN, FIN-ACK, FIN, FIN-ACK)
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">UDP — User Datagram Protocol</span></div>
+
+  <p class="explain">
+    UDP is connectionless — no handshake, no acknowledgment, no guaranteed delivery. Just fire packets and forget. What you lose in reliability, you gain in speed and simplicity.
+  </p>
+
+  <table class="cmp">
+    <tr><th></th><th>TCP</th><th>UDP</th></tr>
+    <tr><td>Connection</td><td>Connection-oriented (3-way handshake)</td><td>Connectionless — just send packets</td></tr>
+    <tr><td>Reliability</td><td>Guaranteed — retransmits lost packets</td><td>No guarantee — packets may be lost, duplicated, reordered</td></tr>
+    <tr><td>Order</td><td>Ordered delivery guaranteed</td><td>No ordering — packets may arrive out of order</td></tr>
+    <tr><td>Speed</td><td>Slower — overhead from ACKs, retransmission</td><td>Faster — minimal overhead</td></tr>
+    <tr><td>Header size</td><td>20 bytes minimum</td><td>8 bytes</td></tr>
+    <tr><td>Use when</td><td>Correctness matters: HTTP, file transfers, email, banking</td><td>Speed matters, some loss OK: DNS, video streaming, gaming, VoIP</td></tr>
+    <tr><td>Examples</td><td>HTTP/1.1, HTTP/2, SSH, FTP, SMTP</td><td>DNS, video/audio streaming, online games, DHCP</td></tr>
+  </table>
+
+  <div class="analogy">
+    <strong>Analogy:</strong> TCP = certified mail with tracking and signature confirmation. You know it arrived. UDP = dropping an envelope in a mailbox. Cheap and fast, but you have no idea if it arrived. For important documents (financial transactions, web pages), use TCP. For real-time audio where a slightly garbled frame is better than a pause (VoIP), use UDP.
+  </div>
+
+  <div class="warn">
+    <strong>HTTP/3 uses UDP!</strong> HTTP/3 is built on QUIC, which runs on UDP. QUIC re-implements reliability, ordering, and connection establishment in the application layer — but with better performance than TCP for high-latency networks. This is why the "TCP = web, UDP = games" simplification is becoming outdated.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — TCP/UDP</div>
+    <div class="qa" id="q-tcp1">
+      <div class="qa-q" onclick="toggleQA('q-tcp1')">Explain the TCP three-way handshake. Why three steps and not two? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>The three-way handshake establishes a reliable connection: (1) <strong>SYN</strong>: Client sends a SYN packet with its initial sequence number (ISN). "I want to connect, I'll start my sequence at X." (2) <strong>SYN-ACK</strong>: Server responds with its own ISN and acknowledges the client's ISN+1. "I acknowledge your sequence X+1, I'll start mine at Y." (3) <strong>ACK</strong>: Client acknowledges the server's ISN+1. "I acknowledge your Y+1." Why not 2 steps? Two steps only confirms the server can receive from the client and send back. The third step (client's ACK) confirms the CLIENT can also receive from the server. Without it, the server doesn't know if its SYN-ACK reached the client. Both parties must confirm bidirectional communication.
+        <span class="follow">Follow-up: "What is a SYN flood attack?"</span>
+        An attacker sends thousands of SYN packets but never sends the final ACK, leaving the server with many half-open connections consuming memory. Fix: SYN cookies — server encodes connection state in the ISN instead of allocating memory until the ACK arrives.
+      </div>
+    </div>
+    <div class="qa" id="q-tcp2">
+      <div class="qa-q" onclick="toggleQA('q-tcp2')">When would you use UDP over TCP? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>Use UDP when: (1) <strong>Speed is more important than reliability</strong> — DNS lookups: you want the IP immediately, and if the first UDP packet is lost, it's faster to retry than to set up a TCP connection. (2) <strong>Real-time is required</strong> — video calls, VoIP, online gaming. A retransmitted audio packet would arrive late and be useless — it's better to skip it and play the next frame. A garbled video frame is better than a freeze. (3) <strong>Broadcast/multicast</strong> — sending to many recipients simultaneously. TCP is point-to-point; UDP supports one-to-many. (4) <strong>Simple request-response with your own reliability</strong> — DNS, DHCP. The application layer handles retry logic, which is simpler than full TCP for these simple use cases.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>TCP vs UDP — 60-second revision</h4>
+    <ul>
+      <li>TCP: reliable, ordered, connection-oriented. Three-way handshake (SYN, SYN-ACK, ACK). Retransmits lost packets.</li>
+      <li>UDP: connectionless, unreliable, no ordering. Fast. No handshake overhead.</li>
+      <li>Handshake: SYN (client seq) → SYN-ACK (server seq + ack client) → ACK (ack server). 3 steps to confirm bidirectional communication.</li>
+      <li>TCP use: HTTP, HTTPS, SSH, email, file transfer. Correctness required.</li>
+      <li>UDP use: DNS, video streaming, gaming, VoIP. Speed critical, some loss OK.</li>
+      <li>HTTP/3: built on QUIC (UDP-based). Reimplements reliability in app layer for better performance.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 3: HTTP ══ -->
+<div class="concept" id="http">
+  <div class="concept-num">Concept 03 of 09</div>
+  <h2>HTTP — HyperText Transfer Protocol</h2>
+  <div class="concept-sub">HTTP/1.1 vs HTTP/2. Methods. Headers. Request/response structure. The statelessness of HTTP and how sessions work around it.</div>
+  <div class="progress-row"><span class="must">must know</span><span>You work with HTTP every day — understand it deeply</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">HTTP Request and Response structure</span></div>
+
+<pre class="code">
+<span class="cm">── HTTP REQUEST ──────────────────────────────────────────────────</span>
+POST /api/v1/orders HTTP/1.1
+Host: api.swiggy.com
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9...
+Accept: application/json
+User-Agent: SwiggyApp/4.2.1 (iOS 17)
+
+{
+    "restaurant_id": 456,
+    "items": [{"id": 789, "qty": 2}],
+    "address_id": 123
+}
+
+<span class="cm">── HTTP RESPONSE ─────────────────────────────────────────────────</span>
+HTTP/1.1 201 Created
+Content-Type: application/json
+X-Request-ID: req_abc123
+Cache-Control: no-store
+
+{
+    "order_id": "ORD-20240115-0042",
+    "status": "CONFIRMED",
+    "estimated_delivery": "35 mins"
+}
+
+<span class="cm">Structure breakdown:</span>
+<span class="cm">Request line: METHOD /path HTTP/version</span>
+<span class="cm">Headers: key-value pairs (metadata)</span>
+<span class="cm">Empty line: separates headers from body</span>
+<span class="cm">Body: payload (optional for GET, required for POST/PUT)</span>
+</pre>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">HTTP Methods — semantics matter</span></div>
+
+  <div class="method-grid">
+    <div class="method-card m-get">
+      <div class="method-name">GET</div>
+      <div class="method-desc">Retrieve resource. No body. Idempotent. Safe. Cacheable. GET /users/123</div>
+    </div>
+    <div class="method-card m-post">
+      <div class="method-name">POST</div>
+      <div class="method-desc">Create resource. Has body. Not idempotent. Not safe. POST /orders creates new order each time.</div>
+    </div>
+    <div class="method-card m-put">
+      <div class="method-name">PUT</div>
+      <div class="method-desc">Replace resource entirely. Idempotent. PUT /users/123 replaces the whole user object.</div>
+    </div>
+    <div class="method-card m-patch">
+      <div class="method-name">PATCH</div>
+      <div class="method-desc">Partial update. Only send fields to change. PATCH /users/123 {"phone": "..."}</div>
+    </div>
+    <div class="method-card m-del">
+      <div class="method-name">DELETE</div>
+      <div class="method-desc">Remove resource. Idempotent (deleting already-deleted returns same outcome). DELETE /orders/456</div>
+    </div>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Idempotent and Safe — the key properties</span></div>
+
+  <table class="cmp">
+    <tr><th>Property</th><th>Meaning</th><th>Methods</th></tr>
+    <tr><td>Safe</td><td>Does not modify server state. Read-only.</td><td>GET, HEAD, OPTIONS</td></tr>
+    <tr><td>Idempotent</td><td>Calling multiple times produces the same result as calling once. DELETE /users/123 once or 10 times — user is deleted either way.</td><td>GET, PUT, DELETE, HEAD, OPTIONS</td></tr>
+    <tr><td>Neither</td><td>Creates a new resource on each call. POST /orders creates a new order each time.</td><td>POST, PATCH (sometimes)</td></tr>
+  </table>
+
+  <div class="warn">
+    <strong>PUT vs PATCH confusion:</strong> PUT replaces the entire resource — you send all fields, and the server stores exactly what you sent. PATCH is a partial update — you send only the fields that changed. If you PUT {"name": "Ravi"} to a user resource, the phone number would be removed. If you PATCH {"name": "Ravi"}, only the name updates; phone stays untouched.
+  </div>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">HTTP/1.1 vs HTTP/2 vs HTTP/3</span></div>
+
+  <table class="cmp">
+    <tr><th>Version</th><th>Key feature</th><th>Problem solved</th></tr>
+    <tr><td>HTTP/1.1</td><td>Persistent connections (keep-alive). One request per TCP connection at a time (pipelining is broken in practice).</td><td>Reduced connection overhead vs HTTP/1.0 (new TCP per request)</td></tr>
+    <tr><td>HTTP/2</td><td>Multiplexing — multiple requests/responses over a single TCP connection simultaneously. Header compression (HPACK). Server push.</td><td>Head-of-line blocking in HTTP/1.1. Reduces latency for many small requests.</td></tr>
+    <tr><td>HTTP/3</td><td>Built on QUIC (UDP-based). Connection ID instead of IP+port. 0-RTT connection establishment.</td><td>TCP head-of-line blocking at transport layer. Better for lossy/mobile networks.</td></tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">05</span><span class="step-line"></span><span class="step-text">HTTP is stateless — and how sessions work around it</span></div>
+
+  <p class="explain">
+    <strong>HTTP is stateless</strong>: each request is completely independent. The server has no memory of previous requests from the same client. A request for /api/orders has no inherent connection to the previous login request.
+  </p>
+  <p class="explain">
+    <strong>How applications add state:</strong> Sessions and tokens. The server issues a token (session cookie or JWT) after authentication. The client sends this token on every subsequent request. The server reads the token, identifies the user, and "restores" state. The state is stored server-side (sessions in Redis) or client-side (JWT payload).
+  </p>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — HTTP</div>
+    <div class="qa" id="q-http1">
+      <div class="qa-q" onclick="toggleQA('q-http1')">What is the difference between PUT and PATCH? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>PUT replaces the entire resource. The request body must contain the full resource representation. If you omit a field, it's removed from the resource. PUT is idempotent — calling it multiple times with the same body produces the same result. PATCH applies a partial update — only the fields in the request body are changed, everything else remains. PATCH is used when you want to update one or two fields without sending the entire object. Example: changing a user's phone number. PUT would require sending name, email, address, and phone together. PATCH only needs {"phone": "9876543210"}. In practice, many APIs use POST for everything (not RESTful), but in a proper REST API, the distinction matters.</div>
+    </div>
+    <div class="qa" id="q-http2">
+      <div class="qa-q" onclick="toggleQA('q-http2')">What is HTTP/2 multiplexing? What problem does it solve? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>HTTP/1.1 head-of-line blocking: a browser opens one TCP connection per origin (or a few), and each connection can only handle one request at a time. If request A is slow (large image), requests B, C, D queue behind it on that connection. HTTP/2 multiplexing: multiple requests and responses are interleaved on a single TCP connection using a binary framing layer. Requests A, B, C, D are broken into frames and multiplexed — no request blocks another. A slow response for A doesn't block B. Additionally: header compression (HPACK) eliminates repeated headers like User-Agent and Cookie being sent on every request. Result: fewer TCP connections (less overhead), faster page loads, especially for pages with many small resources (JS, CSS, fonts, images).</div>
+    </div>
+    <div class="qa" id="q-http3">
+      <div class="qa-q" onclick="toggleQA('q-http3')">HTTP is stateless. How does authentication work across requests? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>HTTP being stateless means the server has no inherent memory of who you are between requests. Authentication adds artificial state via tokens: after login, the server issues a token (session ID or JWT). Client stores it (cookie, localStorage, memory). On every subsequent request, client sends the token (Authorization: Bearer [token] header, or Cookie header). Server verifies the token to identify the user. Two approaches: (1) Server-side sessions: server stores session data (user_id, permissions) in Redis keyed by session_id. Stateful — server must look up session on every request. Scales horizontally if Redis is shared. (2) JWT: all user data encoded in the token itself. Server just verifies the signature — no DB lookup needed. Stateless. Trade-off: JWTs can't be instantly revoked (must wait for expiry).</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>HTTP — 60-second revision</h4>
+    <ul>
+      <li>GET: read, no body, safe, idempotent, cacheable. POST: create, has body, not idempotent.</li>
+      <li>PUT: replace entire resource. PATCH: partial update. DELETE: remove, idempotent.</li>
+      <li>Safe: doesn't modify state. Idempotent: multiple calls = same result as one call.</li>
+      <li>HTTP/1.1: persistent connections but head-of-line blocking. HTTP/2: multiplexing (multiple requests on one TCP connection). HTTP/3: QUIC (UDP-based).</li>
+      <li>Stateless: no memory between requests. Work around with JWT or session cookies.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 4: STATUS CODES ══ -->
+<div class="concept" id="status">
+  <div class="concept-num">Concept 04 of 09</div>
+  <h2>HTTP Status Codes</h2>
+  <div class="concept-sub">Know the 5 families. Know the critical individual codes. The 401 vs 403 confusion is asked at almost every full stack interview.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Use correct codes in your projects — interviewers notice</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">The 5 families</span></div>
+
+  <table class="cmp">
+    <tr><th>Family</th><th>Meaning</th><th>Common codes</th></tr>
+    <tr><td><span style="color:#20a060;font-weight:700;">2xx Success</span></td><td>Request succeeded</td><td>200 OK, 201 Created, 204 No Content</td></tr>
+    <tr><td><span style="color:#1080d0;font-weight:700;">3xx Redirect</span></td><td>Client should look elsewhere</td><td>301 Moved Permanently, 302 Found, 304 Not Modified</td></tr>
+    <tr><td><span style="color:#d08000;font-weight:700;">4xx Client Error</span></td><td>Client did something wrong</td><td>400 Bad Request, 401 Unauthorized, 403 Forbidden, 404 Not Found, 422 Unprocessable, 429 Too Many Requests</td></tr>
+    <tr><td><span style="color:#d02020;font-weight:700;">5xx Server Error</span></td><td>Server failed to fulfill valid request</td><td>500 Internal Server Error, 502 Bad Gateway, 503 Service Unavailable, 504 Gateway Timeout</td></tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">The codes you MUST know cold</span></div>
+
+  <div style="background:var(--paper);border:1px solid var(--rule2);border-radius:10px;overflow:hidden;margin:14px 0;">
+    <div class="status-row"><span class="s-code s-2xx">200</span><div><div class="s-name">OK</div><div class="s-desc">Standard success. Use for GET (returning data) and PUT/PATCH (returning updated resource).</div></div></div>
+    <div class="status-row"><span class="s-code s-2xx">201</span><div><div class="s-name">Created</div><div class="s-desc">Resource was created. Use for POST when a new entity is created. Include Location header pointing to new resource.</div></div></div>
+    <div class="status-row"><span class="s-code s-2xx">204</span><div><div class="s-name">No Content</div><div class="s-desc">Success but no body to return. Use for DELETE (resource deleted, nothing to return).</div></div></div>
+    <div class="status-row"><span class="s-code s-3xx">301</span><div><div class="s-name">Moved Permanently</div><div class="s-desc">URL changed permanently. Browser caches this and uses the new URL forever. SEO: passes "link juice" to new URL.</div></div></div>
+    <div class="status-row"><span class="s-code s-3xx">302</span><div><div class="s-name">Found (Temporary Redirect)</div><div class="s-desc">Temporary redirect. Browser doesn't cache — keeps asking original URL. Use for: login redirect, maintenance page.</div></div></div>
+    <div class="status-row"><span class="s-code s-3xx">304</span><div><div class="s-name">Not Modified</div><div class="s-desc">Caching. Client sent If-Modified-Since header. Server says "your cache is still fresh, use it." No body sent — saves bandwidth.</div></div></div>
+    <div class="status-row"><span class="s-code s-4xx">400</span><div><div class="s-name">Bad Request</div><div class="s-desc">Malformed request syntax. Missing required fields, invalid JSON, type mismatch. Validation failure on basic format.</div></div></div>
+    <div class="status-row"><span class="s-code s-4xx">401</span><div><div class="s-name">Unauthorized</div><div class="s-desc">Not authenticated. "I don't know who you are." No token, expired token, invalid token. Despite the name, this is about AUTHENTICATION.</div></div></div>
+    <div class="status-row"><span class="s-code s-4xx">403</span><div><div class="s-name">Forbidden</div><div class="s-desc">Authenticated but not authorized. "I know who you are, but you can't do this." Valid JWT, wrong role. This is about AUTHORIZATION.</div></div></div>
+    <div class="status-row"><span class="s-code s-4xx">404</span><div><div class="s-name">Not Found</div><div class="s-desc">Resource doesn't exist. GET /users/99999 when that user doesn't exist. Also: route not defined on server.</div></div></div>
+    <div class="status-row"><span class="s-code s-4xx">409</span><div><div class="s-name">Conflict</div><div class="s-desc">Request conflicts with current state. Creating user with already-existing email. Optimistic lock conflict.</div></div></div>
+    <div class="status-row"><span class="s-code s-4xx">422</span><div><div class="s-name">Unprocessable Entity</div><div class="s-desc">Syntactically valid but semantically wrong. Valid JSON but business rule violation (e.g., end date before start date). Some APIs use 400 for this.</div></div></div>
+    <div class="status-row"><span class="s-code s-4xx">429</span><div><div class="s-name">Too Many Requests</div><div class="s-desc">Rate limit exceeded. Server says "slow down." Include Retry-After header. Use in your Node.js API's rate limiter.</div></div></div>
+    <div class="status-row"><span class="s-code s-5xx">500</span><div><div class="s-name">Internal Server Error</div><div class="s-desc">Generic server-side failure. Unhandled exception in your code. Always log the actual error; return 500 to client.</div></div></div>
+    <div class="status-row"><span class="s-code s-5xx">502</span><div><div class="s-name">Bad Gateway</div><div class="s-desc">Your server/proxy received an invalid response from an upstream server (your DB, microservice, third-party API). NGINX returns this when Node crashes.</div></div></div>
+    <div class="status-row"><span class="s-code s-5xx">503</span><div><div class="s-name">Service Unavailable</div><div class="s-desc">Server is temporarily unable to handle requests. Overloaded, under maintenance. Include Retry-After header.</div></div></div>
+    <div class="status-row"><span class="s-code s-5xx">504</span><div><div class="s-name">Gateway Timeout</div><div class="s-desc">Upstream server didn't respond in time. NGINX waiting for Node → Node waiting for slow DB → timeout → NGINX returns 504.</div></div></div>
+  </div>
+
+  <div class="warn">
+    <strong>The 401 vs 403 confusion is asked at almost every interview:</strong> 401 = "I don't know who you are" (authentication problem). 403 = "I know who you are but you can't do this" (authorization problem). Despite the name "Unauthorized," 401 is about authentication. 403 is about authorization. A logged-in user trying to access another user's data → 403. No login token at all → 401.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Status Codes</div>
+    <div class="qa" id="q-sc1">
+      <div class="qa-q" onclick="toggleQA('q-sc1')">What is the difference between 401 and 403? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span><strong>401 Unauthorized</strong>: the request requires authentication and the client hasn't provided valid credentials. No token sent, expired JWT, invalid signature — the server can't identify who is making the request. Despite the misleading name, 401 is about AUTHENTICATION. The client should log in and try again. <strong>403 Forbidden</strong>: the client IS authenticated (server knows who they are) but doesn't have permission to perform this action. A regular user trying to access an admin endpoint — valid JWT, wrong role. This is about AUTHORIZATION. Re-authenticating won't help. Practical in your Spring Boot project: JWT missing or expired → 401. ROLE_USER trying to call an @PreAuthorize("hasRole('ADMIN')") endpoint → 403.</div>
+    </div>
+    <div class="qa" id="q-sc2">
+      <div class="qa-q" onclick="toggleQA('q-sc2')">What status code do you return when creating a resource? When deleting? When a validation fails? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span><strong>Creating a resource</strong>: 201 Created. Include the newly created resource in the body and optionally a Location header pointing to it: <code>Location: /api/orders/123</code>. <strong>Deleting</strong>: 204 No Content (success, nothing to return) or 200 OK with a message body if you want to include a deletion confirmation. 204 is the REST standard. <strong>Validation failure</strong>: 400 Bad Request for malformed input (invalid JSON, missing required field). 422 Unprocessable Entity for semantically invalid input (valid format but business rule violation — like a date range where end is before start). Some teams use 400 for both; pick one and be consistent. The key is: don't return 200 with {"success": false} — that's not RESTful and makes error handling harder for API consumers.</div>
+    </div>
+    <div class="qa" id="q-sc3">
+      <div class="qa-q" onclick="toggleQA('q-sc3')">What is 304 Not Modified? When is it used? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>304 is the caching status code. When a browser fetches a resource with an ETag or Last-Modified timestamp, it stores that value. On subsequent requests, the browser sends an <code>If-None-Match: [etag]</code> or <code>If-Modified-Since: [date]</code> header. The server checks if the resource has changed. If not changed: return 304 with no body — browser uses its cached copy. This saves bandwidth (no body transmitted) and reduces server load. If changed: return 200 with the new resource. Practical: when building an API, use ETags for response caching. When building a CDN or caching layer, 304 is how the CDN validates cached content with the origin server.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Status Codes — 60-second revision</h4>
+    <ul>
+      <li>2xx: success. 200 OK, 201 Created (POST), 204 No Content (DELETE).</li>
+      <li>3xx: redirect. 301 permanent (cached), 302 temporary (not cached), 304 not modified (use cache).</li>
+      <li>4xx: client error. 400 bad request, 401 not authenticated, 403 not authorized, 404 not found, 429 rate limited.</li>
+      <li>5xx: server error. 500 generic, 502 bad gateway (upstream failed), 503 unavailable, 504 gateway timeout.</li>
+      <li>401 vs 403: 401 = no/invalid credentials (WHO are you?). 403 = valid credentials, wrong permissions (you can't do THIS).</li>
+      <li>Use 201 not 200 when creating. Use 204 not 200 when deleting. Use 429 with Retry-After for rate limits.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 5: DNS ══ -->
+<div class="concept" id="dns">
+  <div class="concept-num">Concept 05 of 09</div>
+  <h2>DNS — Domain Name System</h2>
+  <div class="concept-sub">How a domain name becomes an IP address. The resolution hierarchy. Caching. Record types. Why DNS is often the culprit when "the site is down."</div>
+  <div class="progress-row"><span class="must">must know</span><span>The URL → IP flow is a classic interview question</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">The DNS resolution hierarchy</span></div>
+
+  <p class="explain">
+    DNS is the internet's phone book — it translates human-readable domain names (api.swiggy.com) into machine-readable IP addresses (52.66.41.78). Without DNS, you'd have to remember IP addresses for every website.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  You type: https://api.swiggy.com
+
+  Step 1: <span class="d-hl">Browser DNS cache</span>
+  → Check: "Do I have api.swiggy.com cached?" → NO (first visit)
+
+  Step 2: <span class="d-hl">OS DNS cache</span>
+  → Check /etc/hosts, OS resolver cache → NO
+
+  Step 3: <span class="d-hl">Recursive Resolver</span> (your ISP or 8.8.8.8 / 1.1.1.1)
+  → Your first point of contact. Coordinates the rest.
+  → Cache hit? → Return cached IP. Cache miss? → Continue.
+
+  Step 4: <span class="d-hl">Root Name Server</span> (13 sets worldwide)
+  → Resolver asks: "Who handles .com?"
+  → Root returns: "Ask the .com TLD name server at [IP]"
+
+  Step 5: <span class="d-hl">TLD Name Server</span> (.com, .in, .io, .org)
+  → Resolver asks: "Who handles swiggy.com?"
+  → TLD returns: "Ask Swiggy's authoritative NS at [IP]"
+
+  Step 6: <span class="d-hl">Authoritative Name Server</span> (Swiggy's DNS)
+  → Resolver asks: "What is the IP for api.swiggy.com?"
+  → Returns: "52.66.41.78"
+
+  Step 7: Resolver returns IP to browser. Caches it (for TTL seconds).
+  Step 8: Browser connects to 52.66.41.78
+
+  <span class="d-cmt">Total time: typically 20-120ms. Subsequent requests: near-instant (cached).</span>
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">DNS Record Types — the ones that matter</span></div>
+
+  <table class="cmp">
+    <tr><th>Record Type</th><th>Purpose</th><th>Example</th></tr>
+    <tr><td><code>A</code></td><td>Maps domain to IPv4 address</td><td><code>api.swiggy.com → 52.66.41.78</code></td></tr>
+    <tr><td><code>AAAA</code></td><td>Maps domain to IPv6 address</td><td><code>api.swiggy.com → 2400:6180:0::1</code></td></tr>
+    <tr><td><code>CNAME</code></td><td>Alias — points to another domain (not IP). Useful for CDN, load balancer hostnames.</td><td><code>www.swiggy.com → swiggy.com</code> (canonical name)</td></tr>
+    <tr><td><code>MX</code></td><td>Mail Exchange — where to deliver email for this domain</td><td><code>swiggy.com → mail.google.com</code> (if using G Suite)</td></tr>
+    <tr><td><code>TXT</code></td><td>Text records — domain verification, SPF, DKIM (email security)</td><td><code>swiggy.com TXT "v=spf1 include:..."</code></td></tr>
+    <tr><td><code>NS</code></td><td>Name Server — who is authoritative for this domain</td><td><code>swiggy.com NS ns1.awsdns-01.org</code></td></tr>
+    <tr><td><code>SOA</code></td><td>Start of Authority — admin info about the zone</td><td>TTL, serial number, refresh interval</td></tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">TTL — Time to Live and why it matters for deployments</span></div>
+
+  <p class="explain">
+    Every DNS record has a <strong>TTL (Time to Live)</strong> in seconds. This is how long resolvers and browsers cache the record. After TTL expires, they re-query the authoritative server.
+  </p>
+  <p class="explain">
+    <strong>Why TTL matters in practice:</strong> When you change your server's IP address (migrate to AWS, change load balancer), you need the DNS change to propagate to all clients worldwide. If your TTL is 86400 (24 hours), some clients will still point to the old IP for up to 24 hours. Best practice: lower TTL to 300 seconds before a planned migration, make the change, keep low TTL for a few hours, then restore to normal.
+  </p>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — DNS</div>
+    <div class="qa" id="q-dns1">
+      <div class="qa-q" onclick="toggleQA('q-dns1')">What is DNS and how does it resolve a domain to an IP? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>DNS is the internet's distributed phonebook — translates human-readable domain names to IP addresses. Resolution hierarchy: (1) Check browser cache (DNS result from recent visits). (2) Check OS resolver cache (/etc/hosts). (3) Query the recursive resolver (ISP's DNS or a public one like 8.8.8.8). (4) If resolver doesn't have it cached: it queries the Root Name Server — one of 13 server clusters worldwide — to find the TLD server (who handles .com). (5) Query the TLD Name Server (.com, .in) for the authoritative name server for swiggy.com. (6) Query Swiggy's authoritative Name Server for the A record (IP) of api.swiggy.com. (7) Return and cache the IP. Each step is fast (~5-20ms). Results cached per TTL. Subsequent requests use cache — near-instant.</div>
+    </div>
+    <div class="qa" id="q-dns2">
+      <div class="qa-q" onclick="toggleQA('q-dns2')">What is a CNAME record? When would you use it? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>A CNAME (Canonical Name) record is an alias — it maps a domain name to another domain name (not an IP). When a DNS lookup hits a CNAME, the resolver follows the chain until it finds an A record with an actual IP. Use cases: (1) <code>www.swiggy.com CNAME swiggy.com</code> — the canonical name is swiggy.com, www just redirects. (2) CDN integration: <code>assets.swiggy.com CNAME swiggy.cdn.cloudflare.com</code> — the CDN's name is the canonical. (3) Load balancer: AWS ELB gives you a hostname (not a static IP), so you CNAME to it. Limitation: you can't use CNAME on a root/apex domain (swiggy.com) because CNAME replaces the entire DNS record set — use ALIAS or ANAME records for apex domains (AWS Route 53 supports this).</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>DNS — 60-second revision</h4>
+    <ul>
+      <li>DNS: domain name → IP address. "Internet's phonebook."</li>
+      <li>Resolution order: browser cache → OS cache → recursive resolver → root NS → TLD NS → authoritative NS → return IP.</li>
+      <li>A record: domain → IPv4. AAAA: domain → IPv6. CNAME: domain → another domain (alias). MX: email routing. TXT: verification/security.</li>
+      <li>TTL: how long the result is cached. Lower TTL before migrations so changes propagate faster.</li>
+      <li>Recursive resolver: your ISP's server or 8.8.8.8. Does all the legwork on your behalf.</li>
+      <li>Root name servers: 13 clusters worldwide. Know where .com, .in, etc. live.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 6: URL FLOW ══ -->
+<div class="concept" id="url-flow">
+  <div class="concept-num">Concept 06 of 09</div>
+  <h2>What Happens When You Type a URL</h2>
+  <div class="concept-sub">The most famous interview question in networking. Combines DNS, TCP, TLS, HTTP, and browser rendering. Walk through all 7 steps without missing any.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Classic question — practiced by every experienced engineer</span></div>
+
+  <div class="diagram">
+    <pre>
+  URL: https://www.swiggy.com/restaurants?city=bangalore
+
+  ─────────────────────────────────────────────────────────────────
+  STEP 1: <span class="d-hl">URL Parsing</span>
+  Protocol: https | Host: www.swiggy.com | Path: /restaurants
+  Query: city=bangalore | Port: 443 (default for https)
+
+  ─────────────────────────────────────────────────────────────────
+  STEP 2: <span class="d-hl">DNS Resolution</span>
+  Browser cache → OS cache → Recursive resolver
+  → Root NS → TLD NS → Swiggy's authoritative NS
+  → Returns: 52.66.41.78
+
+  ─────────────────────────────────────────────────────────────────
+  STEP 3: <span class="d-hl">TCP Connection</span>
+  Client → Server: SYN (seq=100)
+  Server → Client: SYN-ACK (seq=300, ack=101)
+  Client → Server: ACK (ack=301)
+  Connection established on port 443
+
+  ─────────────────────────────────────────────────────────────────
+  STEP 4: <span class="d-hl">TLS Handshake</span> (HTTPS only)
+  Client Hello: "I support TLS 1.3, here are my cipher suites"
+  Server Hello: "Use TLS 1.3 + AES-256. Here's my certificate."
+  Client: Verify certificate with CA. Generate session keys.
+  → Symmetric encryption established. All subsequent traffic encrypted.
+
+  ─────────────────────────────────────────────────────────────────
+  STEP 5: <span class="d-hl">HTTP Request</span>
+  GET /restaurants?city=bangalore HTTP/2
+  Host: www.swiggy.com
+  Cookie: session=abc123; pref=bangalore
+  Accept: text/html
+
+  ─────────────────────────────────────────────────────────────────
+  STEP 6: <span class="d-hl">Server Processing</span>
+  NGINX receives → Routes to Node.js/Python service
+  → Query DB / Redis cache for Bangalore restaurants
+  → Build response (HTML or JSON)
+  → Return HTTP 200 with body
+
+  ─────────────────────────────────────────────────────────────────
+  STEP 7: <span class="d-hl">Browser Rendering</span>
+  Parse HTML → Build DOM
+  Discover CSS, JS, images → Parallel requests for each
+  Parse CSS → Build CSSOM
+  DOM + CSSOM → Render tree → Layout → Paint → Composite
+
+  Subsequent resource requests (JS, CSS):
+  Check DNS cache → TCP connection may be reused (keep-alive)
+  → If cached (304 Not Modified) → Use browser cache
+    </pre>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — URL Flow</div>
+    <div class="qa" id="q-url1">
+      <div class="qa-q" onclick="toggleQA('q-url1')">What happens when you type a URL in a browser and press Enter? Walk through every step. <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer — walk through all 7 steps</span><strong>1. URL Parsing</strong>: browser parses scheme (https), host (swiggy.com), path, query string, port (443 for HTTPS, 80 for HTTP). <strong>2. DNS Resolution</strong>: browser cache → OS cache → recursive resolver → root NS → TLD NS → authoritative NS. Returns IP. <strong>3. TCP Connection</strong>: three-way handshake to IP:443 (SYN → SYN-ACK → ACK). <strong>4. TLS Handshake</strong>: client sends supported cipher suites. Server responds with certificate. Client verifies certificate with CA. Key exchange → symmetric session key established. All data now encrypted. <strong>5. HTTP Request</strong>: browser sends GET with headers (Host, Cookie, Accept). <strong>6. Server Processing</strong>: NGINX/load balancer routes to application server. App queries DB or cache, builds response, returns HTTP 200 with body. <strong>7. Browser Renders</strong>: parses HTML → DOM. Fetches CSS/JS/images (parallel, check cache). Builds CSSOM. DOM + CSSOM → Render tree → Layout → Paint. Interviewers can ask about any step — know each one a level deeper.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>URL Flow — 60-second revision</h4>
+    <ul>
+      <li>7 steps: URL parse → DNS resolution → TCP handshake → TLS handshake → HTTP request → server processing → browser render.</li>
+      <li>DNS: browser cache → OS → resolver → root → TLD → authoritative NS → IP.</li>
+      <li>TCP: SYN → SYN-ACK → ACK (3-way handshake on port 443 for HTTPS).</li>
+      <li>TLS: client hello (ciphers) → server cert → verify CA → key exchange → symmetric encryption.</li>
+      <li>HTTP: GET request with headers. Server returns 200 + body.</li>
+      <li>Render: HTML → DOM. CSS → CSSOM. JS fetched/executed. Render tree → layout → paint.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 7: TLS/HTTPS ══ -->
+<div class="concept" id="tls">
+  <div class="concept-num">Concept 07 of 09</div>
+  <h2>HTTPS and TLS</h2>
+  <div class="concept-sub">What TLS does, why it's not just encryption, how certificate validation works, and what TLS 1.3 improved. HTTPS security is increasingly asked in full stack interviews.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Interviewers connect this to your deployed projects</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">What TLS provides — three guarantees</span></div>
+
+  <table class="cmp">
+    <tr><th>Guarantee</th><th>What it means</th><th>How TLS achieves it</th></tr>
+    <tr><td>Confidentiality</td><td>Data is unreadable to eavesdroppers. A man-in-the-middle intercepting traffic sees only gibberish.</td><td>Symmetric encryption (AES-256-GCM) with a session key negotiated per connection.</td></tr>
+    <tr><td>Integrity</td><td>Data hasn't been tampered with in transit. Even if intercepted and modified, the receiver will detect it.</td><td>HMAC (Hash-based Message Authentication Code) — each packet includes a hash. Any modification breaks the hash.</td></tr>
+    <tr><td>Authentication</td><td>You're really talking to swiggy.com, not a fake site set up by an attacker.</td><td>X.509 certificates signed by trusted Certificate Authorities (CAs). Browser verifies the signature.</td></tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">TLS Handshake — simplified</span></div>
+
+  <div class="diagram">
+    <pre>
+  TLS 1.3 Handshake (simplified):
+
+  Client                                    Server
+  ──────                                    ──────
+  ClientHello                          →    
+  • TLS version: 1.3
+  • Cipher suites: [AES-256-GCM, ...]
+  • Key shares (Diffie-Hellman params)
+  • Random number
+
+                                       ←    ServerHello
+                                            • Chosen cipher: AES-256-GCM
+                                            • Key share (DH response)
+                                       ←    Certificate (public key + domain)
+                                       ←    CertificateVerify (signed with private key)
+                                       ←    Finished
+
+  ← Verify certificate: 
+    1. Issued for swiggy.com? ✓
+    2. Signed by a CA I trust? ✓ (browser has CA list built-in)
+    3. Not expired? ✓
+    4. Not revoked? ✓
+
+  Both sides compute session key from DH exchange
+  (Never transmitted — computed independently on each side)
+
+  Client Finished                      →    [Handshake complete]
+
+  All subsequent traffic encrypted with symmetric session key.
+
+  <span class="d-cmt">Key insight: Asymmetric crypto (RSA/ECC) is used ONLY for</span>
+  <span class="d-cmt">authentication and key exchange. Symmetric crypto (AES)</span>
+  <span class="d-cmt">is used for actual data — much faster.</span>
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Certificate validation — the chain of trust</span></div>
+
+  <p class="explain">
+    Browsers have a built-in list of trusted <strong>Root Certificate Authorities</strong> (CA) — organizations like DigiCert, Let's Encrypt, Comodo. When a server presents a certificate, the browser verifies the certificate chain:
+  </p>
+  <p class="explain">
+    <strong>Certificate chain:</strong> Server Certificate → Intermediate CA → Root CA (trusted by browser). The server certificate is signed by an Intermediate CA. The Intermediate CA's certificate is signed by the Root CA. The browser trusts the Root CA. This chain of signatures proves the server's identity.
+  </p>
+
+  <div class="warn">
+    <strong>Let's Encrypt is free and used by millions:</strong> In your projects (EC2 deployment from Phase 3), use <code>certbot --nginx</code> to get a free Let's Encrypt certificate. It auto-renews every 90 days. This is what makes your CollabDocs deployment secure at https://. Know that you used Let's Encrypt — interviewers will ask about your deployment.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — TLS/HTTPS</div>
+    <div class="qa" id="q-tls1">
+      <div class="qa-q" onclick="toggleQA('q-tls1')">What does HTTPS provide that HTTP doesn't? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>HTTPS = HTTP + TLS. TLS adds three guarantees: (1) <strong>Confidentiality</strong>: all data encrypted — an attacker intercepting traffic sees only ciphertext, not your passwords or tokens. (2) <strong>Integrity</strong>: HMAC detects any tampering in transit — if an attacker modifies a packet, the hash breaks, receiver detects it. (3) <strong>Authentication</strong>: the server's certificate proves you're really talking to swiggy.com, not an imposter. The browser verifies the certificate was signed by a trusted CA and issued for this domain. HTTP has none of these — data is plaintext, any network observer can read credentials, and there's no way to verify you're talking to the real server.</div>
+    </div>
+    <div class="qa" id="q-tls2">
+      <div class="qa-q" onclick="toggleQA('q-tls2')">Why does TLS use asymmetric crypto for handshake and symmetric for data? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>Asymmetric crypto (RSA, ECC) is mathematically expensive — 100-1000x slower than symmetric crypto (AES). But asymmetric has a key advantage: you can share the public key openly without security risk. The handshake uses asymmetric crypto (Diffie-Hellman key exchange) to safely establish a shared secret over an untrusted network — without ever transmitting the secret itself. Once both sides have agreed on the session key (symmetric), all actual data transmission uses fast AES encryption. The session key is ephemeral (generated fresh per connection) — this is "Forward Secrecy" — even if the server's private key is later compromised, past sessions can't be decrypted because the session keys were never stored.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>TLS/HTTPS — 60-second revision</h4>
+    <ul>
+      <li>TLS provides: confidentiality (encryption), integrity (HMAC tamper detection), authentication (certificate verification).</li>
+      <li>Handshake: client hello (cipher suites) → server cert → verify CA chain → DH key exchange → symmetric session key.</li>
+      <li>Asymmetric (RSA/ECC): for authentication and key exchange only (slow). Symmetric (AES): for actual data (fast).</li>
+      <li>Certificate chain: server cert → intermediate CA → root CA (trusted by browser).</li>
+      <li>Forward secrecy: ephemeral session keys — past sessions can't be decrypted even if private key is compromised.</li>
+      <li>Let's Encrypt: free CA. Use certbot for auto-renewing certificates on your EC2 deployment.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 8: CORS ══ -->
+<div class="concept" id="cors">
+  <div class="concept-num">Concept 08 of 09</div>
+  <h2>CORS — Cross-Origin Resource Sharing</h2>
+  <div class="concept-sub">The most asked networking concept in full stack interviews. Why it exists, what "origin" means, preflight requests, and how to configure it in Express. Every full stack developer has seen CORS errors.</div>
+  <div class="progress-row"><span class="must">must know</span><span>You've hit CORS errors — now understand why they happen</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">What is an "origin"?</span></div>
+
+  <p class="explain">
+    An <strong>origin</strong> = scheme + hostname + port. Two URLs have the same origin ONLY if all three match exactly.
+  </p>
+
+  <div class="diagram">
+    <pre>
+  Base URL: https://swiggy.com:443/restaurants
+
+  https://swiggy.com/orders       → <span class="d-ok">SAME ORIGIN</span> (same scheme, host, default port)
+  http://swiggy.com/              → <span class="d-err">DIFFERENT</span> (different scheme: http vs https)
+  https://api.swiggy.com/         → <span class="d-err">DIFFERENT</span> (different hostname: api.swiggy.com)
+  https://swiggy.com:3000/        → <span class="d-err">DIFFERENT</span> (different port: 3000 vs 443)
+  https://swiggy.com/profile      → <span class="d-ok">SAME ORIGIN</span> (path doesn't matter)
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">The Same-Origin Policy — why CORS exists</span></div>
+
+  <p class="explain">
+    <strong>The Same-Origin Policy (SOP)</strong> is a browser security mechanism: JavaScript on page A cannot make requests to a different origin B. Why? Without SOP, malicious.com could load swiggy.com and use your cookies to place orders on your behalf (CSRF).
+  </p>
+  <p class="explain">
+    But legitimate cross-origin requests are needed: your React app on localhost:3000 needs to call your API on localhost:8080. Your frontend on app.mysite.com calls api.mysite.com. CORS is the mechanism that lets servers explicitly allow cross-origin requests from trusted origins.
+  </p>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">How CORS works — simple vs preflight</span></div>
+
+  <div class="diagram">
+    <pre>
+  SIMPLE REQUEST (GET, HEAD, POST with simple headers):
+  ─────────────────────────────────────────────────────
+  Browser: GET https://api.swiggy.com/restaurants
+  Browser adds: Origin: https://swiggy.com
+
+  Server responds with:
+  Access-Control-Allow-Origin: https://swiggy.com  ← "Yes, I allow this origin"
+
+  Browser: "Server said OK → deliver response to JS."
+
+  ─────────────────────────────────────────────────────
+  PREFLIGHT REQUEST (PUT, DELETE, or custom headers):
+  ─────────────────────────────────────────────────────
+  Browser first sends: OPTIONS https://api.swiggy.com/orders
+  Origin: https://swiggy.com
+  Access-Control-Request-Method: DELETE
+  Access-Control-Request-Headers: Authorization, Content-Type
+
+  Server responds (preflight response):
+  Access-Control-Allow-Origin: https://swiggy.com
+  Access-Control-Allow-Methods: GET, POST, PUT, DELETE
+  Access-Control-Allow-Headers: Authorization, Content-Type
+  Access-Control-Max-Age: 86400  ← cache preflight for 24 hours
+
+  Browser: "Server approved the request method and headers."
+  Browser: Now sends the actual DELETE request.
+
+  <span class="d-cmt">Why preflight? Browser asks permission before sending a potentially</span>
+  <span class="d-cmt">destructive request. Server gets to say "no" before data is sent.</span>
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">Configuring CORS in Express (Node.js)</span></div>
+
+<pre class="code">
+<span class="ck">const</span> cors = require(<span class="cs">'cors'</span>);
+
+<span class="cm">// Option 1: Allow specific origin (production)</span>
+app.use(cors({
+    origin: <span class="cs">'https://app.mysite.com'</span>,  <span class="cm">// ONLY this origin allowed</span>
+    methods: [<span class="cs">'GET'</span>, <span class="cs">'POST'</span>, <span class="cs">'PUT'</span>, <span class="cs">'DELETE'</span>, <span class="cs">'PATCH'</span>],
+    allowedHeaders: [<span class="cs">'Content-Type'</span>, <span class="cs">'Authorization'</span>],
+    credentials: <span class="ck">true</span>  <span class="cm">// required for cookies/auth headers</span>
+}));
+
+<span class="cm">// Option 2: Allow multiple origins</span>
+<span class="ck">const</span> allowedOrigins = [
+    <span class="cs">'https://app.mysite.com'</span>,
+    <span class="cs">'https://admin.mysite.com'</span>,
+    <span class="cs">'http://localhost:3000'</span>  <span class="cm">// dev only</span>
+];
+app.use(cors({
+    origin: (origin, callback) => {
+        <span class="ck">if</span> (!origin || allowedOrigins.includes(origin)) {
+            callback(<span class="ck">null</span>, <span class="ck">true</span>);  <span class="cm">// allow</span>
+        } <span class="ck">else</span> {
+            callback(<span class="ck">new</span> <span class="ct">Error</span>(<span class="cs">'Not allowed by CORS'</span>));
+        }
+    },
+    credentials: <span class="ck">true</span>
+}));
+
+<span class="cm">// NEVER do this in production:</span>
+app.use(cors({ origin: <span class="cs">'*'</span>, credentials: <span class="ck">true</span> }));
+<span class="cm">// origin: '*' with credentials: true is a CORS spec violation</span>
+<span class="cm">// Browser will block it. '*' means "allow anyone" — bad for APIs.</span>
+</pre>
+
+  <div class="warn">
+    <strong>CORS is browser-only — it's NOT server security:</strong> CORS only affects browser-based requests. curl, Postman, and server-to-server requests bypass CORS completely. This is a common misconception — "I added CORS so my API is secure." No! CORS prevents your JavaScript from being misused in a browser. A malicious SERVER can still call your API directly without any CORS headers. API security must come from authentication (JWT, API keys), not CORS.
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — CORS</div>
+    <div class="qa" id="q-cors1">
+      <div class="qa-q" onclick="toggleQA('q-cors1')">What is CORS? Why does it exist? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>CORS (Cross-Origin Resource Sharing) is a browser security mechanism built on top of the Same-Origin Policy. The SOP prevents JavaScript from making requests to a different origin (different scheme, hostname, or port) — it protects against CSRF: malicious.com's JavaScript can't use your cookies to make requests to bank.com on your behalf. But legitimate cross-origin requests are needed (React frontend at app.mysite.com calling api.mysite.com). CORS allows servers to explicitly declare which origins they accept. The browser checks the response headers (Access-Control-Allow-Origin) and either delivers the response to JavaScript or blocks it. Key point: CORS is browser-enforced only — curl and Postman bypass it. It's not API security — it's browser-level protection against script misuse.</div>
+    </div>
+    <div class="qa" id="q-cors2">
+      <div class="qa-q" onclick="toggleQA('q-cors2')">What is a preflight request? When does the browser send one? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>A preflight request is an HTTP OPTIONS request the browser sends before a potentially state-modifying cross-origin request. The browser asks permission before sending the actual request. Preflight is triggered by: (1) Methods other than GET, POST, HEAD (e.g., DELETE, PUT). (2) POST with Content-Type other than application/x-www-form-urlencoded, multipart/form-data, or text/plain. (3) Custom headers like Authorization. The preflight OPTIONS request includes Access-Control-Request-Method and Access-Control-Request-Headers. The server must respond with appropriate Access-Control-Allow-* headers. Only if the server approves does the browser send the actual request. Access-Control-Max-Age caches the preflight result so subsequent requests don't need another OPTIONS round trip.</div>
+    </div>
+    <div class="qa" id="q-cors3">
+      <div class="qa-q" onclick="toggleQA('q-cors3')">Why does CORS require credentials: true separately from the origin? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>By default, cross-origin requests don't include credentials (cookies, Authorization headers). This is the safe default — you don't want every cross-origin fetch to automatically send your authentication credentials. To include credentials in cross-origin requests, you must: (1) Set credentials: 'include' in the fetch options (frontend), and (2) The server must respond with Access-Control-Allow-Credentials: true AND Access-Control-Allow-Origin must be a specific origin, NOT '*'. The reason you can't use '*' with credentials: a wildcard would mean "accept credentials from any website" — any malicious site could make credentialed requests to your API using the victim's cookies. Requiring a specific origin with credentials explicitly whitelists trusted frontends.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>CORS — 60-second revision</h4>
+    <ul>
+      <li>Origin = scheme + hostname + port. All three must match for same-origin.</li>
+      <li>Same-Origin Policy: browser blocks JS from making cross-origin requests. Prevents CSRF.</li>
+      <li>CORS: server tells browser which origins it allows via Access-Control-Allow-Origin response header.</li>
+      <li>Preflight: browser sends OPTIONS first for non-simple requests (DELETE, PUT, custom headers). Server must respond with allowed methods/headers.</li>
+      <li>Express: cors({ origin: 'https://app.mysite.com', credentials: true }).</li>
+      <li>CORS is BROWSER ONLY. curl/Postman bypass it. CORS is not API security — use authentication for that.</li>
+      <li>origin: '*' + credentials: true = invalid. Specific origin required when using credentials.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 9: WEBSOCKET ══ -->
+<div class="concept" id="websocket">
+  <div class="concept-num">Concept 09 of 09</div>
+  <h2>WebSocket</h2>
+  <div class="concept-sub">Full-duplex persistent connection over a single TCP connection. How the upgrade handshake works. When WebSocket vs HTTP vs Server-Sent Events. Directly connects to your CollabDocs project.</div>
+  <div class="progress-row"><span class="must">must know</span><span>You used Socket.io in CollabDocs — understand what it uses underneath</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Why WebSocket exists — the problem with HTTP for real-time</span></div>
+
+  <p class="explain">
+    HTTP is request-response: client sends request, server sends response, done. To get real-time updates via HTTP, you'd need to <strong>poll</strong> — repeatedly send "any updates?" requests every second. Wasteful: 99% of polls return "no new data" but each one uses network and server resources.
+  </p>
+  <p class="explain">
+    <strong>WebSocket</strong> solves this: establish a single persistent TCP connection, then both client and server can send messages to each other at any time without re-establishing the connection. True bidirectional, full-duplex communication.
+  </p>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">The WebSocket Upgrade handshake</span></div>
+
+  <div class="diagram">
+    <pre>
+  WebSocket starts as HTTP then UPGRADES:
+
+  Client → Server (HTTP Request):
+  GET /ws HTTP/1.1
+  Host: api.collabdocs.com
+  <span class="d-hl">Upgrade: websocket</span>
+  <span class="d-hl">Connection: Upgrade</span>
+  <span class="d-hl">Sec-WebSocket-Key: dGhlIHNhbXBsZSBub25jZQ==</span>
+  Sec-WebSocket-Version: 13
+
+  Server → Client (HTTP 101):
+  HTTP/1.1 <span class="d-ok">101 Switching Protocols</span>
+  Upgrade: websocket
+  Connection: Upgrade
+  Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=
+  <span class="d-cmt">← The accept value is computed from the key (SHA-1 + base64)</span>
+
+  Connection now UPGRADED from HTTP to WebSocket protocol.
+  Both sides can now send frames in either direction at any time.
+  Connection remains open until explicitly closed.
+
+  <span class="d-cmt">Port: same as HTTP/HTTPS. ws:// uses port 80. wss:// uses 443 (TLS).</span>
+  <span class="d-cmt">NGINX: requires Upgrade + Connection headers to proxy WebSocket correctly</span>
+  <span class="d-cmt">(This is why your CollabDocs NGINX config has those headers!)</span>
+    </pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">WebSocket vs HTTP vs SSE — when to use which</span></div>
+
+  <table class="cmp">
+    <tr><th></th><th>HTTP Polling</th><th>Server-Sent Events (SSE)</th><th>WebSocket</th></tr>
+    <tr><td>Direction</td><td>Client → Server (repeated)</td><td>Server → Client only</td><td>Bidirectional (full-duplex)</td></tr>
+    <tr><td>Connection</td><td>New TCP per request</td><td>Single persistent HTTP connection</td><td>Single persistent TCP connection (upgraded from HTTP)</td></tr>
+    <tr><td>Protocol</td><td>HTTP</td><td>HTTP (text/event-stream)</td><td>WebSocket (ws:// or wss://)</td></tr>
+    <tr><td>Use case</td><td>Infrequent updates (check for new emails every 30s)</td><td>Server pushes one-way: live scores, news feeds, stock prices</td><td>Real-time bidirectional: chat, collaborative editing, gaming, trading terminals</td></tr>
+    <tr><td>Complexity</td><td>Simple (just fetch in interval)</td><td>Simple server, simple browser EventSource API</td><td>More complex — connection management, reconnection logic</td></tr>
+    <tr><td>Scaling</td><td>Easy (stateless)</td><td>Easy (stateless HTTP)</td><td>Harder — each server must know all active connections. Need sticky sessions or Redis pub/sub across instances.</td></tr>
+  </table>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">Socket.io — what it adds on top of WebSocket</span></div>
+
+  <p class="explain">
+    <strong>Socket.io</strong> is not the same as WebSocket. Socket.io uses WebSocket when available, but falls back to HTTP long-polling when WebSocket is blocked by proxies or firewalls. It also adds: rooms (namespaced channels), acknowledgements (message receipts), reconnection logic (auto-reconnects with exponential backoff), and a multiplexing namespace system.
+  </p>
+  <p class="explain">
+    In your CollabDocs project, Socket.io handles: joining document rooms (<code>socket.join(docId)</code>), broadcasting edits to all users in a room (<code>io.to(docId).emit('edit', data)</code>), and reconnecting clients whose connections drop.
+  </p>
+
+<pre class="code">
+<span class="cm">// Socket.io server — CollabDocs pattern</span>
+io.on(<span class="cs">'connection'</span>, (socket) => {
+    console.log(<span class="cs">`User connected: ${socket.id}`</span>);
+
+    socket.on(<span class="cs">'join-document'</span>, (docId) => {
+        socket.join(docId);                  <span class="cm">// join the document's room</span>
+        socket.to(docId).emit(<span class="cs">'user-joined'</span>, socket.id);
+    });
+
+    socket.on(<span class="cs">'document-edit'</span>, (data) => {
+        <span class="cm">// Broadcast to all OTHER users in the same room</span>
+        socket.to(data.docId).emit(<span class="cs">'apply-edit'</span>, data);
+        <span class="cm">// socket.to() excludes the sender — they already applied the edit</span>
+    });
+
+    socket.on(<span class="cs">'disconnect'</span>, () => {
+        <span class="cm">// Socket.io auto-cleans up rooms on disconnect</span>
+    });
+});
+
+<span class="cm">// Socket.io client</span>
+<span class="ck">const</span> socket = io(<span class="cs">'https://api.collabdocs.com'</span>);
+socket.emit(<span class="cs">'join-document'</span>, <span class="cs">'doc_abc'</span>);
+socket.on(<span class="cs">'apply-edit'</span>, (data) => { applyEditToEditor(data); });
+</pre>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — WebSocket</div>
+    <div class="qa" id="q-ws1">
+      <div class="qa-q" onclick="toggleQA('q-ws1')">What is WebSocket? How does it differ from HTTP? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>WebSocket is a protocol that enables persistent, bidirectional, full-duplex communication over a single TCP connection. Unlike HTTP (which is request-response — client always initiates, one request per response), WebSocket allows either side to send data at any time without waiting for the other to ask. The connection starts as HTTP, then upgrades: client sends an Upgrade: websocket header, server responds with 101 Switching Protocols, and the connection switches from HTTP to the WebSocket protocol. After that, no HTTP overhead — just lightweight WebSocket frames. Use case: real-time collaborative editing (CollabDocs), chat applications, live dashboards, online gaming. I used it in my CollabDocs project where Socket.io (WebSocket-based) broadcasts document edits to all connected users in a room.</div>
+    </div>
+    <div class="qa" id="q-ws2">
+      <div class="qa-q" onclick="toggleQA('q-ws2')">How would you scale a WebSocket server to handle 100,000 concurrent connections? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>The challenge: WebSocket connections are stateful — each server maintains open connections. If you have 3 servers and user A is on server 1, user B is on server 2, they can't communicate directly because their WebSockets are on different servers. Solution: <strong>Redis Pub/Sub</strong> as a message bus between servers. When user A's edit arrives at server 1, server 1 publishes to a Redis channel for that document. All other servers subscribe to that channel and forward the event to their connected users in that room. Socket.io has a built-in Redis adapter (<code>@socket.io/redis-adapter</code>) that does this automatically. Infrastructure: multiple Node instances behind a load balancer with <strong>sticky sessions</strong> (a user always routes to the same server for their WebSocket connection) OR the Redis pub/sub pattern without sticky sessions. Each Node process can handle tens of thousands of WebSocket connections (Node's event loop is efficient for I/O-bound work).</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>WebSocket — 60-second revision</h4>
+    <ul>
+      <li>WebSocket: persistent TCP connection. Full-duplex — both sides send at any time.</li>
+      <li>Upgrade handshake: HTTP request with Upgrade: websocket → server 101 Switching Protocols → protocol switched.</li>
+      <li>WebSocket vs HTTP: HTTP = request-response (client initiates). WebSocket = bidirectional persistent.</li>
+      <li>SSE: server → client only. Simple. Use for news feeds, live scores, one-way push.</li>
+      <li>WebSocket: bidirectional. Use for chat, collaborative editing, gaming.</li>
+      <li>Socket.io: WebSocket + fallback + rooms + reconnection + acknowledgements. Not vanilla WebSocket.</li>
+      <li>Scaling: Redis pub/sub across multiple Node instances. Socket.io Redis adapter handles this.</li>
+      <li>NGINX: needs Upgrade and Connection headers to proxy WebSocket (already in your CollabDocs config).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ MASTER INTERVIEW Q&A ══ -->
+<div class="concept" id="interview">
+  <div class="concept-num">Master Review</div>
+  <h2>All Networks Interview Questions</h2>
+  <div class="concept-sub">20 questions across all networking topics. Answer out loud without looking first.</div>
+
+  <div class="interview-section" style="margin-top:20px;">
+    <div class="int-label">Complete Networks Q&amp;A bank — 20 questions</div>
+
+    <div class="qa" id="qnet1"><div class="qa-q" onclick="toggleQA('qnet1')">1. What is the OSI model? Which layers does a full stack developer primarily work at? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>7 layers: Physical, Data Link, Network, Internet, Transport, Session, Presentation, Application (bottom to top). Full stack developers work primarily at: Layer 7 (Application) — HTTP, WebSocket, REST APIs, your Express/Spring Boot code. Layer 4 (Transport) — TCP vs UDP choice, ports. Layer 3 (Network) — IP addresses, DNS resolution results. The OS and hardware handle layers 1-3 automatically. Knowing what protocol lives at each layer helps you debug: 502 Bad Gateway = layer 7 issue. Packet loss = layer 3/4 issue. SSL certificate error = layer 6 (Presentation).</div></div>
+
+    <div class="qa" id="qnet2"><div class="qa-q" onclick="toggleQA('qnet2')">2. Explain the TCP three-way handshake. Why is it three steps? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>SYN: client sends synchronize packet with its initial sequence number. SYN-ACK: server acknowledges client's ISN+1 and sends its own ISN. ACK: client acknowledges server's ISN+1. Three steps because two-way confirmation is needed: both sides must verify they can both send AND receive. Two steps only confirms client→server direction. The third step (client's ACK) confirms client received server's SYN-ACK, establishing true bidirectional communication. After three steps: connection is ESTABLISHED, data can flow.</div></div>
+
+    <div class="qa" id="qnet3"><div class="qa-q" onclick="toggleQA('qnet3')">3. What is the difference between TCP and UDP? Give a use case for each. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>TCP: reliable, ordered delivery. Three-way handshake. Retransmits lost packets. Slower. Use for: HTTP/HTTPS, SSH, email, file transfer — when data integrity is critical. UDP: connectionless, no guarantee of delivery or order. Minimal overhead. Faster. Use for: DNS (speed matters, simple retry if lost), video streaming (slight frame loss is acceptable, latency is not), VoIP, online gaming (old packet useless by the time retransmitted). HTTP/3 uses QUIC (over UDP) with application-layer reliability — best of both worlds for modern web.</div></div>
+
+    <div class="qa" id="qnet4"><div class="qa-q" onclick="toggleQA('qnet4')">4. What is the difference between GET, POST, PUT, and PATCH? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>GET: retrieve, no body, safe (read-only), idempotent, cacheable. POST: create, has body, not idempotent (each call creates a new resource). PUT: replace entire resource, idempotent (sending same body multiple times = same result). PATCH: partial update, send only changed fields. DELETE: remove resource, idempotent. Idempotent: calling multiple times produces same result. Safe: doesn't modify server state. PUT vs PATCH: PUT replaces entirely (omitted fields removed), PATCH updates only sent fields.</div></div>
+
+    <div class="qa" id="qnet5"><div class="qa-q" onclick="toggleQA('qnet5')">5. What is the difference between 401 and 403? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>401 Unauthorized: server cannot identify who you are. No token, expired JWT, invalid signature. Despite the name, it's about AUTHENTICATION. Client should authenticate and retry. 403 Forbidden: server knows who you are but you don't have permission. Valid credentials, wrong role or insufficient privileges. This is about AUTHORIZATION. Re-authenticating won't help — you need different permissions. In Spring Boot: JWT missing/expired → 401 from JWT filter. ROLE_USER hitting ROLE_ADMIN endpoint → 403 from @PreAuthorize.</div></div>
+
+    <div class="qa" id="qnet6"><div class="qa-q" onclick="toggleQA('qnet6')">6. Walk me through what happens when you type a URL and press Enter. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>1. URL parsing: scheme, host, path, query string, port. 2. DNS resolution: browser cache → OS cache → recursive resolver → root NS → TLD NS → authoritative NS → returns IP. 3. TCP handshake: SYN → SYN-ACK → ACK on port 443. 4. TLS handshake: cipher negotiation → server cert verification → DH key exchange → symmetric session key. 5. HTTP request: GET with headers (Host, Cookie, Accept). 6. Server processing: NGINX routes to app server → DB/cache query → build response → return 200. 7. Browser renders: HTML → DOM. CSS → CSSOM. Parallel asset fetches. Render tree → layout → paint.</div></div>
+
+    <div class="qa" id="qnet7"><div class="qa-q" onclick="toggleQA('qnet7')">7. What is DNS? Explain the resolution hierarchy. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>DNS translates domain names to IP addresses. Resolution: browser cache → OS cache → recursive resolver (ISP's or 8.8.8.8). If resolver cache miss: queries root name server (who handles .com?) → TLD name server (.com: who handles swiggy.com?) → authoritative name server (Swiggy's DNS: what's the IP for api.swiggy.com?) → returns A record (IP). Recursive resolver returns and caches the result for TTL seconds. DNS record types: A (domain→IPv4), AAAA (IPv6), CNAME (alias to another domain), MX (email), TXT (verification, SPF).</div></div>
+
+    <div class="qa" id="qnet8"><div class="qa-q" onclick="toggleQA('qnet8')">8. What is CORS? Why does it exist? How do you configure it in Express? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>CORS (Cross-Origin Resource Sharing) is a browser mechanism that controls cross-origin requests (different scheme, hostname, or port). Exists because of the Same-Origin Policy: browser prevents JS from making cross-origin requests to protect against CSRF attacks. CORS allows servers to whitelist trusted origins via Access-Control-Allow-Origin response header. Express: <code>app.use(cors({ origin: 'https://app.mysite.com', credentials: true }))</code>. Never use origin: '*' with credentials: true (spec violation). Preflight: browser sends OPTIONS first for DELETE/PUT/custom headers. Server must respond with allowed methods/headers. CORS is browser-only — Postman bypasses it. CORS is not security — use JWT for that.</div></div>
+
+    <div class="qa" id="qnet9"><div class="qa-q" onclick="toggleQA('qnet9')">9. What does HTTPS provide that HTTP doesn't? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>HTTPS = HTTP + TLS. TLS provides three guarantees: Confidentiality (AES symmetric encryption — eavesdroppers see ciphertext), Integrity (HMAC detects any in-transit tampering), Authentication (X.509 certificate verified against trusted CAs — proves you're talking to the real server, not an impersonator). HTTP has none: data is plaintext, anyone can intercept passwords/tokens, and there's no verification that the server is who it claims to be. TLS uses asymmetric crypto (RSA/ECC) only for the handshake (key exchange + authentication) because it's expensive. Actual data uses fast symmetric AES with the negotiated session key.</div></div>
+
+    <div class="qa" id="qnet10"><div class="qa-q" onclick="toggleQA('qnet10')">10. What is a WebSocket? How does it differ from regular HTTP? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>WebSocket is a persistent, bidirectional TCP connection. Unlike HTTP (client initiates every exchange, one response per request), WebSocket allows either side to send data at any time. Starts as HTTP then upgrades: client sends Upgrade: websocket header, server responds 101 Switching Protocols, protocol switches. After upgrade: lightweight WebSocket frames instead of HTTP overhead. Use when bidirectional real-time communication is needed: collaborative editing, chat, gaming, live trading. Used Socket.io (WebSocket-based) in my CollabDocs project — when a user edits, the server broadcasts to all other users in the document room immediately via persistent WebSocket connections.</div></div>
+
+    <div class="qa" id="qnet11"><div class="qa-q" onclick="toggleQA('qnet11')">11. What is a preflight request? When does the browser send one? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>A preflight is an HTTP OPTIONS request the browser sends before a potentially state-modifying cross-origin request, to ask permission. Triggered by: non-simple methods (DELETE, PUT, PATCH), POST with non-standard Content-Type, or custom headers (Authorization). Options request includes Access-Control-Request-Method and Access-Control-Request-Headers. Server must respond with Access-Control-Allow-Methods, Access-Control-Allow-Headers, and Access-Control-Allow-Origin. If approved, browser sends the actual request. Access-Control-Max-Age caches the preflight result (avoids sending OPTIONS on every request). If server doesn't include the right CORS headers in its preflight response, the browser blocks the actual request.</div></div>
+
+    <div class="qa" id="qnet12"><div class="qa-q" onclick="toggleQA('qnet12')">12. What is HTTP/2 multiplexing? What problem does it solve? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>HTTP/1.1 head-of-line blocking: browsers open 6 TCP connections per origin, each handling one request at a time. A slow request blocks others on that connection. HTTP/2 multiplexing: multiple requests and responses interleaved on a single TCP connection using binary frames. Request A's slow response doesn't block requests B, C, D. Also: header compression (HPACK) eliminates sending repeated headers like User-Agent on every request. Server push: server can proactively send resources the client will need. Result: fewer TCP connections, better latency for pages with many assets (JS, CSS, fonts, images). HTTP/3 (QUIC) addresses the remaining TCP-level head-of-line blocking.</div></div>
+
+    <div class="qa" id="qnet13"><div class="qa-q" onclick="toggleQA('qnet13')">13. What is the difference between 301 and 302 redirect? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>301 Moved Permanently: browser caches this redirect permanently. Future requests go directly to the new URL without checking the old one. Search engines transfer "link juice" to the new URL. Use for: permanently moved content, HTTP → HTTPS redirect, domain changes. 302 Found (Temporary Redirect): browser does NOT cache — always asks the original URL first, then follows the redirect. Use for: login redirect (redirect to login page, then back after auth), maintenance mode (redirect to maintenance page temporarily), A/B testing. Choosing wrong: using 302 when you mean 301 = extra DNS + HTTP roundtrip on every visit. Using 301 when you mean 302 = stuck with the redirect even after you change it back.</div></div>
+
+    <div class="qa" id="qnet14"><div class="qa-q" onclick="toggleQA('qnet14')">14. What is the purpose of the Host header in HTTP? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>The Host header is mandatory in HTTP/1.1. It tells the server which virtual host (domain) the request is for. One server (one IP) can host multiple websites — NGINX uses the Host header to route to the correct site. Example: IP 52.66.1.1 hosts both swiggy.com and swiggy-business.com. When NGINX receives a request, it checks Host: swiggy.com and routes to Swiggy's frontend, or Host: swiggy-business.com and routes to the business portal. Without the Host header, the server wouldn't know which site to serve. This is called "virtual hosting" and is fundamental to how shared hosting works. NGINX's server_name directive matches against this header.</div></div>
+
+    <div class="qa" id="qnet15"><div class="qa-q" onclick="toggleQA('qnet15')">15. What is a CDN and how does it work? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>CDN (Content Delivery Network): a geographically distributed network of servers (edge nodes) that cache and serve static content (images, CSS, JS) from locations close to users. How it works: User in Mumbai requests swiggy.com/logo.png. Instead of going to Swiggy's origin server (maybe in Bangalore), the request goes to a CDN edge node in Mumbai. If cached: served immediately (~5ms latency). If not cached (cache miss): edge node fetches from origin, caches it, serves it. Next request from Mumbai: cache hit. Benefits: reduced latency (user gets content from nearby server), reduced origin load (origin only serves cache misses), DDoS protection (attack traffic absorbed by CDN), global availability. Cloudflare, AWS CloudFront, Fastly are major CDNs. Static assets should always go through a CDN in production.</div></div>
+
+    <div class="qa" id="qnet16"><div class="qa-q" onclick="toggleQA('qnet16')">16. What is the difference between WebSocket and Server-Sent Events (SSE)? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>SSE (Server-Sent Events): one-directional push from server to client over a persistent HTTP connection. Client can't send messages through the SSE connection. Browser has built-in EventSource API. Auto-reconnects. Works over regular HTTP — no protocol upgrade needed. Use for: live score updates, stock tickers, notifications feed. WebSocket: bidirectional full-duplex. Client can also send messages to server. More complex. Requires protocol upgrade (ws:// or wss://). Use for: chat, collaborative editing, gaming — anything requiring two-way real-time communication. If you only need server-push, SSE is simpler and sufficient. If you need bidirectional communication (like collaborative document editing where user's edits must go to the server), WebSocket is required.</div></div>
+
+    <div class="qa" id="qnet17"><div class="qa-q" onclick="toggleQA('qnet17')">17. What is a TLS certificate? What does the browser verify? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>A TLS (X.509) certificate is a digital document that binds a public key to a domain name. Issued by a Certificate Authority (CA) — the CA's signature on the certificate proves the CA vouches for this domain owning this public key. Browser verification: (1) Is the certificate issued for THIS domain? (CN or SAN field must match the hostname). (2) Is it signed by a CA I trust? (Browser has a built-in list of ~150 root CAs). (3) Is it within its validity period? (Not before, Not after dates). (4) Is it revoked? (OCSP or CRL check). If all pass: padlock icon, secure connection. If any fail: browser shows warning. Let's Encrypt issues free certificates valid for 90 days, auto-renewable via certbot. Used in your EC2 deployment.</div></div>
+
+    <div class="qa" id="qnet18"><div class="qa-q" onclick="toggleQA('qnet18')">18. What is long polling? How does it compare to WebSocket? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Long polling: client sends a request, server holds it open (doesn't respond immediately) until new data is available or a timeout occurs. When data arrives, server responds, client immediately sends another request. Simulates push using regular HTTP. Advantages: works everywhere (no WebSocket required, works through all proxies). Disadvantages: HTTP overhead for each "push" (headers retransmitted), connection management overhead, latency (new connection setup after each response). WebSocket: persistent connection, minimal frame overhead, true bidirectional. Long polling was the fallback strategy before WebSocket was widely supported — Socket.io still falls back to long polling if WebSocket is blocked. For new applications with modern browser support, use WebSocket (or SSE for one-way push).</div></div>
+
+    <div class="qa" id="qnet19"><div class="qa-q" onclick="toggleQA('qnet19')">19. What is the difference between http:// and https:// in terms of ports? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>HTTP uses port 80 by default. HTTPS uses port 443 by default. These are convention — you can run HTTP on any port. When you see https://swiggy.com (no port specified), the browser connects to port 443. When you see http://localhost:3000, it explicitly specifies port 3000 (non-default). In your projects: Node.js likely runs on port 3000 or 8080, NGINX on port 80/443. NGINX proxies external HTTPS traffic (443) to internal Node HTTP (3000) — this is why you run Node without HTTPS and let NGINX handle TLS termination. WebSocket equivalent: ws:// uses port 80, wss:// uses port 443 (WebSocket over TLS).</div></div>
+
+    <div class="qa" id="qnet20"><div class="qa-q" onclick="toggleQA('qnet20')">20. How do cookies work? What is an HttpOnly cookie? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Cookies are small key-value pairs stored by the browser and automatically sent on every request to the matching domain+path. Server sets them via Set-Cookie response header: <code>Set-Cookie: session=abc123; HttpOnly; Secure; SameSite=Strict; Max-Age=86400</code>. Browser stores and includes them in all subsequent requests via the Cookie header. <strong>HttpOnly</strong>: cookie cannot be accessed by JavaScript (document.cookie returns nothing). This is critical for session tokens — prevents XSS attacks from stealing the cookie even if attacker can execute JS on your page. <strong>Secure</strong>: cookie only sent over HTTPS. <strong>SameSite=Strict</strong>: cookie only sent on same-site requests — prevents CSRF. In your projects: JWT refresh tokens should be HttpOnly, Secure cookies. Access tokens stored in memory (not localStorage — vulnerable to XSS) or as HttpOnly cookies.</div></div>
+  </div>
+
+  <div class="rev">
+    <h4>Networks Complete — Phase 0 Networks done when you can...</h4>
+    <ul>
+      <li>Walk through every step of URL → response without notes (DNS, TCP, TLS, HTTP, server, render)</li>
+      <li>Explain what CORS is, why it exists, and configure it correctly in Express — including preflight</li>
+      <li>Explain the TCP handshake and why it's three steps, not two</li>
+      <li>Distinguish 401 vs 403, 301 vs 302, GET vs POST vs PUT vs PATCH without hesitating</li>
+      <li>Explain what WebSocket provides that HTTP doesn't, and connect it to your CollabDocs project</li>
+      <li>Answer all 20 questions above without looking for more than 5 seconds each</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+function toggleQA(id){document.getElementById(id).classList.toggle('open');}
+document.querySelectorAll('.nav-pill').forEach(p=>{
+  p.addEventListener('click',function(e){
+    e.preventDefault();
+    const t=document.querySelector(this.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+window.addEventListener('scroll',()=>{
+  const cs=document.querySelectorAll('.concept[id]');
+  const ps=document.querySelectorAll('.nav-pill');
+  let a='';
+  cs.forEach(c=>{if(c.getBoundingClientRect().top<100)a=c.id;});
+  ps.forEach(p=>{p.classList.toggle('active',p.getAttribute('href')==='#'+a);});
+});
+</script>
+</body>
+</html>

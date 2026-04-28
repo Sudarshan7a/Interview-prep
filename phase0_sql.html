@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 0 · SQL — Complete Teaching Guide</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400&family=Syne:wght@600;700;800&family=Inter:wght@400;500&display=swap');
+:root{
+  --bg:#f7f5f0;--ink:#1e1a10;--ink2:#4a4430;--ink3:#8a8060;
+  --paper:#fff;--rule:#e4dfc8;--rule2:#c8c0a0;
+  --mono:'IBM Plex Mono',monospace;--head:'Syne',sans-serif;--body:'Inter',sans-serif;
+  --sql:#b8860b;--sql-l:#fffbea;--sql-b:#e0c860;
+  --warn-bg:#fff8e8;--warn-b:#f0c840;--warn-t:#302000;
+  --good-bg:#efffea;--good-b:#60c850;--good-t:#102800;
+  --key-bg:#f0eaff;--key-b:#c0a0f0;--key-t:#200040;
+  --int-bg:#fffbea;--int-b:#d0b840;--int-t:#302000;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:14px;line-height:1.75;max-width:880px;margin:0 auto;}
+
+.top-nav{background:var(--ink);color:#fff;padding:12px 32px;display:flex;align-items:center;justify-content:space-between;gap:16px;position:sticky;top:0;z-index:100;flex-wrap:wrap;}
+.nav-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:rgba(255,255,255,0.5);white-space:nowrap;}
+.nav-pills{display:flex;gap:5px;flex-wrap:wrap;}
+.nav-pill{font-family:var(--mono);font-size:9px;padding:3px 9px;border-radius:99px;border:1px solid rgba(255,255,255,0.2);color:rgba(255,255,255,0.5);cursor:pointer;text-decoration:none;transition:all 0.15s;}
+.nav-pill:hover,.nav-pill.active{border-color:rgba(255,255,255,0.7);color:#fff;}
+
+.hero{padding:52px 40px 40px;border-bottom:2px solid var(--ink);}
+.hero-eyebrow{font-family:var(--mono);font-size:10px;letter-spacing:0.14em;text-transform:uppercase;color:var(--sql);margin-bottom:12px;}
+.hero h1{font-family:var(--head);font-size:clamp(28px,5vw,52px);font-weight:800;line-height:1.05;letter-spacing:-0.02em;margin-bottom:14px;}
+.hero h1 em{font-style:normal;color:var(--sql);}
+.hero-desc{font-size:14px;color:var(--ink2);max-width:540px;line-height:1.7;}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:20px;}
+.meta-chip{font-family:var(--mono);font-size:10px;padding:4px 12px;border-radius:6px;border:1px solid var(--rule2);color:var(--ink2);}
+.meta-chip.hi{border-color:var(--sql);color:var(--sql);font-weight:700;}
+
+.concept{padding:40px;border-bottom:1px solid var(--rule);}
+.concept-num{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);margin-bottom:8px;}
+.concept h2{font-family:var(--head);font-size:26px;font-weight:800;letter-spacing:-0.01em;margin-bottom:6px;}
+.concept-sub{font-size:13px;color:var(--ink2);margin-bottom:20px;line-height:1.6;}
+
+.explain{font-size:14px;color:var(--ink2);line-height:1.8;margin-bottom:14px;}
+.explain strong{color:var(--ink);}
+.explain code{font-family:var(--mono);font-size:12px;background:var(--rule);padding:1px 6px;border-radius:4px;color:var(--sql);}
+
+.step-marker{display:flex;align-items:center;gap:12px;margin:28px 0 14px;}
+.step-num{font-family:var(--mono);font-size:20px;font-weight:700;color:var(--rule2);}
+.step-line{flex:1;height:1px;background:var(--rule);}
+.step-text{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);}
+
+.analogy{background:var(--key-bg);border-left:3px solid #9060d0;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--key-t);line-height:1.6;}
+.analogy strong{font-weight:600;}
+.warn{background:var(--warn-bg);border-left:3px solid #c08000;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--warn-t);line-height:1.6;}
+.warn strong{font-weight:600;}
+.good-box{background:var(--good-bg);border-left:3px solid #30a030;border-radius:0 8px 8px 0;padding:14px 16px;margin:14px 0;font-size:13px;color:var(--good-t);line-height:1.6;}
+.good-box strong{font-weight:600;}
+
+/* SQL code blocks — different styling to stand out */
+.sql-block{background:#1e1a10;border-radius:10px;margin:14px 0;overflow:hidden;}
+.sql-header{background:#2a2418;padding:8px 16px;font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:#a09060;border-bottom:1px solid #3a3020;}
+.sql-block pre{font-family:var(--mono);font-size:12px;line-height:1.8;padding:16px;color:#e0d8b0;overflow-x:auto;white-space:pre;}
+/* SQL syntax colors */
+.sk{color:#f0c060;font-weight:500;}  /* SQL keywords */
+.sf{color:#80e0a0;}                   /* functions */
+.sc{color:#d0d0d0;}                   /* comments */
+.ss{color:#f09060;}                   /* strings */
+.sn{color:#80c8ff;}                   /* numbers */
+.sa{color:#e090e0;}                   /* aliases */
+.sd{color:#808080;font-style:italic;} /* comments */
+
+/* Result table */
+.result-table{width:100%;border-collapse:collapse;font-size:12px;margin:8px 0 14px;background:var(--paper);}
+.result-table th{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:0.08em;color:var(--ink3);text-align:left;padding:7px 10px;border-bottom:2px solid var(--rule2);background:var(--sql-l);}
+.result-table td{padding:7px 10px;border-bottom:1px solid var(--rule);color:var(--ink2);font-family:var(--mono);font-size:11px;}
+.result-table tr:hover td{background:var(--sql-l);}
+.null-val{color:var(--ink3);font-style:italic;}
+
+.cmp{width:100%;border-collapse:collapse;font-size:13px;margin:14px 0;}
+.cmp th{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--ink3);text-align:left;padding:8px 12px;border-bottom:2px solid var(--rule2);background:var(--bg);}
+.cmp td{padding:9px 12px;border-bottom:1px solid var(--rule);color:var(--ink2);vertical-align:top;line-height:1.5;}
+.cmp tr:hover td{background:var(--bg);}
+.cmp td:first-child{color:var(--ink);font-weight:500;}
+.cmp td code{font-family:var(--mono);font-size:11px;background:var(--rule);padding:1px 5px;border-radius:3px;}
+
+.interview-section{background:var(--int-bg);border:1px solid var(--int-b);border-radius:12px;padding:20px;margin:24px 0;}
+.int-label{font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--sql);margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.int-label::after{content:'';flex:1;height:1px;background:var(--int-b);}
+.qa{margin-bottom:10px;background:#fff;border:1px solid var(--int-b);border-radius:8px;overflow:hidden;}
+.qa:last-child{margin-bottom:0;}
+.qa-q{padding:12px 14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:10px;}
+.qa-q:hover{background:var(--int-bg);}
+.qa-arr{color:var(--ink3);font-size:10px;flex-shrink:0;margin-top:2px;transition:transform 0.2s;}
+.qa.open .qa-arr{transform:rotate(180deg);}
+.qa-a{display:none;padding:12px 14px;border-top:1px solid var(--int-b);font-size:13px;color:var(--ink2);line-height:1.75;background:var(--int-bg);}
+.qa.open .qa-a{display:block;}
+.qa-a strong{color:var(--ink);}
+.qa-a .label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--sql);display:block;margin-bottom:6px;}
+.qa-a .follow{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:#804000;display:block;margin-top:10px;margin-bottom:4px;}
+.qa-a code{font-family:var(--mono);font-size:11px;background:rgba(0,0,0,0.06);padding:1px 5px;border-radius:3px;}
+
+.rev{background:var(--ink);color:#fff;border-radius:12px;padding:22px;margin:24px 0;}
+.rev h4{font-family:var(--head);font-size:15px;margin-bottom:12px;color:#fff;border-bottom:1px solid rgba(255,255,255,0.15);padding-bottom:8px;}
+.rev ul{list-style:none;}
+.rev ul li{font-size:12px;color:rgba(255,255,255,0.75);padding:4px 0 4px 16px;position:relative;line-height:1.5;}
+.rev ul li::before{content:'✓';position:absolute;left:0;color:rgba(255,255,255,0.4);font-size:10px;margin-top:1px;}
+
+.progress-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 16px;}
+.must{background:#ffeee8;color:#8a2000;border:1px solid #f0c0a0;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:99px;}
+.high{background:#e8f0ff;color:#001880;border:1px solid #a0b8f0;font-family:var(--mono);font-size:10px;padding:3px 10px;border-radius:99px;}
+
+/* join diagram */
+.join-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:14px 0;}
+.join-card{background:var(--paper);border:1px solid var(--rule2);border-radius:8px;padding:14px;text-align:center;}
+.join-name{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--sql);margin-bottom:6px;}
+.join-venn{font-size:24px;margin:6px 0;}
+.join-desc{font-size:11px;color:var(--ink2);line-height:1.5;}
+
+/* execution order */
+.exec-list{list-style:none;counter-reset:exec;}
+.exec-item{counter-increment:exec;display:flex;gap:14px;align-items:flex-start;padding:10px 14px;background:var(--paper);border:1px solid var(--rule);border-radius:8px;margin-bottom:6px;}
+.exec-num{font-family:var(--mono);font-size:16px;font-weight:700;color:var(--sql-b);flex-shrink:0;min-width:24px;}
+.exec-keyword{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--sql);margin-bottom:2px;}
+.exec-desc{font-size:12px;color:var(--ink2);line-height:1.4;}
+
+@media(max-width:640px){.concept,.hero{padding:24px 20px;}.top-nav{padding:10px 16px;}}
+</style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <span class="nav-label">Phase 0 · SQL</span>
+  <div class="nav-pills">
+    <a class="nav-pill" href="#basics">SELECT basics</a>
+    <a class="nav-pill" href="#joins">JOINs</a>
+    <a class="nav-pill" href="#groupby">GROUP BY</a>
+    <a class="nav-pill" href="#subqueries">Subqueries</a>
+    <a class="nav-pill" href="#window">Window Fns</a>
+    <a class="nav-pill" href="#indexes">Indexes</a>
+    <a class="nav-pill" href="#transactions">Transactions</a>
+    <a class="nav-pill" href="#interview">All Q&amp;A</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">Phase 0 · Subject 6 of 6 · Complete Teaching Guide</div>
+  <h1>SQL — Structured<br><em>Query Language</em></h1>
+  <p class="hero-desc">Not just syntax — the mental model behind SQL. Execution order, JOIN logic, window functions, subqueries, transactions. Everything that separates engineers who can query from engineers who understand why queries work.</p>
+  <div class="hero-meta">
+    <span class="meta-chip hi">4 days</span>
+    <span class="meta-chip">PostgreSQL syntax throughout</span>
+    <span class="meta-chip">Swiggy/PhonePe realistic examples</span>
+    <span class="meta-chip">All interview Q&amp;A included</span>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 1: SELECT BASICS + EXECUTION ORDER ══ -->
+<div class="concept" id="basics">
+  <div class="concept-num">Concept 01 of 07</div>
+  <h2>SELECT Basics + SQL Execution Order</h2>
+  <div class="concept-sub">SQL doesn't execute in the order you write it. This single insight explains most SQL confusion — why you can't use a SELECT alias in WHERE, why you can use it in ORDER BY, why HAVING exists.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Execution order is asked at product company interviews</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">The schema we'll use throughout this guide</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">Schema — Swiggy-like food delivery system</div>
+    <pre>
+<span class="sd">-- Users placing orders</span>
+<span class="sk">CREATE TABLE</span> users (
+    id         <span class="sk">SERIAL PRIMARY KEY</span>,
+    name       <span class="sk">VARCHAR</span>(<span class="sn">100</span>) <span class="sk">NOT NULL</span>,
+    city       <span class="sk">VARCHAR</span>(<span class="sn">50</span>),
+    email      <span class="sk">VARCHAR</span>(<span class="sn">255</span>) <span class="sk">UNIQUE NOT NULL</span>,
+    created_at <span class="sk">TIMESTAMP DEFAULT NOW</span>()
+);
+
+<span class="sd">-- Restaurants available on platform</span>
+<span class="sk">CREATE TABLE</span> restaurants (
+    id          <span class="sk">SERIAL PRIMARY KEY</span>,
+    name        <span class="sk">VARCHAR</span>(<span class="sn">200</span>) <span class="sk">NOT NULL</span>,
+    city        <span class="sk">VARCHAR</span>(<span class="sn">50</span>),
+    cuisine     <span class="sk">VARCHAR</span>(<span class="sn">50</span>),
+    rating      <span class="sk">DECIMAL</span>(<span class="sn">3</span>,<span class="sn">1</span>),
+    is_active   <span class="sk">BOOLEAN DEFAULT TRUE</span>
+);
+
+<span class="sd">-- Customer orders</span>
+<span class="sk">CREATE TABLE</span> orders (
+    id            <span class="sk">SERIAL PRIMARY KEY</span>,
+    user_id       <span class="sk">INT REFERENCES</span> users(id),
+    restaurant_id <span class="sk">INT REFERENCES</span> restaurants(id),
+    amount        <span class="sk">DECIMAL</span>(<span class="sn">10</span>,<span class="sn">2</span>) <span class="sk">NOT NULL</span>,
+    status        <span class="sk">VARCHAR</span>(<span class="sn">20</span>) <span class="sk">CHECK</span>(status <span class="sk">IN</span> (<span class="ss">'pending'</span>,<span class="ss">'delivered'</span>,<span class="ss">'cancelled'</span>)),
+    placed_at     <span class="sk">TIMESTAMP DEFAULT NOW</span>()
+);
+
+<span class="sd">-- Items in each order</span>
+<span class="sk">CREATE TABLE</span> order_items (
+    id            <span class="sk">SERIAL PRIMARY KEY</span>,
+    order_id      <span class="sk">INT REFERENCES</span> orders(id),
+    item_name     <span class="sk">VARCHAR</span>(<span class="sn">200</span>),
+    quantity      <span class="sk">INT NOT NULL</span>,
+    price         <span class="sk">DECIMAL</span>(<span class="sn">8</span>,<span class="sn">2</span>) <span class="sk">NOT NULL</span>
+);</pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">SQL Execution Order — the most important concept</span></div>
+
+  <p class="explain">
+    You write SQL in this order: SELECT → FROM → WHERE → GROUP BY → HAVING → ORDER BY → LIMIT. But SQL executes it in a completely different order. This is why many SQL errors happen.
+  </p>
+
+  <ul class="exec-list">
+    <li class="exec-item">
+      <span class="exec-num">1</span>
+      <div><div class="exec-keyword">FROM + JOIN</div><div class="exec-desc">First: identify the source tables. Build the combined row set by joining tables together.</div></div>
+    </li>
+    <li class="exec-item">
+      <span class="exec-num">2</span>
+      <div><div class="exec-keyword">WHERE</div><div class="exec-desc">Filter rows BEFORE grouping. Cannot use SELECT aliases here (SELECT hasn't run yet!) or aggregate functions (no grouping yet).</div></div>
+    </li>
+    <li class="exec-item">
+      <span class="exec-num">3</span>
+      <div><div class="exec-keyword">GROUP BY</div><div class="exec-desc">Collapse rows into groups. Reduces a set of rows to one row per group.</div></div>
+    </li>
+    <li class="exec-item">
+      <span class="exec-num">4</span>
+      <div><div class="exec-keyword">HAVING</div><div class="exec-desc">Filter GROUPS after aggregation. CAN use aggregate functions (COUNT, SUM, AVG). This is why HAVING exists — WHERE can't filter on aggregates.</div></div>
+    </li>
+    <li class="exec-item">
+      <span class="exec-num">5</span>
+      <div><div class="exec-keyword">SELECT</div><div class="exec-desc">Compute the output columns. Aliases defined here. This is step 5 — so aliases aren't available in WHERE (step 2) or GROUP BY (step 3).</div></div>
+    </li>
+    <li class="exec-item">
+      <span class="exec-num">6</span>
+      <div><div class="exec-keyword">ORDER BY</div><div class="exec-desc">Sort the result. CAN use SELECT aliases (SELECT already ran in step 5). PostgreSQL allows this; standard SQL technically doesn't.</div></div>
+    </li>
+    <li class="exec-item">
+      <span class="exec-num">7</span>
+      <div><div class="exec-keyword">LIMIT / OFFSET</div><div class="exec-desc">Restrict the number of rows returned. Always last — first sort, then limit.</div></div>
+    </li>
+  </ul>
+
+  <div class="warn">
+    <strong>Why you can't use a SELECT alias in WHERE:</strong> SELECT runs at step 5, WHERE at step 2. The alias doesn't exist when WHERE executes. This catches many beginners. Fix: use a subquery or CTE, or repeat the expression in WHERE. PostgreSQL sometimes allows it, but it's not guaranteed behavior.
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Core SELECT — filtering, sorting, limiting</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">SELECT — the building blocks</div>
+    <pre>
+<span class="sd">-- Basic SELECT with aliases</span>
+<span class="sk">SELECT</span>
+    id,
+    name,
+    <span class="sf">UPPER</span>(city) <span class="sk">AS</span> <span class="sa">city_upper</span>,
+    <span class="sf">ROUND</span>(rating, <span class="sn">1</span>) <span class="sk">AS</span> <span class="sa">avg_rating</span>
+<span class="sk">FROM</span> restaurants
+<span class="sk">WHERE</span> city = <span class="ss">'Bangalore'</span>
+  <span class="sk">AND</span> rating >= <span class="sn">4.0</span>
+  <span class="sk">AND</span> cuisine <span class="sk">IN</span> (<span class="ss">'Indian'</span>, <span class="ss">'Italian'</span>, <span class="ss">'Chinese'</span>)
+  <span class="sk">AND</span> is_active = <span class="sk">TRUE</span>
+<span class="sk">ORDER BY</span> rating <span class="sk">DESC</span>, name <span class="sk">ASC</span>  <span class="sd">-- sort by rating first, then name</span>
+<span class="sk">LIMIT</span> <span class="sn">10</span> <span class="sk">OFFSET</span> <span class="sn">20</span>;              <span class="sd">-- page 3 (0-based, 10 per page)</span>
+
+<span class="sd">-- DISTINCT: remove duplicate rows</span>
+<span class="sk">SELECT DISTINCT</span> city <span class="sk">FROM</span> restaurants;
+
+<span class="sd">-- LIKE: pattern matching</span>
+<span class="sd">-- '%text%' = contains. 'text%' = starts with. '%text' = ends with</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> restaurants <span class="sk">WHERE</span> name <span class="sk">LIKE</span> <span class="ss">'%Biryani%'</span>;
+
+<span class="sd">-- BETWEEN: inclusive range</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> orders
+<span class="sk">WHERE</span> amount <span class="sk">BETWEEN</span> <span class="sn">100</span> <span class="sk">AND</span> <span class="sn">500</span>
+  <span class="sk">AND</span> placed_at >= <span class="ss">'2024-01-01'</span>;
+
+<span class="sd">-- IS NULL / IS NOT NULL (never use = NULL — it doesn't work)</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> orders <span class="sk">WHERE</span> status <span class="sk">IS NULL</span>;
+<span class="sd">-- NULL = NULL → returns NULL (falsy), not TRUE. Always use IS NULL.</span>
+
+<span class="sd">-- CASE WHEN: conditional logic in SELECT</span>
+<span class="sk">SELECT</span>
+    id,
+    amount,
+    <span class="sk">CASE</span>
+        <span class="sk">WHEN</span> amount < <span class="sn">200</span>  <span class="sk">THEN</span> <span class="ss">'small'</span>
+        <span class="sk">WHEN</span> amount < <span class="sn">1000</span> <span class="sk">THEN</span> <span class="ss">'medium'</span>
+        <span class="sk">ELSE</span>                      <span class="ss">'large'</span>
+    <span class="sk">END</span> <span class="sk">AS</span> <span class="sa">order_size</span>
+<span class="sk">FROM</span> orders;</pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">Aggregate functions</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">Aggregate functions — operate on groups of rows</div>
+    <pre>
+<span class="sd">-- COUNT, SUM, AVG, MIN, MAX</span>
+<span class="sk">SELECT</span>
+    <span class="sf">COUNT</span>(*) <span class="sk">AS</span> <span class="sa">total_orders</span>,          <span class="sd">-- count all rows</span>
+    <span class="sf">COUNT</span>(status) <span class="sk">AS</span> <span class="sa">non_null_status</span>,  <span class="sd">-- count non-NULL values only</span>
+    <span class="sf">COUNT</span>(<span class="sk">DISTINCT</span> user_id) <span class="sk">AS</span> <span class="sa">unique_users</span>,
+    <span class="sf">SUM</span>(amount) <span class="sk">AS</span> <span class="sa">total_revenue</span>,
+    <span class="sf">AVG</span>(amount) <span class="sk">AS</span> <span class="sa">avg_order_value</span>,
+    <span class="sf">MIN</span>(amount) <span class="sk">AS</span> <span class="sa">min_order</span>,
+    <span class="sf">MAX</span>(amount) <span class="sk">AS</span> <span class="sa">max_order</span>
+<span class="sk">FROM</span> orders
+<span class="sk">WHERE</span> status = <span class="ss">'delivered'</span>;  <span class="sd">-- filter BEFORE aggregation</span>
+
+<span class="sd">-- Result:</span>
+<span class="sd">-- total_orders | non_null_status | unique_users | total_revenue | ...</span>
+<span class="sd">-- 5234         | 5234            | 892          | 2847650.00    | ...</span></pre>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — SELECT basics</div>
+    <div class="qa" id="q-s1">
+      <div class="qa-q" onclick="toggleQA('q-s1')">In what order does SQL execute a query? Why does this matter? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>SQL executes in this order: FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. This matters because: (1) You can't use a SELECT alias in WHERE (SELECT runs later). (2) You can't use aggregate functions in WHERE (no grouping yet). (3) HAVING exists precisely because WHERE can't filter on aggregated values. (4) You CAN use SELECT aliases in ORDER BY because SELECT ran first. Understanding this order explains most SQL errors and helps you write correct queries faster. Example: SELECT city AS c FROM restaurants WHERE c = 'Bangalore' → ERROR because WHERE runs before SELECT creates the alias 'c'. Fix: WHERE city = 'Bangalore'.</div>
+    </div>
+    <div class="qa" id="q-s2">
+      <div class="qa-q" onclick="toggleQA('q-s2')">What is the difference between WHERE and HAVING? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>WHERE filters individual rows BEFORE grouping. It cannot use aggregate functions (COUNT, SUM, AVG) because rows haven't been grouped yet. HAVING filters groups AFTER the GROUP BY aggregation. It CAN use aggregate functions because groups already exist. Example: SELECT restaurant_id, COUNT(*) as order_count FROM orders WHERE status = 'delivered' GROUP BY restaurant_id HAVING COUNT(*) > 10 ORDER BY order_count DESC. WHERE filters out non-delivered orders first. HAVING then filters to only restaurants with more than 10 delivered orders. If you try WHERE COUNT(*) > 10 → SQL error: aggregate functions not allowed in WHERE clause. Performance note: WHERE is more efficient — it reduces rows before grouping, so fewer rows need to be aggregated.</div>
+    </div>
+    <div class="qa" id="q-s3">
+      <div class="qa-q" onclick="toggleQA('q-s3')">Why doesn't `= NULL` work in SQL? What should you use instead? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>NULL represents an unknown value in SQL. Comparing anything to NULL using = returns NULL (unknown), not TRUE or FALSE. NULL = NULL → NULL. NULL = 5 → NULL. In a WHERE clause, NULL is treated as falsy — the row is filtered out. So WHERE column = NULL never returns any rows. Always use IS NULL or IS NOT NULL. The same applies to != NULL — use IS NOT NULL instead. This is called three-valued logic in SQL: TRUE, FALSE, and UNKNOWN (NULL). It's one of the most common SQL bugs. Even COUNT behaves specially: COUNT(*) counts all rows including NULLs, COUNT(column) only counts non-NULL values in that column.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>SELECT basics — 60-second revision</h4>
+    <ul>
+      <li>Execution order: FROM → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT.</li>
+      <li>Cannot use SELECT aliases in WHERE or GROUP BY (SELECT runs later). Can use in ORDER BY.</li>
+      <li>WHERE: filters rows before grouping. No aggregates. HAVING: filters groups after aggregation. Aggregates OK.</li>
+      <li>NULL: = NULL doesn't work. Use IS NULL and IS NOT NULL. COUNT(*) includes NULLs, COUNT(col) excludes them.</li>
+      <li>LIKE: '%text%' contains, 'text%' starts with, '%text' ends with. Case-sensitive in PostgreSQL.</li>
+      <li>CASE WHEN ... THEN ... ELSE ... END: conditional expression in SELECT (like ternary operator).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 2: JOINS ══ -->
+<div class="concept" id="joins">
+  <div class="concept-num">Concept 02 of 07</div>
+  <h2>JOINs — Combining Tables</h2>
+  <div class="concept-sub">INNER, LEFT, RIGHT, FULL OUTER — know what each returns when rows don't match. Self joins, cross joins. Write a JOIN from scratch in an interview without thinking.</div>
+  <div class="progress-row"><span class="must">must know</span><span>JOINs appear in every SQL interview — write them cold</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">The four JOIN types — visually</span></div>
+
+  <div class="join-grid">
+    <div class="join-card">
+      <div class="join-name">INNER JOIN</div>
+      <div class="join-venn">🔴⭕🔵 → ⭕</div>
+      <div class="join-desc">Only rows where the condition matches in BOTH tables. Unmatched rows from either table are dropped.</div>
+    </div>
+    <div class="join-card">
+      <div class="join-name">LEFT JOIN</div>
+      <div class="join-venn">🔴⭕🔵 → 🔴⭕</div>
+      <div class="join-desc">All rows from LEFT table + matching rows from RIGHT. Unmatched right-side columns become NULL.</div>
+    </div>
+    <div class="join-card">
+      <div class="join-name">RIGHT JOIN</div>
+      <div class="join-venn">🔴⭕🔵 → ⭕🔵</div>
+      <div class="join-desc">All rows from RIGHT table + matching rows from LEFT. Unmatched left-side columns become NULL. Rarely used — flip tables and use LEFT JOIN instead.</div>
+    </div>
+    <div class="join-card">
+      <div class="join-name">FULL OUTER JOIN</div>
+      <div class="join-venn">🔴⭕🔵 → 🔴⭕🔵</div>
+      <div class="join-desc">All rows from BOTH tables. Unmatched columns from either side become NULL. Union of LEFT and RIGHT JOIN.</div>
+    </div>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">JOIN queries — each type with real examples</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">INNER JOIN — orders with their user and restaurant details</div>
+    <pre>
+<span class="sk">SELECT</span>
+    o.id          <span class="sk">AS</span> <span class="sa">order_id</span>,
+    u.name        <span class="sk">AS</span> <span class="sa">customer</span>,
+    r.name        <span class="sk">AS</span> <span class="sa">restaurant</span>,
+    o.amount,
+    o.status,
+    o.placed_at
+<span class="sk">FROM</span> orders <span class="sa">o</span>
+<span class="sk">INNER JOIN</span> users <span class="sa">u</span>        <span class="sk">ON</span> o.user_id = u.id
+<span class="sk">INNER JOIN</span> restaurants <span class="sa">r</span> <span class="sk">ON</span> o.restaurant_id = r.id
+<span class="sk">WHERE</span> o.status = <span class="ss">'delivered'</span>
+<span class="sk">ORDER BY</span> o.placed_at <span class="sk">DESC</span>
+<span class="sk">LIMIT</span> <span class="sn">20</span>;
+<span class="sd">-- Only returns orders where BOTH user AND restaurant exist</span>
+<span class="sd">-- Orders with NULL user_id or restaurant_id are excluded</span></pre>
+  </div>
+
+  <div class="sql-block">
+    <div class="sql-header">LEFT JOIN — all restaurants, including those with no orders</div>
+    <pre>
+<span class="sd">-- "Show me all restaurants and how many orders they've received"</span>
+<span class="sd">-- Including restaurants that have ZERO orders (new restaurants)</span>
+<span class="sk">SELECT</span>
+    r.id,
+    r.name,
+    r.city,
+    <span class="sf">COUNT</span>(o.id) <span class="sk">AS</span> <span class="sa">order_count</span>,
+    <span class="sf">COALESCE</span>(<span class="sf">SUM</span>(o.amount), <span class="sn">0</span>) <span class="sk">AS</span> <span class="sa">total_revenue</span>
+<span class="sk">FROM</span> restaurants <span class="sa">r</span>
+<span class="sk">LEFT JOIN</span> orders <span class="sa">o</span> <span class="sk">ON</span> r.id = o.restaurant_id
+                  <span class="sk">AND</span> o.status = <span class="ss">'delivered'</span>  <span class="sd">-- condition on the JOIN, not WHERE</span>
+<span class="sk">GROUP BY</span> r.id, r.name, r.city
+<span class="sk">ORDER BY</span> total_revenue <span class="sk">DESC</span>;
+
+<span class="sd">-- IMPORTANT: if you put "AND o.status = 'delivered'" in WHERE instead of ON,</span>
+<span class="sd">-- it converts the LEFT JOIN to an INNER JOIN for those rows!</span>
+<span class="sd">-- The WHERE clause filters AFTER joining — restaurants with no orders</span>
+<span class="sd">-- would have o.status = NULL which doesn't match 'delivered', filtering them out.</span>
+<span class="sd">-- Putting the condition on JOIN keeps all restaurants, filtering only which</span>
+<span class="sd">-- orders are matched (not which restaurants are included).</span></pre>
+  </div>
+
+  <div class="sql-block">
+    <div class="sql-header">FULL OUTER JOIN + SELF JOIN + CROSS JOIN</div>
+    <pre>
+<span class="sd">-- FULL OUTER JOIN: find users with no orders AND restaurants with no users</span>
+<span class="sk">SELECT</span>
+    u.name <span class="sk">AS</span> <span class="sa">user_name</span>,
+    r.name <span class="sk">AS</span> <span class="sa">restaurant_name</span>,
+    o.amount
+<span class="sk">FROM</span> users <span class="sa">u</span>
+<span class="sk">FULL OUTER JOIN</span> orders <span class="sa">o</span>       <span class="sk">ON</span> u.id = o.user_id
+<span class="sk">FULL OUTER JOIN</span> restaurants <span class="sa">r</span>  <span class="sk">ON</span> o.restaurant_id = r.id;
+<span class="sd">-- Rows with NULL on left: user exists but no orders</span>
+<span class="sd">-- Rows with NULL on right: restaurant exists but no orders</span>
+
+<span class="sd">-- SELF JOIN: compare rows within the same table</span>
+<span class="sd">-- "Find pairs of restaurants in the same city"</span>
+<span class="sk">SELECT</span>
+    <span class="sa">a</span>.name <span class="sk">AS</span> <span class="sa">restaurant_1</span>,
+    <span class="sa">b</span>.name <span class="sk">AS</span> <span class="sa">restaurant_2</span>,
+    <span class="sa">a</span>.city
+<span class="sk">FROM</span> restaurants <span class="sa">a</span>
+<span class="sk">INNER JOIN</span> restaurants <span class="sa">b</span>
+    <span class="sk">ON</span> <span class="sa">a</span>.city = <span class="sa">b</span>.city
+   <span class="sk">AND</span> <span class="sa">a</span>.id < <span class="sa">b</span>.id  <span class="sd">-- avoid duplicates (a,b) and (b,a) and (a,a)</span>
+<span class="sk">ORDER BY</span> <span class="sa">a</span>.city;
+
+<span class="sd">-- CROSS JOIN: every combination of rows (cartesian product)</span>
+<span class="sd">-- Use sparingly — can produce massive results</span>
+<span class="sk">SELECT</span> u.name, r.name <span class="sk">FROM</span> users <span class="sa">u</span> <span class="sk">CROSS JOIN</span> restaurants <span class="sa">r</span>;
+<span class="sd">-- 100 users × 50 restaurants = 5000 rows</span></pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">The classic JOIN interview question — employees with managers</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">Self JOIN — employees and their managers</div>
+    <pre>
+<span class="sd">-- employees table: id, name, manager_id (FK to same table)</span>
+<span class="sk">SELECT</span>
+    <span class="sa">emp</span>.name   <span class="sk">AS</span> <span class="sa">employee</span>,
+    <span class="sa">mgr</span>.name   <span class="sk">AS</span> <span class="sa">manager</span>
+<span class="sk">FROM</span> employees <span class="sa">emp</span>
+<span class="sk">LEFT JOIN</span> employees <span class="sa">mgr</span> <span class="sk">ON</span> <span class="sa">emp</span>.manager_id = <span class="sa">mgr</span>.id;
+<span class="sd">-- LEFT JOIN: includes CEO who has no manager (manager column = NULL)</span>
+<span class="sd">-- INNER JOIN would exclude the top-level employee with no manager</span></pre>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — JOINs</div>
+    <div class="qa" id="q-j1">
+      <div class="qa-q" onclick="toggleQA('q-j1')">What is the difference between INNER JOIN and LEFT JOIN? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>INNER JOIN returns only rows where the join condition matches in BOTH tables. If an order has no matching user (user deleted), that order is excluded. LEFT JOIN returns ALL rows from the LEFT table regardless of whether there's a match in the right table. Where there's no match, the right table's columns are NULL. Use LEFT JOIN when you want to include all records from one table even if no related records exist in the other — e.g., all restaurants including those with zero orders. INNER JOIN when you only care about records that have matches in both tables. Never use RIGHT JOIN — flip the tables and use LEFT JOIN instead (clearer to read). Example: LEFT JOIN vs WHERE clause gotcha — putting the filter condition in WHERE instead of ON converts a LEFT JOIN to effectively an INNER JOIN for filtered rows.</div>
+    </div>
+    <div class="qa" id="q-j2">
+      <div class="qa-q" onclick="toggleQA('q-j2')">Write a query to find all users who have never placed an order. <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer — multiple approaches</span>Approach 1 (LEFT JOIN + NULL check): SELECT u.id, u.name FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE o.id IS NULL. The LEFT JOIN includes all users. For users with no orders, o.id will be NULL. WHERE o.id IS NULL filters to only those users. Approach 2 (NOT EXISTS — often more readable): SELECT id, name FROM users u WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id). Approach 3 (NOT IN — careful with NULLs): SELECT id, name FROM users WHERE id NOT IN (SELECT user_id FROM orders WHERE user_id IS NOT NULL). NOT IN with NULLs in the subquery returns no results — always add the IS NOT NULL filter. LEFT JOIN + NULL check or NOT EXISTS are generally preferred in production.</div>
+    </div>
+    <div class="qa" id="q-j3">
+      <div class="qa-q" onclick="toggleQA('q-j3')">What is a self join? When would you use it? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>A self join joins a table to itself using two different aliases. Use when data within a table has a relationship to other rows in the same table. Classic cases: (1) Employee-manager hierarchy: employees table has manager_id referencing another row in the same table. JOIN employees emp ON employees mgr ON emp.manager_id = mgr.id — LEFT JOIN to include top-level employees who have no manager. (2) Finding duplicate records: JOIN table a ON a.email = b.email AND a.id != b.id. (3) Finding records that meet some comparative condition relative to other rows: restaurants with a higher rating than some reference restaurant. The key is using two different aliases for the same table so SQL can treat them as separate sources.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>JOINs — 60-second revision</h4>
+    <ul>
+      <li>INNER JOIN: only matching rows in both tables. Non-matching rows dropped.</li>
+      <li>LEFT JOIN: all rows from left table + matching right. Non-matching right → NULL. Most common.</li>
+      <li>RIGHT JOIN: all rows from right table + matching left. Rarely used — flip tables and use LEFT.</li>
+      <li>FULL OUTER JOIN: all rows from both tables. NULLs where no match on either side.</li>
+      <li>Self JOIN: join table to itself with two aliases. Use for hierarchical data (employee-manager).</li>
+      <li>LEFT JOIN + NULL check: find rows in left table with no match in right table (users with no orders).</li>
+      <li>Filter in ON vs WHERE: ON filters during join (LEFT JOIN still keeps all left rows). WHERE filters after (converts LEFT to INNER for filtered rows).</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 3: GROUP BY + AGGREGATES ══ -->
+<div class="concept" id="groupby">
+  <div class="concept-num">Concept 03 of 07</div>
+  <h2>GROUP BY + Aggregates</h2>
+  <div class="concept-sub">The GROUP BY rule every fresher gets wrong. Non-aggregate columns in SELECT must be in GROUP BY. HAVING filters groups. Multiple aggregate functions per query.</div>
+  <div class="progress-row"><span class="must">must know</span><span>GROUP BY errors are the most common SQL mistakes in interviews</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">The GROUP BY rule — non-negotiable</span></div>
+
+  <p class="explain">
+    The rule: <strong>every column in SELECT that is NOT an aggregate function MUST appear in GROUP BY</strong>. This is because GROUP BY collapses many rows into one — if you want to show a non-aggregated column, SQL needs to know which value to show (since all rows in a group might have different values for that column).
+  </p>
+
+  <div class="sql-block">
+    <div class="sql-header">GROUP BY + HAVING — correct patterns</div>
+    <pre>
+<span class="sd">-- Revenue and order count per restaurant per city</span>
+<span class="sd">-- All non-aggregate columns (restaurant_id, city, name) must be in GROUP BY</span>
+<span class="sk">SELECT</span>
+    r.id                      <span class="sk">AS</span> <span class="sa">restaurant_id</span>,   <span class="sd">-- in GROUP BY</span>
+    r.name                    <span class="sk">AS</span> <span class="sa">restaurant</span>,      <span class="sd">-- in GROUP BY</span>
+    r.city,                                         <span class="sd">-- in GROUP BY</span>
+    <span class="sf">COUNT</span>(o.id)               <span class="sk">AS</span> <span class="sa">total_orders</span>,    <span class="sd">-- aggregate ✓</span>
+    <span class="sf">SUM</span>(o.amount)             <span class="sk">AS</span> <span class="sa">total_revenue</span>,   <span class="sd">-- aggregate ✓</span>
+    <span class="sf">AVG</span>(o.amount)             <span class="sk">AS</span> <span class="sa">avg_order_value</span>, <span class="sd">-- aggregate ✓</span>
+    <span class="sf">COUNT</span>(<span class="sk">DISTINCT</span> o.user_id) <span class="sk">AS</span> <span class="sa">unique_customers</span>  <span class="sd">-- aggregate ✓</span>
+<span class="sk">FROM</span> restaurants <span class="sa">r</span>
+<span class="sk">LEFT JOIN</span> orders <span class="sa">o</span>
+    <span class="sk">ON</span> r.id = o.restaurant_id
+   <span class="sk">AND</span> o.status = <span class="ss">'delivered'</span>
+<span class="sk">WHERE</span> r.city = <span class="ss">'Bangalore'</span>           <span class="sd">-- filter BEFORE grouping</span>
+<span class="sk">GROUP BY</span> r.id, r.name, r.city        <span class="sd">-- all non-aggregates must be here</span>
+<span class="sk">HAVING</span> <span class="sf">COUNT</span>(o.id) > <span class="sn">50</span>              <span class="sd">-- filter AFTER grouping</span>
+<span class="sk">ORDER BY</span> total_revenue <span class="sk">DESC</span>;
+
+<span class="sd">-- Orders per user per month in 2024</span>
+<span class="sk">SELECT</span>
+    user_id,
+    <span class="sf">DATE_TRUNC</span>(<span class="ss">'month'</span>, placed_at) <span class="sk">AS</span> <span class="sa">month</span>,
+    <span class="sf">COUNT</span>(*) <span class="sk">AS</span> <span class="sa">orders_this_month</span>,
+    <span class="sf">SUM</span>(amount) <span class="sk">AS</span> <span class="sa">monthly_spend</span>
+<span class="sk">FROM</span> orders
+<span class="sk">WHERE</span> placed_at >= <span class="ss">'2024-01-01'</span>
+  <span class="sk">AND</span> placed_at < <span class="ss">'2025-01-01'</span>
+  <span class="sk">AND</span> status = <span class="ss">'delivered'</span>
+<span class="sk">GROUP BY</span> user_id, <span class="sf">DATE_TRUNC</span>(<span class="ss">'month'</span>, placed_at)
+<span class="sk">ORDER BY</span> month, monthly_spend <span class="sk">DESC</span>;</pre>
+  </div>
+
+  <div class="sql-block">
+    <div class="sql-header">GROUP BY with ROLLUP — subtotals and grand totals</div>
+    <pre>
+<span class="sd">-- Revenue by city, with a grand total row</span>
+<span class="sk">SELECT</span>
+    <span class="sf">COALESCE</span>(city, <span class="ss">'ALL CITIES'</span>) <span class="sk">AS</span> <span class="sa">city</span>,
+    <span class="sf">COUNT</span>(*) <span class="sk">AS</span> <span class="sa">order_count</span>,
+    <span class="sf">SUM</span>(amount) <span class="sk">AS</span> <span class="sa">total_revenue</span>
+<span class="sk">FROM</span> orders <span class="sa">o</span>
+<span class="sk">INNER JOIN</span> restaurants <span class="sa">r</span> <span class="sk">ON</span> o.restaurant_id = r.id
+<span class="sk">GROUP BY</span> <span class="sk">ROLLUP</span>(city);
+<span class="sd">-- Result includes: Bangalore row, Mumbai row, and a grand total row</span>
+<span class="sd">-- Grand total row has NULL for city (use COALESCE to show "ALL CITIES")</span></pre>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — GROUP BY</div>
+    <div class="qa" id="q-g1">
+      <div class="qa-q" onclick="toggleQA('q-g1')">Write a query to find the top 5 restaurants by revenue in 2024. <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>
+        <code>SELECT r.id, r.name, SUM(o.amount) AS total_revenue, COUNT(o.id) AS order_count FROM restaurants r INNER JOIN orders o ON r.id = o.restaurant_id WHERE o.status = 'delivered' AND o.placed_at >= '2024-01-01' AND o.placed_at &lt; '2025-01-01' GROUP BY r.id, r.name ORDER BY total_revenue DESC LIMIT 5</code>. Key points: INNER JOIN (only restaurants with orders), WHERE filters before grouping (delivered orders in 2024), GROUP BY on all non-aggregated columns (r.id, r.name), ORDER BY aggregate descending, LIMIT 5. Would mention adding an index on orders(placed_at, status) to optimize the WHERE filter if this is a frequently run report.
+      </div>
+    </div>
+    <div class="qa" id="q-g2">
+      <div class="qa-q" onclick="toggleQA('q-g2')">What happens if you put a non-aggregate column in SELECT that isn't in GROUP BY? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>In strict SQL (PostgreSQL, Oracle): you get an error. "Column must appear in the GROUP BY clause or be used in an aggregate function." MySQL in its default mode allows it and returns an arbitrary value from the group — which is a bug, not a feature. This is why you'll see GROUP BY r.id, r.name even though r.name is functionally determined by r.id (if you know the id, you know the name). The SQL standard requires all non-aggregated SELECT columns to be in GROUP BY. PostgreSQL follows this strictly. Good practice: always include all non-aggregated columns in GROUP BY, even if technically some are functionally dependent — it makes the query portable and intention clear.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>GROUP BY — 60-second revision</h4>
+    <ul>
+      <li>Rule: every non-aggregate SELECT column MUST be in GROUP BY. Aggregate functions (COUNT, SUM, AVG) don't need to be.</li>
+      <li>HAVING: filter groups after aggregation. WHERE: filter rows before. Only HAVING can use aggregate functions in the filter.</li>
+      <li>COUNT(*): all rows including NULLs. COUNT(col): non-NULL values only. COUNT(DISTINCT col): unique non-NULL values.</li>
+      <li>COALESCE(value, default): return first non-NULL value. Use to replace NULL with 0 for SUM of empty groups.</li>
+      <li>DATE_TRUNC('month', timestamp): truncate to month boundary — group by month easily.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 4: SUBQUERIES + CTEs ══ -->
+<div class="concept" id="subqueries">
+  <div class="concept-num">Concept 04 of 07</div>
+  <h2>Subqueries + CTEs</h2>
+  <div class="concept-sub">Subqueries embed one query inside another. CTEs (WITH clause) give subqueries a name and make complex queries readable. EXISTS vs IN — performance matters.</div>
+  <div class="progress-row"><span class="must">must know</span><span>CTEs are used in almost every real production query</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Subqueries — where they can appear</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">Subqueries — in WHERE, FROM, SELECT</div>
+    <pre>
+<span class="sd">-- ── Scalar subquery (returns one value) — in SELECT ─────────</span>
+<span class="sk">SELECT</span>
+    r.name,
+    r.rating,
+    (<span class="sk">SELECT</span> <span class="sf">AVG</span>(rating) <span class="sk">FROM</span> restaurants) <span class="sk">AS</span> <span class="sa">platform_avg</span>,
+    r.rating - (<span class="sk">SELECT</span> <span class="sf">AVG</span>(rating) <span class="sk">FROM</span> restaurants) <span class="sk">AS</span> <span class="sa">diff_from_avg</span>
+<span class="sk">FROM</span> restaurants <span class="sa">r</span>
+<span class="sk">ORDER BY</span> diff_from_avg <span class="sk">DESC</span>;
+<span class="sd">-- Runs the subquery once and uses the result in every row</span>
+
+<span class="sd">-- ── Subquery in WHERE ─────────────────────────────────────────</span>
+<span class="sd">-- "Users who spent more than the average order amount"</span>
+<span class="sk">SELECT DISTINCT</span> user_id
+<span class="sk">FROM</span> orders
+<span class="sk">WHERE</span> amount > (<span class="sk">SELECT</span> <span class="sf">AVG</span>(amount) <span class="sk">FROM</span> orders <span class="sk">WHERE</span> status = <span class="ss">'delivered'</span>)
+  <span class="sk">AND</span> status = <span class="ss">'delivered'</span>;
+
+<span class="sd">-- IN with subquery</span>
+<span class="sk">SELECT</span> name <span class="sk">FROM</span> users
+<span class="sk">WHERE</span> id <span class="sk">IN</span> (<span class="sk">SELECT DISTINCT</span> user_id <span class="sk">FROM</span> orders <span class="sk">WHERE</span> amount > <span class="sn">1000</span>);
+
+<span class="sd">-- ── Derived table (subquery in FROM) ─────────────────────────</span>
+<span class="sd">-- "Average monthly revenue per restaurant"</span>
+<span class="sk">SELECT</span>
+    restaurant_id,
+    <span class="sf">AVG</span>(monthly_revenue) <span class="sk">AS</span> <span class="sa">avg_monthly_revenue</span>
+<span class="sk">FROM</span> (
+    <span class="sk">SELECT</span>
+        restaurant_id,
+        <span class="sf">DATE_TRUNC</span>(<span class="ss">'month'</span>, placed_at) <span class="sk">AS</span> <span class="sa">month</span>,
+        <span class="sf">SUM</span>(amount) <span class="sk">AS</span> <span class="sa">monthly_revenue</span>
+    <span class="sk">FROM</span> orders
+    <span class="sk">WHERE</span> status = <span class="ss">'delivered'</span>
+    <span class="sk">GROUP BY</span> restaurant_id, <span class="sf">DATE_TRUNC</span>(<span class="ss">'month'</span>, placed_at)
+) <span class="sk">AS</span> <span class="sa">monthly_stats</span>  <span class="sd">-- derived tables must have an alias</span>
+<span class="sk">GROUP BY</span> restaurant_id
+<span class="sk">ORDER BY</span> avg_monthly_revenue <span class="sk">DESC</span>;</pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">CTEs — WITH clause for readable complex queries</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">CTEs (Common Table Expressions) — cleaner than nested subqueries</div>
+    <pre>
+<span class="sd">-- Same query as above but with a CTE — much more readable</span>
+<span class="sk">WITH</span> <span class="sa">monthly_revenue</span> <span class="sk">AS</span> (
+    <span class="sd">-- CTE 1: calculate monthly revenue per restaurant</span>
+    <span class="sk">SELECT</span>
+        restaurant_id,
+        <span class="sf">DATE_TRUNC</span>(<span class="ss">'month'</span>, placed_at) <span class="sk">AS</span> month,
+        <span class="sf">SUM</span>(amount) <span class="sk">AS</span> revenue
+    <span class="sk">FROM</span> orders
+    <span class="sk">WHERE</span> status = <span class="ss">'delivered'</span>
+    <span class="sk">GROUP BY</span> restaurant_id, <span class="sf">DATE_TRUNC</span>(<span class="ss">'month'</span>, placed_at)
+),
+<span class="sa">restaurant_avg</span> <span class="sk">AS</span> (
+    <span class="sd">-- CTE 2: average over months per restaurant</span>
+    <span class="sk">SELECT</span>
+        restaurant_id,
+        <span class="sf">AVG</span>(revenue) <span class="sk">AS</span> avg_monthly_revenue,
+        <span class="sf">MAX</span>(revenue) <span class="sk">AS</span> best_month_revenue
+    <span class="sk">FROM</span> <span class="sa">monthly_revenue</span>  <span class="sd">-- reference the previous CTE!</span>
+    <span class="sk">GROUP BY</span> restaurant_id
+)
+<span class="sd">-- Final SELECT uses the CTEs like tables</span>
+<span class="sk">SELECT</span>
+    r.name,
+    ra.avg_monthly_revenue,
+    ra.best_month_revenue
+<span class="sk">FROM</span> <span class="sa">restaurant_avg</span> <span class="sa">ra</span>
+<span class="sk">INNER JOIN</span> restaurants <span class="sa">r</span> <span class="sk">ON</span> ra.restaurant_id = r.id
+<span class="sk">ORDER BY</span> ra.avg_monthly_revenue <span class="sk">DESC</span>
+<span class="sk">LIMIT</span> <span class="sn">10</span>;
+
+<span class="sd">-- Recursive CTE: walk a hierarchy</span>
+<span class="sk">WITH RECURSIVE</span> <span class="sa">org_tree</span> <span class="sk">AS</span> (
+    <span class="sd">-- Anchor: start with the CEO (no manager)</span>
+    <span class="sk">SELECT</span> id, name, manager_id, <span class="sn">1</span> <span class="sk">AS</span> <span class="sa">level</span>
+    <span class="sk">FROM</span> employees
+    <span class="sk">WHERE</span> manager_id <span class="sk">IS NULL</span>
+
+    <span class="sk">UNION ALL</span>
+
+    <span class="sd">-- Recursive: join back to find each person's reports</span>
+    <span class="sk">SELECT</span> e.id, e.name, e.manager_id, ot.level + <span class="sn">1</span>
+    <span class="sk">FROM</span> employees <span class="sa">e</span>
+    <span class="sk">INNER JOIN</span> <span class="sa">org_tree</span> <span class="sa">ot</span> <span class="sk">ON</span> e.manager_id = ot.id
+)
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sa">org_tree</span> <span class="sk">ORDER BY</span> level, name;</pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">EXISTS vs IN — when performance matters</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">EXISTS vs IN — performance difference</div>
+    <pre>
+<span class="sd">-- IN: evaluates the subquery, builds a list, checks membership</span>
+<span class="sk">SELECT</span> name <span class="sk">FROM</span> users
+<span class="sk">WHERE</span> id <span class="sk">IN</span> (<span class="sk">SELECT</span> user_id <span class="sk">FROM</span> orders <span class="sk">WHERE</span> amount > <span class="sn">5000</span>);
+
+<span class="sd">-- EXISTS: checks if any row exists. Stops as soon as one is found.</span>
+<span class="sk">SELECT</span> name <span class="sk">FROM</span> users <span class="sa">u</span>
+<span class="sk">WHERE</span> <span class="sk">EXISTS</span> (
+    <span class="sk">SELECT</span> <span class="sn">1</span> <span class="sk">FROM</span> orders <span class="sk">WHERE</span> user_id = u.id <span class="sk">AND</span> amount > <span class="sn">5000</span>
+);
+<span class="sd">-- EXISTS uses a correlated subquery (references the outer query's 'u.id')</span>
+<span class="sd">-- SELECT 1 — content doesn't matter, we just check if a row EXISTS</span>
+
+<span class="sd">-- When to use which:</span>
+<span class="sd">-- EXISTS: better when outer table is small, inner is large.</span>
+<span class="sd">-- EXISTS: better when you just need to know "does at least one row match?"</span>
+<span class="sd">-- IN: fine for small subquery result sets.</span>
+<span class="sd">-- NOT IN with NULLs in subquery: NEVER returns rows (NULL comparison issue)</span>
+<span class="sd">-- Always prefer NOT EXISTS over NOT IN to avoid NULL trap.</span></pre>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Subqueries</div>
+    <div class="qa" id="q-sq1">
+      <div class="qa-q" onclick="toggleQA('q-sq1')">What is a CTE? How is it different from a subquery? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>A CTE (Common Table Expression) is a named temporary result set defined with the WITH clause, referenced in the subsequent query. Like a derived table (subquery in FROM), but: (1) defined before the main query, not inline — much more readable for complex logic; (2) can be referenced multiple times in the same query (a subquery in FROM can only be used once); (3) supports recursion (WITH RECURSIVE) for hierarchical data. A subquery is embedded directly within another query — harder to read when nested deeply. Use CTE when: the query needs multiple steps of transformation (CTE 1 → CTE 2 → final SELECT), or when the same intermediate result is needed in multiple places, or when you want self-documenting named steps.</div>
+    </div>
+    <div class="qa" id="q-sq2">
+      <div class="qa-q" onclick="toggleQA('q-sq2')">What is the NOT IN NULL trap? How do you avoid it? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>NOT IN breaks when the subquery returns any NULL values. Example: SELECT * FROM users WHERE id NOT IN (SELECT user_id FROM orders). If any order has user_id = NULL (orphan record), the entire NOT IN evaluates to UNKNOWN for every row — returns 0 results. This is because NOT IN checks id != NULL for every value in the list, and NULL != anything returns NULL (unknown), which is falsy. Fix: WHERE id NOT IN (SELECT user_id FROM orders WHERE user_id IS NOT NULL). Better fix: use NOT EXISTS instead — it handles NULLs correctly. NOT EXISTS returns no row if the correlated subquery finds anything (including NULLs treated as existing rows). This is one of the most subtle SQL bugs — worth mentioning in interviews to show SQL depth.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Subqueries + CTEs — 60-second revision</h4>
+    <ul>
+      <li>Subquery locations: WHERE (filtering), FROM (derived table), SELECT (scalar value per row).</li>
+      <li>CTE (WITH clause): named subquery, referenced in subsequent query. Readable, can be referenced multiple times.</li>
+      <li>Recursive CTE: WITH RECURSIVE. Anchor + recursive step + UNION ALL. Walks hierarchies.</li>
+      <li>EXISTS: correlated subquery, stops on first match. Better for large inner tables.</li>
+      <li>IN: builds result list, checks membership. Fine for small lists.</li>
+      <li>NOT IN + NULL trap: if subquery returns any NULL, NOT IN returns no rows. Use NOT EXISTS or add IS NOT NULL filter.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 5: WINDOW FUNCTIONS ══ -->
+<div class="concept" id="window">
+  <div class="concept-num">Concept 05 of 07</div>
+  <h2>Window Functions</h2>
+  <div class="concept-sub">Window functions perform calculations across a set of rows related to the current row — without collapsing the result into one row per group (unlike GROUP BY). ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD, running totals.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Window functions separate good SQL writers from the rest — always asked</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">The key difference: OVER() — no row collapsing</span></div>
+
+  <p class="explain">
+    Regular aggregate functions (SUM, COUNT, AVG) with GROUP BY collapse many rows into one per group. Window functions use <code>OVER()</code> — they calculate across related rows but <strong>each row keeps its own line in the output</strong>. You can have the aggregate AND the original row detail simultaneously.
+  </p>
+
+  <div class="sql-block">
+    <div class="sql-header">OVER() — the syntax and how it works</div>
+    <pre>
+<span class="sd">-- aggregate_function() OVER (PARTITION BY ... ORDER BY ...)</span>
+
+<span class="sd">-- PARTITION BY: like GROUP BY for the window — defines the "group" for each calculation</span>
+<span class="sd">-- ORDER BY: within the partition, how to order rows (for ranking and running calculations)</span>
+
+<span class="sd">-- Without PARTITION BY: window is the entire result set</span>
+<span class="sd">-- With PARTITION BY: window restarts for each unique value of the partition column</span>
+
+<span class="sk">SELECT</span>
+    id,
+    restaurant_id,
+    amount,
+    placed_at,
+    <span class="sd">-- Running total of revenue for each restaurant (resets per restaurant)</span>
+    <span class="sf">SUM</span>(amount) <span class="sk">OVER</span> (
+        <span class="sk">PARTITION BY</span> restaurant_id
+        <span class="sk">ORDER BY</span> placed_at
+    ) <span class="sk">AS</span> <span class="sa">running_total</span>,
+    <span class="sd">-- Percentage of restaurant's total for this order</span>
+    <span class="sf">ROUND</span>(
+        amount * <span class="sn">100.0</span> / <span class="sf">SUM</span>(amount) <span class="sk">OVER</span> (<span class="sk">PARTITION BY</span> restaurant_id),
+        <span class="sn">2</span>
+    ) <span class="sk">AS</span> <span class="sa">pct_of_restaurant_total</span>,
+    <span class="sd">-- Total orders for this restaurant (same for every row in partition)</span>
+    <span class="sf">COUNT</span>(*) <span class="sk">OVER</span> (<span class="sk">PARTITION BY</span> restaurant_id) <span class="sk">AS</span> <span class="sa">restaurant_order_count</span>
+<span class="sk">FROM</span> orders
+<span class="sk">WHERE</span> status = <span class="ss">'delivered'</span>
+<span class="sk">ORDER BY</span> restaurant_id, placed_at;</pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">Ranking functions — ROW_NUMBER, RANK, DENSE_RANK</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">Ranking — top N per group (the most common window function pattern)</div>
+    <pre>
+<span class="sd">-- "Top 3 highest-value orders per restaurant"</span>
+<span class="sk">WITH</span> <span class="sa">ranked_orders</span> <span class="sk">AS</span> (
+    <span class="sk">SELECT</span>
+        id,
+        restaurant_id,
+        user_id,
+        amount,
+        <span class="sf">ROW_NUMBER</span>() <span class="sk">OVER</span> (
+            <span class="sk">PARTITION BY</span> restaurant_id
+            <span class="sk">ORDER BY</span> amount <span class="sk">DESC</span>
+        ) <span class="sk">AS</span> <span class="sa">row_num</span>
+    <span class="sk">FROM</span> orders
+    <span class="sk">WHERE</span> status = <span class="ss">'delivered'</span>
+)
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> <span class="sa">ranked_orders</span>
+<span class="sk">WHERE</span> row_num <= <span class="sn">3</span>;  <span class="sd">-- can now filter on window function result</span>
+
+<span class="sd">-- ROW_NUMBER vs RANK vs DENSE_RANK — the difference:</span>
+<span class="sd">-- Amounts:  [1000, 1000, 800, 700]</span>
+<span class="sd">-- ROW_NUMBER:   1, 2, 3, 4      (always unique, arbitrary for ties)</span>
+<span class="sd">-- RANK:         1, 1, 3, 4      (tied values get same rank, then skip)</span>
+<span class="sd">-- DENSE_RANK:   1, 1, 2, 3      (tied values get same rank, NO skip)</span>
+
+<span class="sk">SELECT</span>
+    restaurant_id,
+    amount,
+    <span class="sf">ROW_NUMBER</span>()  <span class="sk">OVER</span> (<span class="sk">PARTITION BY</span> restaurant_id <span class="sk">ORDER BY</span> amount <span class="sk">DESC</span>) <span class="sk">AS</span> <span class="sa">rn</span>,
+    <span class="sf">RANK</span>()        <span class="sk">OVER</span> (<span class="sk">PARTITION BY</span> restaurant_id <span class="sk">ORDER BY</span> amount <span class="sk">DESC</span>) <span class="sk">AS</span> <span class="sa">rnk</span>,
+    <span class="sf">DENSE_RANK</span>()  <span class="sk">OVER</span> (<span class="sk">PARTITION BY</span> restaurant_id <span class="sk">ORDER BY</span> amount <span class="sk">DESC</span>) <span class="sk">AS</span> <span class="sa">drnk</span>
+<span class="sk">FROM</span> orders <span class="sk">WHERE</span> status = <span class="ss">'delivered'</span>;</pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">LAG and LEAD — access adjacent rows</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">LAG / LEAD — compare to previous or next row</div>
+    <pre>
+<span class="sd">-- "For each order, show the previous order amount for that user"</span>
+<span class="sd">-- LAG: look back at previous row's value</span>
+<span class="sd">-- LEAD: look forward at next row's value</span>
+<span class="sk">SELECT</span>
+    id,
+    user_id,
+    amount,
+    placed_at,
+    <span class="sf">LAG</span>(amount, <span class="sn">1</span>, <span class="sn">0</span>) <span class="sk">OVER</span> (
+        <span class="sk">PARTITION BY</span> user_id
+        <span class="sk">ORDER BY</span> placed_at
+    ) <span class="sk">AS</span> <span class="sa">prev_order_amount</span>,
+    <span class="sd">-- LAG(column, offset, default_if_no_prev)</span>
+    amount - <span class="sf">LAG</span>(amount, <span class="sn">1</span>, amount) <span class="sk">OVER</span> (
+        <span class="sk">PARTITION BY</span> user_id
+        <span class="sk">ORDER BY</span> placed_at
+    ) <span class="sk">AS</span> <span class="sa">change_from_prev</span>
+<span class="sk">FROM</span> orders
+<span class="sk">WHERE</span> status = <span class="ss">'delivered'</span>
+<span class="sk">ORDER BY</span> user_id, placed_at;
+
+<span class="sd">-- NTILE: divide into N roughly equal buckets</span>
+<span class="sk">SELECT</span>
+    user_id,
+    <span class="sf">SUM</span>(amount) <span class="sk">AS</span> <span class="sa">total_spend</span>,
+    <span class="sf">NTILE</span>(<span class="sn">4</span>) <span class="sk">OVER</span> (<span class="sk">ORDER BY</span> <span class="sf">SUM</span>(amount) <span class="sk">DESC</span>) <span class="sk">AS</span> <span class="sa">quartile</span>
+    <span class="sd">-- 1 = top 25%, 4 = bottom 25% (quartile based on total spend)</span>
+<span class="sk">FROM</span> orders
+<span class="sk">WHERE</span> status = <span class="ss">'delivered'</span>
+<span class="sk">GROUP BY</span> user_id;
+<span class="sd">-- Note: NTILE goes OVER grouped result — combine window with GROUP BY</span></pre>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Window Functions</div>
+    <div class="qa" id="q-wf1">
+      <div class="qa-q" onclick="toggleQA('q-wf1')">What is the difference between window functions and GROUP BY? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>GROUP BY collapses multiple rows into one row per group — you lose individual row detail. Window functions (using OVER()) perform calculations across related rows but EACH ROW KEEPS ITS OWN LINE in the result. Example: GROUP BY restaurant_id with SUM(amount) gives one revenue total per restaurant. A window function SUM(amount) OVER(PARTITION BY restaurant_id) shows every order with the restaurant's total alongside it. This lets you do things like: "what percentage of this restaurant's total revenue does this single order represent?" — impossible with GROUP BY alone. PARTITION BY in window functions is like GROUP BY — it defines the grouping for the calculation — but doesn't collapse rows. ORDER BY in OVER() enables ordered calculations like running totals, rankings, and LAG/LEAD.</div>
+    </div>
+    <div class="qa" id="q-wf2">
+      <div class="qa-q" onclick="toggleQA('q-wf2')">Write a query to find the top 3 customers by spend per city. <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span><code>WITH customer_spend AS (SELECT u.city, u.id AS user_id, u.name, SUM(o.amount) AS total_spend FROM users u INNER JOIN orders o ON u.id = o.user_id WHERE o.status = 'delivered' GROUP BY u.city, u.id, u.name), ranked AS (SELECT city, user_id, name, total_spend, DENSE_RANK() OVER (PARTITION BY city ORDER BY total_spend DESC) AS rank FROM customer_spend) SELECT city, name, total_spend, rank FROM ranked WHERE rank <= 3 ORDER BY city, rank</code>. Key decisions: DENSE_RANK so ties get same rank without skipping numbers; PARTITION BY city so ranking resets per city; CTE for readability (two steps: aggregate then rank); WHERE on the rank in outer query since window functions can't be in WHERE directly.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Window Functions — 60-second revision</h4>
+    <ul>
+      <li>Window functions: calculate across rows related to current row. No row collapsing. Each row keeps its line.</li>
+      <li>Syntax: function() OVER (PARTITION BY col ORDER BY col). PARTITION BY = "group", ORDER BY = sequence.</li>
+      <li>ROW_NUMBER: unique sequential number. RANK: same rank for ties, skips next. DENSE_RANK: same rank for ties, no skip.</li>
+      <li>Top N per group: ROW_NUMBER() OVER(PARTITION BY group ORDER BY col DESC) in CTE, then WHERE row_num &lt;= N.</li>
+      <li>LAG(col, offset, default): previous row's value. LEAD: next row's value. For comparing adjacent rows.</li>
+      <li>Running total: SUM(amount) OVER(PARTITION BY x ORDER BY date) — accumulates in order.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 6: INDEXES ══ -->
+<div class="concept" id="indexes">
+  <div class="concept-num">Concept 06 of 07</div>
+  <h2>Indexes in Practice</h2>
+  <div class="concept-sub">Creating the right index on the right column. EXPLAIN ANALYZE to verify. Common slow query patterns. This directly connects to your ShopFlow and DevTracker database work.</div>
+  <div class="progress-row"><span class="must">must know</span><span>"Your query is slow — how do you fix it?" is always asked</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Creating and using indexes correctly</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">Index creation — patterns that work and patterns that don't</div>
+    <pre>
+<span class="sd">-- Single column index: for frequently filtered columns</span>
+<span class="sk">CREATE INDEX</span> idx_orders_user_id    <span class="sk">ON</span> orders(user_id);
+<span class="sk">CREATE INDEX</span> idx_orders_placed_at  <span class="sk">ON</span> orders(placed_at);
+<span class="sk">CREATE INDEX</span> idx_orders_status     <span class="sk">ON</span> orders(status);
+
+<span class="sd">-- Composite index: column ORDER matters (leftmost prefix rule)</span>
+<span class="sk">CREATE INDEX</span> idx_orders_user_date  <span class="sk">ON</span> orders(user_id, placed_at);
+<span class="sd">-- Helps: WHERE user_id = 5                      (prefix: user_id)</span>
+<span class="sd">-- Helps: WHERE user_id = 5 AND placed_at > '2024-01-01'</span>
+<span class="sd">-- Does NOT help: WHERE placed_at > '2024-01-01' (not leftmost)</span>
+<span class="sd">-- Design: most selective column FIRST</span>
+
+<span class="sd">-- Partial index: only index a subset of rows</span>
+<span class="sk">CREATE INDEX</span> idx_active_orders <span class="sk">ON</span> orders(placed_at)
+<span class="sk">WHERE</span> status = <span class="ss">'pending'</span>;
+<span class="sd">-- Smaller index — only pending orders indexed</span>
+<span class="sd">-- Useful when you almost always filter by status first</span>
+
+<span class="sd">-- Functional index: index on an expression</span>
+<span class="sk">CREATE INDEX</span> idx_lower_email <span class="sk">ON</span> users(<span class="sf">LOWER</span>(email));
+<span class="sd">-- Allows: WHERE LOWER(email) = 'ravi@gmail.com' to use the index</span>
+<span class="sd">-- Without this, LOWER(email) in WHERE → full table scan</span>
+
+<span class="sd">-- EXPLAIN ANALYZE: see how a query actually executes</span>
+<span class="sk">EXPLAIN ANALYZE</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> orders
+<span class="sk">WHERE</span> user_id = <span class="sn">42</span> <span class="sk">AND</span> status = <span class="ss">'delivered'</span>;
+<span class="sd">-- Look for: "Seq Scan" (bad) vs "Index Scan" or "Bitmap Index Scan" (good)</span>
+<span class="sd">-- Also: "actual time", "rows", "Execution Time" at the bottom</span></pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">When indexes aren't used — the gotchas</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">Patterns that break index usage</div>
+    <pre>
+<span class="sd">-- GOTCHA 1: Function on the indexed column</span>
+<span class="sd">-- Index on placed_at (timestamp)</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> orders <span class="sk">WHERE</span> <span class="sf">DATE_TRUNC</span>(<span class="ss">'month'</span>, placed_at) = <span class="ss">'2024-01-01'</span>;
+<span class="sd">-- → Full scan! The function changes the column value, breaking the index.</span>
+<span class="sd">-- Fix: use range instead</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> orders
+<span class="sk">WHERE</span> placed_at >= <span class="ss">'2024-01-01'</span> <span class="sk">AND</span> placed_at < <span class="ss">'2024-02-01'</span>;
+<span class="sd">-- → Index scan! Range queries work with B-tree indexes</span>
+
+<span class="sd">-- GOTCHA 2: Leading wildcard in LIKE</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> restaurants <span class="sk">WHERE</span> name <span class="sk">LIKE</span> <span class="ss">'%Biryani%'</span>;
+<span class="sd">-- → Full scan! B-tree can't search from unknown start.</span>
+<span class="sd">-- Fix: use full-text search index, or store name in both directions</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> restaurants <span class="sk">WHERE</span> name <span class="sk">LIKE</span> <span class="ss">'Biryani%'</span>;  <span class="sd">-- prefix can use index</span>
+
+<span class="sd">-- GOTCHA 3: Type mismatch</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> users <span class="sk">WHERE</span> id = <span class="ss">'42'</span>;  <span class="sd">-- id is INT, '42' is varchar</span>
+<span class="sd">-- PostgreSQL will cast and still use index (sometimes)</span>
+<span class="sd">-- MySQL may not — always use the correct type</span>
+
+<span class="sd">-- GOTCHA 4: OR conditions</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> orders <span class="sk">WHERE</span> user_id = <span class="sn">5</span> <span class="sk">OR</span> restaurant_id = <span class="sn">10</span>;
+<span class="sd">-- May not use indexes efficiently — OR conditions are complex for planners</span>
+<span class="sd">-- Fix: UNION ALL</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> orders <span class="sk">WHERE</span> user_id = <span class="sn">5</span>
+<span class="sk">UNION ALL</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> orders <span class="sk">WHERE</span> restaurant_id = <span class="sn">10</span> <span class="sk">AND</span> user_id != <span class="sn">5</span>;</pre>
+  </div>
+
+  <div class="rev">
+    <h4>Indexes — 60-second revision</h4>
+    <ul>
+      <li>Composite index: leftmost prefix rule. (a, b, c) helps WHERE a, WHERE a+b, WHERE a+b+c. Not WHERE b alone.</li>
+      <li>Partial index: CREATE INDEX ... WHERE condition. Smaller, faster for known filter patterns.</li>
+      <li>Functional index: CREATE INDEX ON (LOWER(email)) — allows LOWER(email) in WHERE to use index.</li>
+      <li>EXPLAIN ANALYZE: check for "Seq Scan" (bad) vs "Index Scan" (good). Also check "actual rows" vs "estimated rows".</li>
+      <li>Index killers: function on column (use range instead), leading LIKE wildcard, type mismatch.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ CONCEPT 7: TRANSACTIONS ══ -->
+<div class="concept" id="transactions">
+  <div class="concept-num">Concept 07 of 07</div>
+  <h2>Transactions + Locking in SQL</h2>
+  <div class="concept-sub">BEGIN, COMMIT, ROLLBACK. SAVEPOINT. SELECT FOR UPDATE (pessimistic locking). Isolation levels in practice. How to implement a safe bank transfer in SQL.</div>
+  <div class="progress-row"><span class="must">must know</span><span>Write a safe bank transfer in SQL — asked at every fintech interview</span></div>
+
+  <div class="step-marker"><span class="step-num">01</span><span class="step-line"></span><span class="step-text">Transaction syntax and atomicity</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">Basic transaction — bank transfer</div>
+    <pre>
+<span class="sd">-- Ravi sends ₹500 to Priya</span>
+<span class="sk">BEGIN</span>;  <span class="sd">-- or START TRANSACTION</span>
+
+<span class="sd">-- Step 1: Check balance</span>
+<span class="sk">SELECT</span> balance <span class="sk">FROM</span> accounts
+<span class="sk">WHERE</span> user_id = <span class="ss">'ravi'</span> <span class="sk">FOR UPDATE</span>;
+<span class="sd">-- FOR UPDATE: acquires exclusive row lock</span>
+<span class="sd">-- Other transactions trying to touch this row → BLOCK until we COMMIT</span>
+
+<span class="sd">-- Step 2: Debit Ravi</span>
+<span class="sk">UPDATE</span> accounts
+<span class="sk">SET</span> balance = balance - <span class="sn">500</span>
+<span class="sk">WHERE</span> user_id = <span class="ss">'ravi'</span>
+  <span class="sk">AND</span> balance >= <span class="sn">500</span>;  <span class="sd">-- safe debit: only succeeds if funds available</span>
+
+<span class="sd">-- Step 3: Verify the debit happened (1 row affected)</span>
+<span class="sd">-- In application code: check ROW_COUNT / rowsAffected</span>
+<span class="sd">-- If 0 rows: insufficient funds → ROLLBACK</span>
+
+<span class="sd">-- Step 4: Credit Priya</span>
+<span class="sk">UPDATE</span> accounts
+<span class="sk">SET</span> balance = balance + <span class="sn">500</span>
+<span class="sk">WHERE</span> user_id = <span class="ss">'priya'</span>;
+
+<span class="sd">-- Step 5: Log the transaction</span>
+<span class="sk">INSERT INTO</span> transaction_log(from_user, to_user, amount, created_at)
+<span class="sk">VALUES</span> (<span class="ss">'ravi'</span>, <span class="ss">'priya'</span>, <span class="sn">500</span>, <span class="sf">NOW</span>());
+
+<span class="sk">COMMIT</span>;  <span class="sd">-- All three changes committed atomically</span>
+<span class="sd">-- If any step fails: ROLLBACK undoes ALL changes since BEGIN</span></pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">02</span><span class="step-line"></span><span class="step-text">SAVEPOINT — partial rollback</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">SAVEPOINT — rollback to a specific point, not all the way to BEGIN</div>
+    <pre>
+<span class="sk">BEGIN</span>;
+
+<span class="sk">INSERT INTO</span> orders(user_id, restaurant_id, amount) <span class="sk">VALUES</span> (<span class="sn">1</span>, <span class="sn">10</span>, <span class="sn">500</span>);
+
+<span class="sk">SAVEPOINT</span> after_order;  <span class="sd">-- save current state</span>
+
+<span class="sk">UPDATE</span> inventory <span class="sk">SET</span> stock = stock - <span class="sn">1</span> <span class="sk">WHERE</span> item_id = <span class="sn">42</span>;
+<span class="sd">-- Suppose this fails: item out of stock</span>
+
+<span class="sk">ROLLBACK TO</span> after_order;  <span class="sd">-- undo only the inventory update</span>
+<span class="sd">-- The order INSERT is still there, we're back to after_order state</span>
+
+<span class="sd">-- Can try alternative inventory logic here</span>
+<span class="sk">INSERT INTO</span> backorder(item_id, order_id) <span class="sk">VALUES</span> (<span class="sn">42</span>, <span class="sf">LASTVAL</span>());
+
+<span class="sk">COMMIT</span>;  <span class="sd">-- commits: the order + the backorder entry</span></pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">03</span><span class="step-line"></span><span class="step-text">Setting isolation level + read committed vs repeatable read</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">Isolation levels in PostgreSQL</div>
+    <pre>
+<span class="sd">-- Set isolation level for the current transaction</span>
+<span class="sk">BEGIN TRANSACTION ISOLATION LEVEL</span> REPEATABLE READ;
+
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> accounts <span class="sk">WHERE</span> user_id = <span class="ss">'ravi'</span>;
+<span class="sd">-- All reads in this transaction see data as of transaction start</span>
+<span class="sd">-- Even if another transaction updates ravi's balance and commits,</span>
+<span class="sd">-- our reads here will still see the old value (snapshot isolation)</span>
+
+<span class="sk">COMMIT</span>;
+
+<span class="sd">-- Default in PostgreSQL: READ COMMITTED</span>
+<span class="sd">-- Each statement sees latest committed data</span>
+<span class="sd">-- Two reads of same row in same transaction CAN give different results</span>
+
+<span class="sd">-- SERIALIZABLE: strongest — transactions execute as if serial</span>
+<span class="sk">BEGIN TRANSACTION ISOLATION LEVEL</span> SERIALIZABLE;
+<span class="sd">-- PostgreSQL uses Serializable Snapshot Isolation (SSI)</span>
+<span class="sd">-- Detects serialization conflicts and aborts one transaction</span>
+<span class="sd">-- Application must retry aborted transaction</span></pre>
+  </div>
+
+  <div class="step-marker"><span class="step-num">04</span><span class="step-line"></span><span class="step-text">Useful SQL functions and patterns</span></div>
+
+  <div class="sql-block">
+    <div class="sql-header">Essential SQL functions and patterns for interviews</div>
+    <pre>
+<span class="sd">-- ── Date/time functions ───────────────────────────────────────</span>
+<span class="sf">NOW</span>()                           <span class="sd">-- current timestamp</span>
+<span class="sf">CURRENT_DATE</span>                    <span class="sd">-- current date only</span>
+<span class="sf">DATE_TRUNC</span>(<span class="ss">'month'</span>, placed_at) <span class="sd">-- truncate to month start</span>
+<span class="sf">EXTRACT</span>(<span class="sk">YEAR FROM</span> placed_at)   <span class="sd">-- extract year part</span>
+<span class="sf">DATE_PART</span>(<span class="ss">'hour'</span>, placed_at)   <span class="sd">-- extract hour (0-23)</span>
+placed_at + <span class="sk">INTERVAL</span> <span class="ss">'7 days'</span>  <span class="sd">-- add 7 days</span>
+<span class="sf">AGE</span>(placed_at)                  <span class="sd">-- human-readable time since</span>
+
+<span class="sd">-- ── String functions ─────────────────────────────────────────</span>
+<span class="sf">UPPER</span>(name), <span class="sf">LOWER</span>(email)
+<span class="sf">CONCAT</span>(first_name, <span class="ss">' '</span>, last_name)
+<span class="sf">LENGTH</span>(name)
+<span class="sf">TRIM</span>(name), <span class="sf">LTRIM</span>(name), <span class="sf">RTRIM</span>(name)
+<span class="sf">SUBSTRING</span>(email, <span class="sn">1</span>, <span class="sf">POSITION</span>(<span class="ss">'@'</span> <span class="sk">IN</span> email) - <span class="sn">1</span>)  <span class="sd">-- extract before @</span>
+<span class="sf">SPLIT_PART</span>(email, <span class="ss">'@'</span>, <span class="sn">2</span>)     <span class="sd">-- domain part of email</span>
+<span class="sf">REGEXP_REPLACE</span>(phone, <span class="ss">'[^0-9]'</span>, <span class="ss">''</span>, <span class="ss">'g'</span>)  <span class="sd">-- remove non-digits</span>
+
+<span class="sd">-- ── Conditional / null-handling ──────────────────────────────</span>
+<span class="sf">COALESCE</span>(value1, value2, fallback)  <span class="sd">-- first non-null</span>
+<span class="sf">NULLIF</span>(value, compare)             <span class="sd">-- NULL if value = compare</span>
+<span class="sf">GREATEST</span>(a, b, c)                  <span class="sd">-- largest value</span>
+<span class="sf">LEAST</span>(a, b, c)                     <span class="sd">-- smallest value</span>
+
+<span class="sd">-- ── Pagination ───────────────────────────────────────────────</span>
+<span class="sd">-- Offset-based (simple, but slow for large offsets)</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> orders
+<span class="sk">ORDER BY</span> placed_at <span class="sk">DESC</span>
+<span class="sk">LIMIT</span> <span class="sn">20</span> <span class="sk">OFFSET</span> <span class="sn">100</span>;  <span class="sd">-- page 6 (100 = 20 × 5)</span>
+
+<span class="sd">-- Cursor-based (keyset pagination — fast for large datasets)</span>
+<span class="sk">SELECT</span> * <span class="sk">FROM</span> orders
+<span class="sk">WHERE</span> placed_at < <span class="ss">'2024-05-20 10:30:00'</span>  <span class="sd">-- cursor: last item's timestamp</span>
+<span class="sk">ORDER BY</span> placed_at <span class="sk">DESC</span>
+<span class="sk">LIMIT</span> <span class="sn">20</span>;
+<span class="sd">-- No OFFSET — always fast. Next page cursor = last returned placed_at.</span></pre>
+  </div>
+
+  <div class="interview-section">
+    <div class="int-label">Interview Q&amp;A — Transactions</div>
+    <div class="qa" id="q-tx1">
+      <div class="qa-q" onclick="toggleQA('q-tx1')">Write a safe bank transfer query. What could go wrong and how do you prevent it? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>BEGIN; SELECT balance FROM accounts WHERE id = ravi_id FOR UPDATE; — the FOR UPDATE acquires an exclusive row lock, preventing concurrent transactions from modifying Ravi's balance. Then UPDATE accounts SET balance = balance - 500 WHERE id = ravi_id AND balance >= 500 — the AND balance >= 500 ensures we don't go negative even if a concurrent transaction snuck through. Check rows affected — if 0, insufficient funds, ROLLBACK. Then UPDATE accounts SET balance = balance + 500 WHERE id = priya_id; COMMIT. What could go wrong: (1) Race condition without FOR UPDATE — two simultaneous transfers both read balance 1000, both subtract, resulting in wrong final balance. (2) Deadlock — if two transfers simultaneously lock accounts in opposite order. Fix: always lock accounts in the same order (by account ID). (3) Crash between debit and credit — solved by the transaction: incomplete transactions are rolled back on recovery.</div>
+    </div>
+    <div class="qa" id="q-tx2">
+      <div class="qa-q" onclick="toggleQA('q-tx2')">What is SELECT FOR UPDATE? What is the difference from a regular SELECT? <span class="qa-arr">▼</span></div>
+      <div class="qa-a"><span class="label">Strong answer</span>Regular SELECT: acquires a shared (read) lock — multiple transactions can read simultaneously, but none block each other. SELECT FOR UPDATE: acquires an exclusive lock on the selected rows. Other transactions trying to SELECT FOR UPDATE or UPDATE these rows must WAIT until the lock is released (at COMMIT or ROLLBACK). Regular SELECT doesn't block writers in PostgreSQL (MVCC means readers and writers don't block each other for regular reads). SELECT FOR UPDATE is used for read-modify-write patterns where you must guarantee no concurrent modification between your read and write — classic example: check balance, deduct, credit. Without FOR UPDATE, two transactions could both read the balance before either modifies it, causing incorrect double-spending. The lock is held until COMMIT or ROLLBACK.</div>
+    </div>
+  </div>
+
+  <div class="rev">
+    <h4>Transactions — 60-second revision</h4>
+    <ul>
+      <li>BEGIN / START TRANSACTION → COMMIT (persist) or ROLLBACK (undo all changes).</li>
+      <li>SAVEPOINT name → ROLLBACK TO name: partial rollback, keep earlier changes.</li>
+      <li>SELECT FOR UPDATE: exclusive row lock. Other transactions block until COMMIT. Use for read-modify-write patterns.</li>
+      <li>Safe bank transfer: BEGIN → SELECT FOR UPDATE → UPDATE with balance check → verify rows affected → UPDATE other account → INSERT log → COMMIT.</li>
+      <li>Isolation levels: READ COMMITTED (default PostgreSQL) → REPEATABLE READ (default MySQL) → SERIALIZABLE.</li>
+      <li>Deadlock prevention: always acquire locks in the same fixed order (sort by account ID). DB auto-detects with timeout + rollback.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ══ MASTER INTERVIEW Q&A ══ -->
+<div class="concept" id="interview">
+  <div class="concept-num">Master Review</div>
+  <h2>All SQL Interview Questions</h2>
+  <div class="concept-sub">20 questions — from basics to window functions. Answer out loud without looking. Interviewers often give you a schema and ask you to write queries on the spot.</div>
+
+  <div class="interview-section" style="margin-top:20px;">
+    <div class="int-label">Complete SQL Q&amp;A bank — 20 questions</div>
+
+    <div class="qa" id="qsql1"><div class="qa-q" onclick="toggleQA('qsql1')">1. In what order does SQL execute? Why does it matter? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>FROM/JOIN → WHERE → GROUP BY → HAVING → SELECT → ORDER BY → LIMIT. Matters because: (1) Can't use SELECT aliases in WHERE (SELECT runs later). (2) Can't use aggregates in WHERE (no grouping yet). (3) HAVING exists because WHERE can't filter on aggregated values. (4) Can use SELECT aliases in ORDER BY (SELECT already ran). Understanding this explains most SQL errors and helps you write correct queries without trial and error.</div></div>
+
+    <div class="qa" id="qsql2"><div class="qa-q" onclick="toggleQA('qsql2')">2. What is the difference between WHERE and HAVING? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>WHERE filters individual rows BEFORE grouping — cannot use aggregate functions. HAVING filters groups AFTER GROUP BY — can use aggregate functions. Example: WHERE status = 'delivered' (row-level filter). HAVING COUNT(*) > 100 (group-level filter — only restaurants with more than 100 orders). If you put the aggregate condition in WHERE → SQL error. Performance: WHERE is more efficient — reduces rows before aggregation, less data to process.</div></div>
+
+    <div class="qa" id="qsql3"><div class="qa-q" onclick="toggleQA('qsql3')">3. What is the difference between INNER JOIN and LEFT JOIN? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>INNER JOIN: only rows where the condition matches in BOTH tables. Non-matching rows dropped. LEFT JOIN: all rows from the left table + matching rows from right. Unmatched right columns = NULL. Use LEFT JOIN when you need all records from one table even without matches (all restaurants including those with zero orders). Find non-matching: LEFT JOIN + WHERE right.id IS NULL → rows with no match on right side (users with no orders). Never use RIGHT JOIN — flip tables and use LEFT JOIN instead.</div></div>
+
+    <div class="qa" id="qsql4"><div class="qa-q" onclick="toggleQA('qsql4')">4. Write a query to find users who have never placed an order. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Method 1 (LEFT JOIN + IS NULL): SELECT u.id, u.name FROM users u LEFT JOIN orders o ON u.id = o.user_id WHERE o.id IS NULL. Method 2 (NOT EXISTS): SELECT id, name FROM users u WHERE NOT EXISTS (SELECT 1 FROM orders o WHERE o.user_id = u.id). Method 3 (NOT IN — careful): SELECT id, name FROM users WHERE id NOT IN (SELECT user_id FROM orders WHERE user_id IS NOT NULL). NOT IN requires the IS NOT NULL — if any order has NULL user_id, NOT IN returns zero results (NULL comparison trap). LEFT JOIN + IS NULL or NOT EXISTS are preferred.</div></div>
+
+    <div class="qa" id="qsql5"><div class="qa-q" onclick="toggleQA('qsql5')">5. What is the GROUP BY rule for non-aggregate columns? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Every column in SELECT that is NOT an aggregate function MUST appear in GROUP BY. This is because GROUP BY collapses many rows into one per group — if a non-aggregated column could have different values within a group, SQL doesn't know which value to show. PostgreSQL enforces this strictly (error if violated). MySQL's default mode allows it and returns arbitrary values (a bug, not a feature). Practical example: SELECT r.id, r.name, r.city, COUNT(o.id) FROM restaurants r LEFT JOIN orders o ON r.id = o.restaurant_id GROUP BY r.id, r.name, r.city — all three non-aggregated columns in GROUP BY.</div></div>
+
+    <div class="qa" id="qsql6"><div class="qa-q" onclick="toggleQA('qsql6')">6. What is a CTE? How is it different from a subquery? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>CTE (Common Table Expression): named temporary result set defined with WITH clause, referenced in the subsequent query. vs Subquery: subquery is embedded inline; CTE is defined before the main query — more readable. CTE advantages: (1) Named — self-documenting. (2) Can be referenced multiple times in same query. (3) Supports recursion (WITH RECURSIVE) for hierarchical data. Use CTE for: multi-step transformations (CTE1 → CTE2 → final SELECT), when same intermediate result needed multiple places, or when you want clearly labeled steps. Performance: in PostgreSQL, CTEs are "optimization fences" by default — the planner treats them as black boxes. Add MATERIALIZED or NOT MATERIALIZED hint to control this in PG 12+.</div></div>
+
+    <div class="qa" id="qsql7"><div class="qa-q" onclick="toggleQA('qsql7')">7. What is the difference between ROW_NUMBER, RANK, and DENSE_RANK? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>All are window functions for ranking. Given values [1000, 1000, 800, 700]: ROW_NUMBER: 1, 2, 3, 4 — always unique sequential numbers, arbitrary for ties. RANK: 1, 1, 3, 4 — tied values share the same rank, then the count skips (no rank 2). DENSE_RANK: 1, 1, 2, 3 — tied values share the same rank, next rank is consecutive (no gap). Use ROW_NUMBER for top-N per group (want exactly N results even for ties). Use RANK/DENSE_RANK when ties should be equally ranked (sports leaderboard: two tied for 1st, both get rank 1). DENSE_RANK when you don't want gaps in rankings.</div></div>
+
+    <div class="qa" id="qsql8"><div class="qa-q" onclick="toggleQA('qsql8')">8. Write a query to get the top 3 orders per restaurant. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span><code>WITH ranked AS (SELECT *, ROW_NUMBER() OVER (PARTITION BY restaurant_id ORDER BY amount DESC) AS rn FROM orders WHERE status = 'delivered') SELECT restaurant_id, id, amount, user_id FROM ranked WHERE rn &lt;= 3 ORDER BY restaurant_id, amount DESC</code>. Key points: ROW_NUMBER() because we want exactly 3 per restaurant even for ties; PARTITION BY restaurant_id resets ranking per restaurant; ORDER BY amount DESC ranks by highest first; CTE needed because you can't filter on window function in WHERE directly (window functions run in SELECT phase); final WHERE rn &lt;= 3 in outer query filters to top 3 per restaurant.</div></div>
+
+    <div class="qa" id="qsql9"><div class="qa-q" onclick="toggleQA('qsql9')">9. What is a self JOIN? Give a practical use case. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>A self join joins a table to itself using two different aliases. Used when rows in a table have relationships to other rows in the same table. Classic use case: employee-manager hierarchy. employees table has manager_id referencing another row in the same table. Query: SELECT emp.name AS employee, mgr.name AS manager FROM employees emp LEFT JOIN employees mgr ON emp.manager_id = mgr.id. LEFT JOIN because the top-level employee (CEO) has no manager — INNER JOIN would exclude them. The a.id < b.id trick eliminates duplicate pairs (a,b) and (b,a) when finding pairs within the same table.</div></div>
+
+    <div class="qa" id="qsql10"><div class="qa-q" onclick="toggleQA('qsql10')">10. Why does `NOT IN` with NULLs in the subquery return no rows? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>SQL uses three-valued logic: TRUE, FALSE, and UNKNOWN (for NULL comparisons). NOT IN (a, b, NULL) expands to: id != a AND id != b AND id != NULL. id != NULL evaluates to UNKNOWN (not TRUE). In a WHERE clause, UNKNOWN is treated as FALSE — the row is filtered out. So every row fails the NOT IN check and returns 0 results. This is a silent, dangerous bug. Fix: always add WHERE user_id IS NOT NULL to the subquery. Better: use NOT EXISTS which handles NULLs correctly — it checks for the existence of rows, treating NULLs as existing rows properly.</div></div>
+
+    <div class="qa" id="qsql11"><div class="qa-q" onclick="toggleQA('qsql11')">11. What is SELECT FOR UPDATE? When do you use it? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>SELECT FOR UPDATE acquires an exclusive row lock on the selected rows. Other transactions trying to SELECT FOR UPDATE or UPDATE those rows must wait until the lock is released. Use for read-modify-write patterns where data consistency between the read and the write is critical. Example: bank transfer. Read Ravi's balance (FOR UPDATE locks his row), compute new balance, write it back. Without FOR UPDATE: two concurrent transfers could both read balance=1000 before either writes, both deduct, final balance is wrong. The lock prevents any concurrent modification. Lock is held until COMMIT or ROLLBACK. Note: regular SELECT in PostgreSQL (MVCC) doesn't block writers — only SELECT FOR UPDATE acquires exclusive locks.</div></div>
+
+    <div class="qa" id="qsql12"><div class="qa-q" onclick="toggleQA('qsql12')">12. What is the difference between offset-based and cursor-based pagination? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Offset-based: LIMIT 20 OFFSET 100. Simple but slow for large offsets — DB scans and discards the first 100 rows on every page request. At page 500 of 20 items, it scans 10,000 rows to discard them. Also inconsistent with inserts/deletes (items can shift pages). Cursor-based (keyset pagination): WHERE placed_at < last_seen_value ORDER BY placed_at DESC LIMIT 20. Always fast regardless of page depth — uses an index on placed_at, no rows scanned and discarded. Consistent — new items don't shift existing items. Limitation: can only paginate in one direction (forward or backward, not jump to arbitrary page). Use keyset for large datasets, infinite scroll. Use offset for small datasets or when jumping to arbitrary pages is needed.</div></div>
+
+    <div class="qa" id="qsql13"><div class="qa-q" onclick="toggleQA('qsql13')">13. What is a running total? How do you write it using window functions? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>A running total accumulates a value across rows in order. Using window function: SUM(amount) OVER (PARTITION BY user_id ORDER BY placed_at). PARTITION BY resets the total per user. ORDER BY placed_at defines the order of accumulation — each row's running total includes its own amount plus all previous rows for that user. By default, the window frame is "ROWS UNBOUNDED PRECEDING TO CURRENT ROW" — accumulates up to and including the current row. Without ORDER BY: SUM calculates the total of the entire partition (all rows), not a running total. With ORDER BY: running accumulation. This is the most common window function pattern for analytics (cumulative revenue, running balance).</div></div>
+
+    <div class="qa" id="qsql14"><div class="qa-q" onclick="toggleQA('qsql14')">14. What is a FULL OUTER JOIN? When would you use it? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>FULL OUTER JOIN returns all rows from both tables. Where there's no match on either side, the other table's columns are NULL. It's the union of LEFT JOIN and RIGHT JOIN. Use when you need to find rows that exist in either table with or without a match in the other. Example: reconciliation report — find transactions that exist in your internal DB but not in the bank's records (and vice versa). Or: compare two sets of data to find what's unique to each. In practice, less common than INNER or LEFT JOIN — most queries have a clear "primary" table you want all rows from (use LEFT JOIN). FULL OUTER JOIN is for when both directions matter equally.</div></div>
+
+    <div class="qa" id="qsql15"><div class="qa-q" onclick="toggleQA('qsql15')">15. What is the difference between UNION and UNION ALL? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>UNION: combines results of two queries and removes duplicates. Equivalent to UNION ALL + DISTINCT. Slower because it must sort or hash results to identify and remove duplicates. UNION ALL: combines results without removing duplicates. Faster — no deduplication step. Use UNION when you genuinely need distinct rows and the same row might appear in both queries. Use UNION ALL when: you know there are no duplicates (the queries are on different data), or you want all rows including duplicates, or performance matters. In practice, UNION ALL is usually correct and faster — UNION is rarely needed if your queries are well-designed. Requirements: same number of columns, compatible data types in each position.</div></div>
+
+    <div class="qa" id="qsql16"><div class="qa-q" onclick="toggleQA('qsql16')">16. How would you calculate the percentage of total in SQL? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Using a window function: amount * 100.0 / SUM(amount) OVER (PARTITION BY restaurant_id) AS pct_of_restaurant_total. OVER(PARTITION BY restaurant_id) computes the total for each restaurant while keeping all individual rows. Each row then has both its individual amount and the total to compute percentage. Alternative with subquery or CTE: compute the total separately, then join and divide. Window function is cleaner. The 100.0 (not 100) is important — integer division in SQL truncates. 500 / 2500 = 0. 500 * 100.0 / 2500 = 20.0. Use ROUND(pct, 2) for cleaner output.</div></div>
+
+    <div class="qa" id="qsql17"><div class="qa-q" onclick="toggleQA('qsql17')">17. What is the purpose of COALESCE? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>COALESCE(v1, v2, ..., vn) returns the first non-NULL value in its argument list. Use cases: (1) Replace NULL with a default: COALESCE(SUM(amount), 0) — LEFT JOIN might produce NULL for restaurants with no orders; COALESCE converts to 0. (2) Fallback values: COALESCE(preferred_name, nickname, first_name, 'Unknown'). (3) ROLLUP grand total label: COALESCE(city, 'ALL CITIES') — ROLLUP produces NULL for the totals row. vs NULLIF(value, other): returns NULL if value = other, else returns value. Useful for avoiding division by zero: amount / NULLIF(quantity, 0) — returns NULL instead of error when quantity is 0. ISNULL and IFNULL are MySQL-specific equivalents — COALESCE is standard SQL.</div></div>
+
+    <div class="qa" id="qsql18"><div class="qa-q" onclick="toggleQA('qsql18')">18. What is the difference between TRUNCATE and DELETE? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>DELETE: removes rows one at a time. Can have a WHERE clause to remove specific rows. Writes to transaction log for every deleted row — can be rolled back. Slow for large tables. Fires DELETE triggers. TRUNCATE: removes all rows at once by deallocating the data pages. Much faster — doesn't log individual row deletions. Cannot have a WHERE clause. In PostgreSQL: TRUNCATE can be rolled back (it's within a transaction). In MySQL: TRUNCATE is DDL and cannot be rolled back. Resets SERIAL/AUTO_INCREMENT counters (DELETE doesn't). Doesn't fire row-level triggers. Use DELETE when: you need a WHERE clause, you need row-level logging, or you need triggers to fire. Use TRUNCATE when: clearing a whole table and speed matters.</div></div>
+
+    <div class="qa" id="qsql19"><div class="qa-q" onclick="toggleQA('qsql19')">19. Write a query to find the second-highest salary in a table. <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Method 1 (DENSE_RANK — handles ties correctly): WITH ranked AS (SELECT salary, DENSE_RANK() OVER (ORDER BY salary DESC) AS rnk FROM employees) SELECT DISTINCT salary FROM ranked WHERE rnk = 2. Method 2 (subquery): SELECT MAX(salary) FROM employees WHERE salary &lt; (SELECT MAX(salary) FROM employees). Method 3 (LIMIT/OFFSET): SELECT DISTINCT salary FROM employees ORDER BY salary DESC LIMIT 1 OFFSET 1. DENSE_RANK is the most robust — handles the case where multiple employees share the highest salary. The DISTINCT in method 1 handles multiple employees at the second-highest level. Method 2 fails if there's only one distinct salary. LIMIT/OFFSET approach is simple but doesn't handle ties correctly if multiple people share the 2nd highest salary.</div></div>
+
+    <div class="qa" id="qsql20"><div class="qa-q" onclick="toggleQA('qsql20')">20. How do you detect and remove duplicate rows? <span class="qa-arr">▼</span></div><div class="qa-a"><span class="label">Answer</span>Find duplicates: SELECT email, COUNT(*) as cnt FROM users GROUP BY email HAVING COUNT(*) > 1. This shows which emails appear more than once. Find the full duplicate rows: SELECT * FROM users WHERE email IN (SELECT email FROM users GROUP BY email HAVING COUNT(*) > 1) ORDER BY email. Delete keeping one (keep lowest id): DELETE FROM users WHERE id NOT IN (SELECT MIN(id) FROM users GROUP BY email). Or using CTE with ROW_NUMBER: WITH ranked AS (SELECT id, ROW_NUMBER() OVER (PARTITION BY email ORDER BY id) AS rn FROM users) DELETE FROM users WHERE id IN (SELECT id FROM ranked WHERE rn > 1). The ROW_NUMBER approach is safer — you explicitly define which duplicate to keep (by ordering within the partition).</div></div>
+  </div>
+
+  <div class="rev">
+    <h4>SQL Complete — Phase 0 SQL done when you can...</h4>
+    <ul>
+      <li>Explain SQL execution order and why you can't use SELECT aliases in WHERE</li>
+      <li>Write any JOIN type from memory — INNER, LEFT, SELF — with proper ON conditions</li>
+      <li>Write GROUP BY with HAVING correctly — no aggregate in WHERE, all non-aggregates in GROUP BY</li>
+      <li>Write a window function for top N per group, running total, and LAG for row comparison</li>
+      <li>Write a safe bank transfer with BEGIN, SELECT FOR UPDATE, UPDATE, COMMIT — explain why each step matters</li>
+      <li>Answer all 20 questions above without peeking for more than 5 seconds each</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+function toggleQA(id){document.getElementById(id).classList.toggle('open');}
+document.querySelectorAll('.nav-pill').forEach(p=>{
+  p.addEventListener('click',function(e){
+    e.preventDefault();
+    const t=document.querySelector(this.getAttribute('href'));
+    if(t)t.scrollIntoView({behavior:'smooth',block:'start'});
+  });
+});
+window.addEventListener('scroll',()=>{
+  const cs=document.querySelectorAll('.concept[id]');
+  const ps=document.querySelectorAll('.nav-pill');
+  let a='';
+  cs.forEach(c=>{if(c.getBoundingClientRect().top<100)a=c.id;});
+  ps.forEach(p=>{p.classList.toggle('active',p.getAttribute('href')==='#'+a);});
+});
+</script>
+</body>
+</html>
