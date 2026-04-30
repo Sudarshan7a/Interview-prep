@@ -1,4 +1,5 @@
 ﻿# ☕ JAVA INTERVIEW PREP KIT
+
 ## Arrays · Strings · Method Overloading · OOP Foundations
 
 > **One Kit. Complete Coverage. Interview-Ready.**
@@ -31,6 +32,7 @@
 Think of an array like an apartment building. The building (array) has a fixed number of flats (cells), each numbered starting from **flat 0** (not flat 1 — because when you're outside the building, you haven't entered yet, so that's position zero). Every flat stores the **same type** of tenant — you can't mix a family with a car. The building size is decided when it's constructed and cannot grow or shrink. To find flat 7, you simply say "building name, flat 7" — instant access, no searching floor by floor.
 
 **Why it matters:**
+
 - Every coding interview problem uses arrays as the foundation
 - Understanding arrays unlocks DSA (linked lists, trees, graphs all build on this)
 - Arrays are how front-end React renders component lists, how databases return rows, how APIs return multiple results
@@ -67,11 +69,11 @@ Imagine you start a company and you can never remember employee names, so you na
 
 Every time you create an array, you must analyze three things:
 
-| Observation | Question to Ask | Example |
-|------------|----------------|---------|
-| **Dimensionality** | How many questions do I need to ask to get ONE piece of data? | "Which student?" = 1D; "Which class, which student?" = 2D; "Which school, which class, which student?" = 3D |
-| **Homogeneous vs Heterogeneous** | Is all data the same type? | Ages are all integers = homogeneous. ✅ Arrays only support homogeneous data. |
-| **Regular vs Jagged** | Does every row have the same number of columns? | Equal students per class = regular; unequal = jagged |
+| Observation                      | Question to Ask                                               | Example                                                                                                     |
+| -------------------------------- | ------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| **Dimensionality**               | How many questions do I need to ask to get ONE piece of data? | "Which student?" = 1D; "Which class, which student?" = 2D; "Which school, which class, which student?" = 3D |
+| **Homogeneous vs Heterogeneous** | Is all data the same type?                                    | Ages are all integers = homogeneous. ✅ Arrays only support homogeneous data.                               |
+| **Regular vs Jagged**            | Does every row have the same number of columns?               | Equal students per class = regular; unequal = jagged                                                        |
 
 ---
 
@@ -97,6 +99,7 @@ Stack Segment:                 Heap Segment:
 ```
 
 **Key facts:**
+
 - `new` keyword activates JVM → creates object in **heap**
 - `ar` is a **reference variable** in the **stack**
 - Default values: 0 for int, 0.0 for float, false for boolean, null for String/objects
@@ -110,10 +113,11 @@ int[][] ar = new int[2][5];  // 2 classrooms, 5 students each
 ```
 
 **Memory visualization:**
+
 ```
          Row 0: [ 0 | 0 | 0 | 0 | 0 ]  ← indices [0][0] to [0][4]
          Row 1: [ 0 | 0 | 0 | 0 | 0 ]  ← indices [1][0] to [1][4]
-         
+
 ar.length     → 2  (number of rows/classrooms)
 ar[0].length  → 5  (columns in row 0)
 ar[i].length  → 5  (columns in any row i, since regular)
@@ -133,6 +137,7 @@ ar[1] = new int[5];   // Second classroom: 5 students
 **Why jagged?** Regular array with `new int[2][5]` for this case wastes 2 cells in row 0. For large datasets (100 classrooms, varying students), this becomes thousands of wasted bytes.
 
 **Memory picture:**
+
 ```
 ar → [ ref_to_ar[0] | ref_to_ar[1] ]
          ↓                  ↓
@@ -157,6 +162,7 @@ ar[1][2][4] = 99;  // School 2, Class 3, Student 5 = age 99
 ## 2.3 The Loop Pattern for Any Array
 
 **1D Array:**
+
 ```java
 for (int i = 0; i < ar.length; i++) {
     ar[i] = scan.nextInt();  // or System.out.print(ar[i]);
@@ -164,6 +170,7 @@ for (int i = 0; i < ar.length; i++) {
 ```
 
 **2D Array:**
+
 ```java
 for (int i = 0; i < ar.length; i++) {          // rows
     for (int j = 0; j < ar[i].length; j++) {   // columns (use ar[i].length for jagged!)
@@ -174,6 +181,7 @@ for (int i = 0; i < ar.length; i++) {          // rows
 ```
 
 **3D Array:**
+
 ```java
 for (int i = 0; i < ar.length; i++) {           // blocks/schools
     for (int j = 0; j < ar[i].length; j++) {    // rows/classrooms
@@ -207,6 +215,7 @@ int[] ar3 = {10, 20, 30, 40, 50};
 ```
 
 **When to use which:**
+
 - Method 1: User provides data (coding rounds, real applications) — USE THIS 99% OF TIME
 - Methods 2 & 3: Only when data is fixed and known at code-writing time
 
@@ -215,17 +224,18 @@ int[] ar3 = {10, 20, 30, 40, 50};
 ## 2.5 Array Advantages & Disadvantages — The Complete Picture
 
 ### Advantages
+
 1. **Easy creation** — one line, any size: `new int[1000000]` works as easily as `new int[5]`
 2. **Easy access** — O(1) random access via index: knowing student number → instantly get their data (index = student number - 1)
 
 ### Disadvantages (CRITICAL for interviews)
 
-| Disadvantage | Explanation | Solution |
-|-------------|-------------|----------|
-| **Homogeneous only** | Cannot mix int, float, String in same array | Use Collections (ArrayList stores Objects) |
-| **Fixed size** | Cannot grow/shrink. Neither dynamic. Static in nature. | Use ArrayList (dynamic size) |
-| **Contiguous memory** | Array needs consecutive bytes in RAM. For very large arrays (crores of elements), RAM (a shared piece of memory) may not have that many consecutive bytes available | Use LinkedList (uses dispersed memory — each node links to next via address) |
-| **No built-in methods** | Only `clone()` exists. No sort, search, filter methods | Use Collections (ArrayList.sort(), etc.) |
+| Disadvantage            | Explanation                                                                                                                                                         | Solution                                                                     |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
+| **Homogeneous only**    | Cannot mix int, float, String in same array                                                                                                                         | Use Collections (ArrayList stores Objects)                                   |
+| **Fixed size**          | Cannot grow/shrink. Neither dynamic. Static in nature.                                                                                                              | Use ArrayList (dynamic size)                                                 |
+| **Contiguous memory**   | Array needs consecutive bytes in RAM. For very large arrays (crores of elements), RAM (a shared piece of memory) may not have that many consecutive bytes available | Use LinkedList (uses dispersed memory — each node links to next via address) |
+| **No built-in methods** | Only `clone()` exists. No sort, search, filter methods                                                                                                              | Use Collections (ArrayList.sort(), etc.)                                     |
 
 ---
 
@@ -255,6 +265,7 @@ System.out.println(e1.name);            // "Steve" — same object, both referen
 ```
 
 **With loop (production-style):**
+
 ```java
 int n = scan.nextInt();  // User decides how many employees
 Employee[] empArray = new Employee[n];
@@ -292,6 +303,7 @@ String name = new String("Tim");
 ```
 
 Because String is an object:
+
 - Stored in the **heap**
 - Default value is `null` (not "" — empty and null are different!)
 - Has built-in methods (unlike arrays)
@@ -326,6 +338,7 @@ if (a.equals(b)) { }  // Always compares values — USE THIS
 ## 2.8 Method Overloading — The Full Picture
 
 ### Definition
+
 The process of creating **multiple methods with the same name** within the **same class** is known as method overloading.
 
 ```java
@@ -344,12 +357,12 @@ class Calculator {
 
 ### How Java Compiler Resolves Which Method to Call (4 Rules)
 
-| Step | Rule | Example |
-|------|------|---------|
-| 1 | Name must match | `add` → finds all `add` methods |
-| 2 | Count parameters | `add(10, 20)` → 2 params → narrows to `add(int,int)` and `add(float,float)` |
-| 3 | Type must match | Both are int → picks `add(int a, int b)` ✅ |
-| 4 | Implicit type casting (widening) | If no exact match, promotes smaller types to larger: char→int, int→float, float→double |
+| Step | Rule                             | Example                                                                                |
+| ---- | -------------------------------- | -------------------------------------------------------------------------------------- |
+| 1    | Name must match                  | `add` → finds all `add` methods                                                        |
+| 2    | Count parameters                 | `add(10, 20)` → 2 params → narrows to `add(int,int)` and `add(float,float)`            |
+| 3    | Type must match                  | Both are int → picks `add(int a, int b)` ✅                                            |
+| 4    | Implicit type casting (widening) | If no exact match, promotes smaller types to larger: char→int, int→float, float→double |
 
 ### When Compiler Gets Confused — Ambiguity Error
 
@@ -366,15 +379,16 @@ calc.add('A', 100);  // ERROR! Both methods are equally valid after widening
 
 ## 2.9 Naming Conventions (Essential for Professional Code)
 
-| Convention | Used For | Example |
-|-----------|---------|---------|
-| **camelCase** | Variables, methods | `numberOfLegs`, `dogBarks()`, `numberOfSeats` |
-| **PascalCase** | Class names | `StreetDog`, `BankAccount`, `StudentDetails` |
-| **SNAKE_CASE** | Constants (static final) | `MAX_SIZE`, `PI_VALUE`, `TAX_RATE` |
-| **kebab-case** | NOT used in Java (used in CSS/URLs) | `my-variable` ❌ |
-| **Reverse Domain** | Package names | `com.tapacademy.arrays`, `com.google.android` |
+| Convention         | Used For                            | Example                                       |
+| ------------------ | ----------------------------------- | --------------------------------------------- |
+| **camelCase**      | Variables, methods                  | `numberOfLegs`, `dogBarks()`, `numberOfSeats` |
+| **PascalCase**     | Class names                         | `StreetDog`, `BankAccount`, `StudentDetails`  |
+| **SNAKE_CASE**     | Constants (static final)            | `MAX_SIZE`, `PI_VALUE`, `TAX_RATE`            |
+| **kebab-case**     | NOT used in Java (used in CSS/URLs) | `my-variable` ❌                              |
+| **Reverse Domain** | Package names                       | `com.tapacademy.arrays`, `com.google.android` |
 
 **Camel vs Pascal:**
+
 - camelCase: first word all lowercase, subsequent words capitalized → `numberOfLegs`
 - PascalCase: ALL words capitalized → `NumberOfLegs`
 
@@ -391,7 +405,7 @@ public static void main(String[] args)
 ```bash
 java MyProgram C Python Java
 # args[0] = "C"
-# args[1] = "Python"  
+# args[1] = "Python"
 # args[2] = "Java"
 ```
 
@@ -410,6 +424,7 @@ This is how CLI tools (like Cloud Code, React setup tools) receive user commands
 "An array is a **data structure** that stores the data of the **same data type** under a single reference variable, allowing efficient creation and access of large amounts of data.
 
 **Key points to always include:**
+
 - Arrays are **objects** in Java (stored in heap, not stack)
 - Array **indices start from zero** — because 0 represents the starting position before any movement
 - **Advantages:** (1) Easy creation — single line creates arrays of any size; (2) Easy access — O(1) via index of operator
@@ -549,7 +564,7 @@ Java compiler follows **four rules** to determine which method to invoke:
 
 If after all four rules the compiler is still confused (ambiguity), it throws a compilation error.
 
-```java
+````java
 void add(int a, int b) { }
 void add(float a, float b) { }
 
@@ -594,7 +609,7 @@ The method overloading concept itself: it's actually an **illusion** that one me
 ```java
 void add(int a, int b) { System.out.println("first"); }
 void add(int a, int b) { System.out.println("second"); } // ❌ COMPILATION ERROR
-```
+````
 
 The compiler cannot distinguish between them — name, count, and types all match. Since method overloading requires at least one difference among these three factors (or implicit type casting to resolve), completely identical signatures create an ambiguous situation the compiler cannot resolve."
 
@@ -633,6 +648,7 @@ empArray[0].name = "Tim";  // NullPointerException! No object at index 0
 ```
 
 **Solution:** Create the object before accessing it:
+
 ```java
 empArray[0] = new Employee();  // Now an object exists
 empArray[0].name = "Tim";      // Works fine
@@ -659,6 +675,7 @@ ar[-1] = 5;  // Also throws this exception
 The compiler doesn't catch this because `ar[5]` is syntactically valid — it only fails at runtime when JVM tries to actually access that memory location.
 
 Common causes:
+
 1. Off-by-one errors: `i <= ar.length` instead of `i < ar.length`
 2. Hardcoding indices instead of using `ar.length - 1` for the last element"
 
@@ -748,30 +765,30 @@ _In loops: N dimensions need N nested for loops. The inner loop finishes complet
 
 ## Follow-Up Responses
 
-| They Ask | Your Answer |
-|---------|-------------|
-| "Why start from 0?" | "0 = starting position before any movement. Also makes mathematical calculations simpler — last valid index is always length-1." |
-| "Is Java's `length` a method?" | "For arrays: no, it's a variable (no parentheses). For Strings: yes, `length()` is a method (with parentheses). Common trap!" |
-| "When would you use a jagged array?" | "When each row naturally has a different number of columns — banks have different ATM counts, users have different order histories. Regular array wastes memory; jagged is memory-efficient." |
-| "Can arrays store objects?" | "Yes! Any type — primitive or non-primitive. `Employee[] empArray = new Employee[5]` stores references to Employee objects. This is how real applications store collections of domain objects." |
+| They Ask                             | Your Answer                                                                                                                                                                                     |
+| ------------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| "Why start from 0?"                  | "0 = starting position before any movement. Also makes mathematical calculations simpler — last valid index is always length-1."                                                                |
+| "Is Java's `length` a method?"       | "For arrays: no, it's a variable (no parentheses). For Strings: yes, `length()` is a method (with parentheses). Common trap!"                                                                   |
+| "When would you use a jagged array?" | "When each row naturally has a different number of columns — banks have different ATM counts, users have different order histories. Regular array wastes memory; jagged is memory-efficient."   |
+| "Can arrays store objects?"          | "Yes! Any type — primitive or non-primitive. `Employee[] empArray = new Employee[5]` stores references to Employee objects. This is how real applications store collections of domain objects." |
 
 ---
 
 # ⚠️ SECTION 5: EDGE CASES & GOTCHAS
 
-| Edge Case | What Happens | Solution |
-|-----------|--------------|----------|
-| `ar[ar.length]` | `ArrayIndexOutOfBoundsException` at runtime | Last valid index is always `ar.length - 1` |
-| `ar[0]` when `ar` is jagged and row not initialized | `NullPointerException` | Always assign `ar[0] = new int[n]` before access |
-| `String a == String b` for comparison | May return wrong result — compares addresses, not content | Always use `a.equals(b)` |
-| Printing `ar` directly (object reference) | Gets hexadecimal address like `[I@7852e922` | Use loop: `ar[i]` for each element |
-| `1 / 4` stored in float array | `0.0` not `0.25` — integer division happens first | Cast: `(float)1 / 4` or use `1.0f / 4` |
-| Two methods with identical signatures | Compilation error: "Duplicate method" | At least one parameter type or count must differ |
-| Two overloaded methods where widening causes ambiguity | Compilation error: "Ambiguous" | Make one parameter type explicitly distinct |
-| Jagged 2D loop using `ar.length` for inner loop | `ArrayIndexOutOfBoundsException` for rows with fewer columns | ALWAYS use `ar[i].length` for inner loop bound |
-| `String` default value assumption | Assuming default is `""` (empty) | Default is `null` — check for null before calling string methods |
-| Naming a variable with spaces | Compilation error | Use camelCase: `numberOfLegs` (no spaces, no hyphens) |
-| `ar.length()` with parentheses for arrays | Compilation error — `length` is a field, not method | Remove parentheses: `ar.length` |
+| Edge Case                                              | What Happens                                                 | Solution                                                         |
+| ------------------------------------------------------ | ------------------------------------------------------------ | ---------------------------------------------------------------- |
+| `ar[ar.length]`                                        | `ArrayIndexOutOfBoundsException` at runtime                  | Last valid index is always `ar.length - 1`                       |
+| `ar[0]` when `ar` is jagged and row not initialized    | `NullPointerException`                                       | Always assign `ar[0] = new int[n]` before access                 |
+| `String a == String b` for comparison                  | May return wrong result — compares addresses, not content    | Always use `a.equals(b)`                                         |
+| Printing `ar` directly (object reference)              | Gets hexadecimal address like `[I@7852e922`                  | Use loop: `ar[i]` for each element                               |
+| `1 / 4` stored in float array                          | `0.0` not `0.25` — integer division happens first            | Cast: `(float)1 / 4` or use `1.0f / 4`                           |
+| Two methods with identical signatures                  | Compilation error: "Duplicate method"                        | At least one parameter type or count must differ                 |
+| Two overloaded methods where widening causes ambiguity | Compilation error: "Ambiguous"                               | Make one parameter type explicitly distinct                      |
+| Jagged 2D loop using `ar.length` for inner loop        | `ArrayIndexOutOfBoundsException` for rows with fewer columns | ALWAYS use `ar[i].length` for inner loop bound                   |
+| `String` default value assumption                      | Assuming default is `""` (empty)                             | Default is `null` — check for null before calling string methods |
+| Naming a variable with spaces                          | Compilation error                                            | Use camelCase: `numberOfLegs` (no spaces, no hyphens)            |
+| `ar.length()` with parentheses for arrays              | Compilation error — `length` is a field, not method          | Remove parentheses: `ar.length`                                  |
 
 ---
 
@@ -846,22 +863,23 @@ if (str1.equalsIgnoreCase(str2)) { }  // case-insensitive version
 
 # 🔗 SECTION 7: CONNECTIONS
 
-| This Concept | Connects To | How |
-|-------------|-------------|-----|
-| Arrays | ArrayList (Collections) | ArrayList solves all 4 array disadvantages; internally uses array |
-| Arrays | LinkedList | LinkedList solves contiguous memory problem — uses dispersed memory via address linking |
-| Array of Objects | OOP (Classes & Objects) | Every real application stores collections of domain objects in arrays |
-| Jagged Arrays | Real-World Data Modeling | Real data is never perfectly regular — jagged arrays model actual business structures |
-| `ar.length` | For Loop Conditions | `i < ar.length` is the standard professional loop condition |
-| `String[]` args | CLI Tools, DevOps | Every CLI tool (Docker, NPM, React CLI) uses command-line arguments |
-| String `.equals()` | HashMap Keys | HashMap uses `.equals()` and `hashCode()` for key comparison |
-| Method Overloading | Scanner class | `scan.nextInt()`, `scan.nextFloat()`, `scan.next()` — same scanner, overloaded methods |
-| Method Overloading | OOP (Polymorphism) | Overloading is compile-time polymorphism; overriding is runtime polymorphism |
-| Array Indices | Binary Search | Binary search algorithm depends entirely on array's random index access |
-| Pass by Reference + Arrays | Merge Sort | Merge sort modifies arrays in-place using reference passing |
-| Naming Conventions | Team Development | Every company has a style guide; following conventions = professional, readable code |
+| This Concept               | Connects To              | How                                                                                     |
+| -------------------------- | ------------------------ | --------------------------------------------------------------------------------------- |
+| Arrays                     | ArrayList (Collections)  | ArrayList solves all 4 array disadvantages; internally uses array                       |
+| Arrays                     | LinkedList               | LinkedList solves contiguous memory problem — uses dispersed memory via address linking |
+| Array of Objects           | OOP (Classes & Objects)  | Every real application stores collections of domain objects in arrays                   |
+| Jagged Arrays              | Real-World Data Modeling | Real data is never perfectly regular — jagged arrays model actual business structures   |
+| `ar.length`                | For Loop Conditions      | `i < ar.length` is the standard professional loop condition                             |
+| `String[]` args            | CLI Tools, DevOps        | Every CLI tool (Docker, NPM, React CLI) uses command-line arguments                     |
+| String `.equals()`         | HashMap Keys             | HashMap uses `.equals()` and `hashCode()` for key comparison                            |
+| Method Overloading         | Scanner class            | `scan.nextInt()`, `scan.nextFloat()`, `scan.next()` — same scanner, overloaded methods  |
+| Method Overloading         | OOP (Polymorphism)       | Overloading is compile-time polymorphism; overriding is runtime polymorphism            |
+| Array Indices              | Binary Search            | Binary search algorithm depends entirely on array's random index access                 |
+| Pass by Reference + Arrays | Merge Sort               | Merge sort modifies arrays in-place using reference passing                             |
+| Naming Conventions         | Team Development         | Every company has a style guide; following conventions = professional, readable code    |
 
 ### System Design Relevance
+
 - **Arrays in caching:** Redis stores cached data in array-like structures for O(1) lookup
 - **Array of Objects in ORMs:** Hibernate fetches database records as arrays of entity objects
 - **2D Arrays in ML:** Neural network weight matrices are 2D arrays (matrix multiplication)
@@ -879,7 +897,7 @@ class BankAccount {
     String holderName;
     double balance;
     String accountType;  // "savings", "current"
-    
+
     void deposit(double amount) { balance += amount; }
     boolean withdraw(double amount) {
         if (balance >= amount) { balance -= amount; return true; }
@@ -943,15 +961,15 @@ class PostService {
     void createPost(String text) {
         System.out.println("Text post created: " + text);
     }
-    
+
     void createPost(String text, String imageUrl) {
         System.out.println("Image post: " + text + " | Image: " + imageUrl);
     }
-    
+
     void createPost(String text, String videoUrl, int durationSeconds) {
         System.out.println("Video post: " + text + " | Duration: " + durationSeconds + "s");
     }
-    
+
     void createPost(String text, String[] tags) {  // Array parameter!
         System.out.print("Tagged post: " + text + " | Tags: ");
         for (String tag : tags) System.out.print("#" + tag + " ");
@@ -974,16 +992,16 @@ service.createPost("Tech news", new String[]{"Java","AI"}); // With tags
 ## Conceptual Questions
 
 1. **"You have data for 5 cities, each with a different number of districts, each district with a different number of wards. How many dimensions? Regular or jagged? Write the array creation code."**
- _(Answer: 3D jagged. `int[][][] ar = new int[5][][];` then manually assign districts and wards)_
+   _(Answer: 3D jagged. `int[][][] ar = new int[5][][];` then manually assign districts and wards)_
 
 2. **"Why does `int[] ar; System.out.println(ar.length);` throw an error but `int[] ar = new int[5]; System.out.println(ar.length);` works?"**
- _(Answer: Declaration without initialization → ar is null. No object exists, so no length property to access. NullPointerException.)_
+   _(Answer: Declaration without initialization → ar is null. No object exists, so no length property to access. NullPointerException.)_
 
 3. **"Can you overload `main()`? What happens?"**
- _(Answer: Yes, you can overload it syntactically. But JVM only calls `public static void main(String[] args)`. Overloaded versions exist but are never auto-invoked.)_
+   _(Answer: Yes, you can overload it syntactically. But JVM only calls `public static void main(String[] args)`. Overloaded versions exist but are never auto-invoked.)_
 
 4. **"If `ar.length = 10`, what is `ar[ar.length - 1]`?"**
- _(Answer: `ar[9]` — the last valid element. Common pattern for accessing last element.)_
+   _(Answer: `ar[9]` — the last valid element. Common pattern for accessing last element.)_
 
 ## Predict the Output
 
@@ -1041,15 +1059,15 @@ System.out.println(ar[5]);
 
 ## What Interviewers Are ACTUALLY Testing
 
-| They Ask | They're Really Testing |
-|---------|----------------------|
-| "Define an array" | Do you know it's an object? Do you know advantages AND disadvantages? Most candidates stop at definition. |
-| "Regular vs jagged?" | Do you understand memory efficiency? Can you think like a developer about real-world data? |
-| "Explain `ar.length`" | Do you know it's a variable not a method? Can you explain 2D length access? |
-| "Why `equals()` not `==` for Strings?" | Do you understand objects vs primitives? Do you know pass-by-reference implications? |
-| "What is compile-time polymorphism?" | Do you know method overloading deeply, or just the surface? Can you name all four aliases? |
-| "Can duplicate methods exist?" | Do you know the four resolution rules? Do you know ambiguity errors? |
-| "What are array disadvantages?" | Are you honest about trade-offs? Do you know what Collections solve? |
+| They Ask                               | They're Really Testing                                                                                    |
+| -------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| "Define an array"                      | Do you know it's an object? Do you know advantages AND disadvantages? Most candidates stop at definition. |
+| "Regular vs jagged?"                   | Do you understand memory efficiency? Can you think like a developer about real-world data?                |
+| "Explain `ar.length`"                  | Do you know it's a variable not a method? Can you explain 2D length access?                               |
+| "Why `equals()` not `==` for Strings?" | Do you understand objects vs primitives? Do you know pass-by-reference implications?                      |
+| "What is compile-time polymorphism?"   | Do you know method overloading deeply, or just the surface? Can you name all four aliases?                |
+| "Can duplicate methods exist?"         | Do you know the four resolution rules? Do you know ambiguity errors?                                      |
+| "What are array disadvantages?"        | Are you honest about trade-offs? Do you know what Collections solve?                                      |
 
 ## The Perfect Closing Statement
 
@@ -1076,21 +1094,20 @@ _"I understand arrays at the memory level — objects in heap, references in sta
 
 ## 🎯 THE ONE-LINE SUMMARY FOR EACH TOPIC
 
-| Topic | The One Line That Wins Interviews |
-|-------|----------------------------------|
-| Array | "A data structure — same type, single variable, contiguous heap memory, zero-based index, and crucially, an object in Java." |
-| Regular Array | "Equal columns in every row — created in one line." |
-| Jagged Array | "Unequal columns — row count fixed, each row's size defined separately; memory-efficient for real-world data." |
-| Array Advantage | "Create any size in one line; access any element in O(1) via index." |
-| Array Disadvantage | "Homogeneous only, fixed size, contiguous memory, no built-in methods — Collections solves all four." |
-| `ar.length` | "Variable not method — no parentheses; gives rows for 2D, use `ar[i].length` for columns." |
-| String vs `==` | "Strings are objects — `==` compares addresses; `.equals()` compares content; always use `.equals()`." |
-| Method Overloading | "Multiple methods, same name, same class — compiler resolves by name → count → type → widening." |
-| Compile-Time Polymorphism | "Another name for overloading — compiler (early in pipeline) binds the call at compile time." |
-| `String[] args` | "1D String array for command-line arguments — that's why CLI tools work." |
-| Naming Conventions | "camelCase for variables/methods, PascalCase for classes, SNAKE_CASE for constants, reverse domain for packages." |
+| Topic                     | The One Line That Wins Interviews                                                                                            |
+| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Array                     | "A data structure — same type, single variable, contiguous heap memory, zero-based index, and crucially, an object in Java." |
+| Regular Array             | "Equal columns in every row — created in one line."                                                                          |
+| Jagged Array              | "Unequal columns — row count fixed, each row's size defined separately; memory-efficient for real-world data."               |
+| Array Advantage           | "Create any size in one line; access any element in O(1) via index."                                                         |
+| Array Disadvantage        | "Homogeneous only, fixed size, contiguous memory, no built-in methods — Collections solves all four."                        |
+| `ar.length`               | "Variable not method — no parentheses; gives rows for 2D, use `ar[i].length` for columns."                                   |
+| String vs `==`            | "Strings are objects — `==` compares addresses; `.equals()` compares content; always use `.equals()`."                       |
+| Method Overloading        | "Multiple methods, same name, same class — compiler resolves by name → count → type → widening."                             |
+| Compile-Time Polymorphism | "Another name for overloading — compiler (early in pipeline) binds the call at compile time."                                |
+| `String[] args`           | "1D String array for command-line arguments — that's why CLI tools work."                                                    |
+| Naming Conventions        | "camelCase for variables/methods, PascalCase for classes, SNAKE_CASE for constants, reverse domain for packages."            |
 
 ---
 
 _"Arrays are to Java what wheels are to a car — you can get somewhere without understanding them, but you'll never build anything serious. Know them from memory to code, and every data structure problem becomes manageable."_
-
