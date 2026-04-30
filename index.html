@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Interview Prep - Master Index</title>
+    <style>
+      @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Space+Mono:wght@400;700&display=swap");
+      :root {
+        --bg: #09090b;
+        --s1: #111113;
+        --s2: #18181b;
+        --s3: #27272a;
+        --b1: #3f3f46;
+        --b2: #52525b;
+        --t1: #fafafa;
+        --t2: #a1a1aa;
+        --t3: #52525b;
+        --mono: "Space Mono", monospace;
+        --sans: "Space Grotesk", sans-serif;
+        --phase0: #f97316;
+        --phase1: #3b82f6;
+        --phase2: #a855f7;
+        --phase3: #22c55e;
+        --phase4: #0ea5e9;
+        --phase5: #eab308;
+      }
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        background: var(--bg);
+        color: var(--t1);
+        font-family: var(--sans);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .topbar {
+        padding: 28px 32px 24px;
+        border-bottom: 1px solid var(--s3);
+      }
+      .topbar h1 {
+        font-size: 22px;
+        font-weight: 700;
+        margin-bottom: 6px;
+      }
+      .topbar p {
+        font-size: 13px;
+        color: var(--t2);
+        max-width: 700px;
+      }
+      .tagrow {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        margin-top: 14px;
+      }
+      .tag {
+        font-family: var(--mono);
+        font-size: 10px;
+        padding: 3px 10px;
+        border-radius: 4px;
+        border: 1px solid var(--b1);
+        color: var(--t2);
+      }
+
+      .panel {
+        padding: 32px;
+        max-width: 1060px;
+      }
+      .section {
+        margin-bottom: 34px;
+      }
+      .section-label {
+        font-family: var(--mono);
+        font-size: 10px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--t3);
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--s3);
+      }
+
+      .overview-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+        gap: 10px;
+      }
+      .ov-card {
+        background: var(--s1);
+        border: 1px solid var(--s3);
+        border-radius: 10px;
+        padding: 16px;
+      }
+      .ov-title {
+        font-size: 13px;
+        font-weight: 600;
+        margin-bottom: 5px;
+      }
+      .ov-count {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--t3);
+        margin-bottom: 8px;
+      }
+      .ov-sub {
+        font-size: 11px;
+        color: var(--t2);
+      }
+      .ov-tag {
+        font-family: var(--mono);
+        font-size: 9px;
+        padding: 2px 7px;
+        border-radius: 3px;
+        margin-top: 8px;
+        display: inline-block;
+        background: var(--s3);
+        color: var(--t2);
+      }
+
+      .group {
+        background: var(--s1);
+        border: 1px solid var(--s3);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 10px;
+      }
+      .group-head {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--s3);
+      }
+      .group-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+      }
+      .group-title {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .group-meta {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--t3);
+      }
+
+      .link-list {
+        list-style: none;
+        padding: 10px 14px 14px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 8px;
+      }
+      .link-list li a {
+        display: block;
+        text-decoration: none;
+        color: var(--t2);
+        font-size: 12px;
+        padding: 10px 12px;
+        border: 1px solid var(--s3);
+        border-radius: 8px;
+        background: var(--s2);
+        transition:
+          border-color 0.15s,
+          color 0.15s,
+          transform 0.15s;
+      }
+      .link-list li a:hover {
+        border-color: var(--b1);
+        color: var(--t1);
+        transform: translateY(-1px);
+      }
+
+      footer {
+        padding: 0 32px 28px;
+        color: var(--t3);
+        font-family: var(--mono);
+        font-size: 10px;
+      }
+
+      @media (max-width: 640px) {
+        .topbar,
+        .panel,
+        footer {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+        .link-list {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <h1>Interview Prep - Master Index</h1>
+      <p>
+        Single navigation page for every roadmap HTML file. Same visual language
+        as Phase 0 so the experience feels consistent across your prep site.
+      </p>
+      <div class="tagrow">
+        <span class="tag">total files: 15</span>
+        <span class="tag">root + phase 0-5</span>
+        <span class="tag">organized by track</span>
+        <span class="tag">ready for local hosting</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="section">
+        <div class="section-label">Roadmap overview</div>
+        <div class="overview-grid">
+          <div class="ov-card">
+            <div class="ov-title" style="color: var(--phase0)">Phase 0</div>
+            <div class="ov-count">7 files</div>
+            <div class="ov-sub">
+              CS fundamentals and core interview subjects.
+            </div>
+            <span class="ov-tag">foundation</span>
+          </div>
+          <div class="ov-card">
+            <div class="ov-title" style="color: var(--phase1)">Phase 1</div>
+            <div class="ov-count">3 files</div>
+            <div class="ov-sub">DSA roadmap and practice tracks.</div>
+            <span class="ov-tag">dsa</span>
+          </div>
+          <div class="ov-card">
+            <div class="ov-title" style="color: var(--phase2)">Phase 2-5</div>
+            <div class="ov-count">4 files</div>
+            <div class="ov-sub">
+              Advanced preparation and final interview rounds.
+            </div>
+            <span class="ov-tag">advanced</span>
+          </div>
+          <div class="ov-card">
+            <div class="ov-title">Main file</div>
+            <div class="ov-count">1 file</div>
+            <div class="ov-sub">Bangalore fresher roadmap entry page.</div>
+            <span class="ov-tag">start here</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="section-label">All HTML files</div>
+
+        <div class="group">
+          <div class="group-head">
+            <span class="group-dot" style="background: #888"></span>
+            <div>
+              <div class="group-title">Root</div>
+              <div class="group-meta">1 file</div>
+            </div>
+          </div>
+          <ul class="link-list">
+            <li>
+              <a href="bangalore_fresher_roadmap.html" target="_blank"
+                >bangalore_fresher_roadmap.html</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <span class="group-dot" style="background: var(--phase0)"></span>
+            <div>
+              <div class="group-title">Phase 0</div>
+              <div class="group-meta">7 files</div>
+            </div>
+          </div>
+          <ul class="link-list">
+            <li>
+              <a href="phase 0/phase0_Dashboard.html" target="_blank"
+                >phase0_Dashboard.html</a
+              >
+            </li>
+            <li>
+              <a href="phase 0/phase0_dbms.html" target="_blank"
+                >phase0_dbms.html</a
+              >
+            </li>
+            <li>
+              <a href="phase 0/phase0_networks.html" target="_blank"
+                >phase0_networks.html</a
+              >
+            </li>
+            <li>
+              <a href="phase 0/phase0_oop.html" target="_blank"
+                >phase0_oop.html</a
+              >
+            </li>
+            <li>
+              <a href="phase 0/phase0_os.html" target="_blank"
+                >phase0_os.html</a
+              >
+            </li>
+            <li>
+              <a href="phase 0/phase0_sql.html" target="_blank"
+                >phase0_sql.html</a
+              >
+            </li>
+            <li>
+              <a href="phase 0/phase0_typescript.html" target="_blank"
+                >phase0_typescript.html</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <span class="group-dot" style="background: var(--phase1)"></span>
+            <div>
+              <div class="group-title">Phase 1</div>
+              <div class="group-meta">3 files</div>
+            </div>
+          </div>
+          <ul class="link-list">
+            <li>
+              <a href="phase 1/phase1_dsa.html" target="_blank"
+                >phase1_dsa.html</a
+              >
+            </li>
+            <li>
+              <a href="phase 1/phase1_p0_arrays_hashing.html" target="_blank"
+                >phase1_p0_arrays_hashing.html</a
+              >
+            </li>
+            <li>
+              <a href="phase 1/phase1_p1_two_pointers.html" target="_blank"
+                >phase1_p1_two_pointers.html</a
+              >
+            </li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <span class="group-dot" style="background: var(--phase2)"></span>
+            <div>
+              <div class="group-title">Phase 2</div>
+              <div class="group-meta">1 file</div>
+            </div>
+          </div>
+          <ul class="link-list">
+            <li>
+              <a href="phase 2/phase2.html" target="_blank">phase2.html</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <span class="group-dot" style="background: var(--phase3)"></span>
+            <div>
+              <div class="group-title">Phase 3</div>
+              <div class="group-meta">1 file</div>
+            </div>
+          </div>
+          <ul class="link-list">
+            <li>
+              <a href="phase 3/phase3.html" target="_blank">phase3.html</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <span class="group-dot" style="background: var(--phase4)"></span>
+            <div>
+              <div class="group-title">Phase 4</div>
+              <div class="group-meta">1 file</div>
+            </div>
+          </div>
+          <ul class="link-list">
+            <li>
+              <a href="phase 4/phase4.html" target="_blank">phase4.html</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="group">
+          <div class="group-head">
+            <span class="group-dot" style="background: var(--phase5)"></span>
+            <div>
+              <div class="group-title">Phase 5</div>
+              <div class="group-meta">1 file</div>
+            </div>
+          </div>
+          <ul class="link-list">
+            <li>
+              <a href="phase 5/phase5.html" target="_blank">phase5.html</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <footer>
+      Interview Prep index styled to match Phase 0 dashboard language.
+    </footer>
+  </body>
+</html>
