@@ -1006,12 +1006,14 @@ service.createPost("Tech news", new String[]{"Java","AI"}); // With tags
 ## Predict the Output
 
 ```java
+{% raw %}
 // Q1: What is the output?
 int[][] ar = {{1,2,3},{4,5},{6}};  // Jagged — can you tell?
 System.out.println(ar.length);
 System.out.println(ar[0].length);
 System.out.println(ar[1].length);
 // Answer: 3, 3, 2
+{% endraw %}
 ```
 
 ```java
