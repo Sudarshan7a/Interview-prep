@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 1 · Part 0 — Arrays + Hashing</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap');
+:root{
+  --bg:#060608;--s1:#0d0d11;--s2:#14141a;--s3:#1c1c24;--s4:#242430;
+  --b1:#2e2e3e;--b2:#484860;--b3:#6060a0;
+  --t1:#eeeef8;--t2:#9090b8;--t3:#505070;--t4:#303048;
+  --mono:'JetBrains Mono',monospace;
+  --head:'Bricolage Grotesque',sans-serif;
+  --body:'DM Sans',sans-serif;
+  --acc:#7c6fff;--acc2:#a78bfa;--acc3:#c4b5fd;
+  --green:#4ade80;--yellow:#facc15;--red:#f87171;--blue:#60a5fa;--orange:#fb923c;
+  --easy:#4ade80;--medium:#facc15;--hard:#f87171;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--t1);font-family:var(--body);font-size:14px;line-height:1.7;min-height:100vh;}
+
+/* ── STICKY NAV ── */
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(6,6,8,0.92);backdrop-filter:blur(12px);border-bottom:1px solid var(--s3);padding:10px 32px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.bar-left{display:flex;align-items:center;gap:16px;}
+.bar-badge{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--acc2);background:rgba(124,111,255,0.12);padding:4px 10px;border-radius:99px;border:1px solid rgba(124,111,255,0.25);}
+.bar-title{font-family:var(--mono);font-size:11px;color:var(--t2);}
+.bar-right{display:flex;gap:6px;flex-wrap:wrap;}
+.nav-pill{font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:99px;border:1px solid var(--b1);color:var(--t3);cursor:pointer;text-decoration:none;transition:all 0.15s;background:none;}
+.nav-pill:hover,.nav-pill.active{border-color:var(--acc);color:var(--acc2);}
+
+/* ── HERO ── */
+.hero{padding:64px 48px 52px;position:relative;overflow:hidden;border-bottom:1px solid var(--s3);}
+.hero::before{content:'';position:absolute;top:-120px;right:-120px;width:500px;height:500px;background:radial-gradient(circle,rgba(124,111,255,0.08) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'ARRAYS + HASHING';position:absolute;bottom:-30px;right:-10px;font-family:var(--head);font-size:120px;font-weight:800;color:rgba(255,255,255,0.015);pointer-events:none;line-height:1;white-space:nowrap;}
+.h-phase{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--acc);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.h-phase::before{content:'';width:24px;height:2px;background:var(--acc);}
+.hero h1{font-family:var(--head);font-size:clamp(32px,6vw,68px);font-weight:800;line-height:1.0;letter-spacing:-0.03em;margin-bottom:16px;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--acc),var(--acc3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-desc{font-size:14px;color:var(--t2);max-width:580px;line-height:1.75;margin-bottom:24px;}
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-num{font-family:var(--head);font-size:28px;font-weight:800;color:var(--acc2);}
+.stat-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-top:2px;}
+
+/* ── SECTIONS ── */
+.section{padding:48px;border-bottom:1px solid var(--s3);}
+.section-label{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--t3);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--s3);}
+.section h2{font-family:var(--head);font-size:28px;font-weight:800;margin-bottom:8px;letter-spacing:-0.01em;}
+.section-sub{font-size:13px;color:var(--t2);margin-bottom:24px;max-width:600px;line-height:1.6;}
+
+/* ── CONCEPT BLOCKS ── */
+.explain{font-size:14px;color:var(--t2);line-height:1.8;margin-bottom:16px;}
+.explain strong{color:var(--t1);}
+.explain code{font-family:var(--mono);font-size:12px;background:var(--s3);padding:1px 6px;border-radius:4px;color:var(--acc3);}
+
+.insight{background:linear-gradient(135deg,rgba(124,111,255,0.08),rgba(167,139,250,0.04));border:1px solid rgba(124,111,255,0.2);border-left:3px solid var(--acc);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:var(--t1);line-height:1.7;}
+.insight strong{color:var(--acc2);}
+.warn-box{background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.2);border-left:3px solid var(--orange);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:#fcd9b6;line-height:1.7;}
+.warn-box strong{color:var(--orange);}
+.good-box{background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:#bbf7d0;line-height:1.7;}
+.good-box strong{color:var(--green);}
+
+/* ── CODE BLOCKS ── */
+.code-wrap{background:var(--s1);border:1px solid var(--s3);border-radius:12px;overflow:hidden;margin:16px 0;}
+.code-header{background:var(--s2);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--s3);}
+.code-lang{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc2);}
+.code-label{font-family:var(--mono);font-size:9px;color:var(--t3);}
+.code-wrap pre{font-family:var(--mono);font-size:12px;line-height:1.85;padding:20px;color:#c8c8e8;overflow-x:auto;white-space:pre;}
+/* Syntax */
+.ck{color:#f87171;}.cs{color:#86efac;}.cn{color:#a5b4fc;}.cf{color:#fde68a;}
+.cc{color:#64748b;font-style:italic;}.ct{color:#7dd3fc;font-weight:600;}
+.co{color:#fb923c;}.cm{color:#c084fc;}
+
+/* ── THE 5-STEP INTERVIEW FRAMEWORK ── */
+.steps-grid{display:grid;gap:10px;margin:16px 0;}
+.step-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start;}
+.step-n{font-family:var(--head);font-size:32px;font-weight:800;color:var(--s4);flex-shrink:0;line-height:1;}
+.step-content{}
+.step-title{font-family:var(--head);font-size:15px;font-weight:700;color:var(--t1);margin-bottom:6px;}
+.step-text{font-size:12px;color:var(--t2);line-height:1.6;}
+.step-say{background:var(--s2);border-radius:6px;padding:8px 12px;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--green);line-height:1.6;}
+.step-say::before{content:'SAY: ';color:var(--t3);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;}
+
+/* ── PROBLEM CARDS ── */
+.problem-card{background:var(--s1);border:1px solid var(--s3);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.pc-header{padding:20px 24px 16px;border-bottom:1px solid var(--s3);}
+.pc-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.pc-num{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);}
+.diff-badge{font-family:var(--mono);font-size:9px;padding:3px 10px;border-radius:99px;font-weight:600;}
+.diff-easy{background:rgba(74,222,128,0.1);color:var(--easy);border:1px solid rgba(74,222,128,0.25);}
+.diff-medium{background:rgba(250,204,21,0.1);color:var(--medium);border:1px solid rgba(250,204,21,0.25);}
+.diff-hard{background:rgba(248,113,113,0.1);color:var(--hard);border:1px solid rgba(248,113,113,0.25);}
+.pc-title{font-family:var(--head);font-size:20px;font-weight:800;margin-bottom:4px;}
+.pc-lc{font-family:var(--mono);font-size:10px;color:var(--t3);}
+.pc-lc a{color:var(--acc2);text-decoration:none;}
+.pc-lc a:hover{text-decoration:underline;}
+
+.pc-tabs{display:flex;border-bottom:1px solid var(--s3);}
+.pc-tab{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:10px 18px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;transition:all 0.15s;background:none;border-top:none;border-left:none;border-right:none;}
+.pc-tab:hover{color:var(--t2);}
+.pc-tab.active{color:var(--acc2);border-bottom-color:var(--acc);}
+.pc-body{padding:22px 24px;}
+.pc-panel{display:none;}
+.pc-panel.active{display:block;}
+
+/* approach panel */
+.approach-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+.as-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--acc2);background:rgba(124,111,255,0.12);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.as-text{font-size:13px;color:var(--t2);line-height:1.6;}
+.as-text strong{color:var(--t1);}
+.as-text code{font-family:var(--mono);font-size:11px;background:var(--s3);padding:1px 5px;border-radius:3px;color:var(--acc3);}
+
+/* dialogue panel */
+.dialogue{background:var(--s2);border-radius:10px;padding:4px 0;margin:8px 0;}
+.d-line{display:flex;gap:10px;padding:8px 16px;font-size:13px;line-height:1.6;}
+.d-line:nth-child(even){background:var(--s3);}
+.d-speaker{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;flex-shrink:0;padding-top:2px;min-width:60px;}
+.d-iv{color:var(--orange);}
+.d-you{color:var(--acc2);}
+.d-msg{color:var(--t2);}
+.d-msg strong{color:var(--t1);}
+.d-msg em{color:var(--green);font-style:normal;font-family:var(--mono);font-size:11px;}
+
+/* complexity badge */
+.complexity-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 8px;}
+.cx-badge{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--s4);}
+.cx-time{border-color:rgba(124,111,255,0.3);color:var(--acc2);}
+.cx-space{border-color:rgba(74,222,128,0.3);color:var(--green);}
+
+.edge-list{list-style:none;}
+.edge-list li{font-size:13px;color:var(--t2);padding:6px 0;border-bottom:1px solid var(--s3);display:flex;gap:10px;}
+.edge-list li:last-child{border-bottom:none;}
+.edge-list li::before{content:'⚠';font-size:11px;margin-top:2px;flex-shrink:0;}
+
+/* ── PROBLEM BANK ── */
+.pb-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.pb-filter{font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:6px;border:1px solid var(--b1);color:var(--t3);cursor:pointer;background:none;transition:all 0.15s;}
+.pb-filter:hover,.pb-filter.active{background:var(--s2);border-color:var(--b2);color:var(--t1);}
+.pb-filter.easy-filter.active{border-color:var(--easy);color:var(--easy);}
+.pb-filter.med-filter.active{border-color:var(--medium);color:var(--medium);}
+.pb-filter.hard-filter.active{border-color:var(--hard);color:var(--hard);}
+
+.pb-list{display:grid;gap:6px;}
+.pb-item{background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;transition:border-color 0.15s;}
+.pb-item:hover{border-color:var(--b2);}
+.pb-cb{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--b1);flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all 0.15s;}
+.pb-item.solved .pb-cb{background:var(--green);border-color:var(--green);color:#000;}
+.pb-num{font-family:var(--mono);font-size:10px;color:var(--t3);flex-shrink:0;min-width:36px;}
+.pb-name{flex:1;font-size:13px;color:var(--t2);}
+.pb-name a{color:inherit;text-decoration:none;}
+.pb-name a:hover{color:var(--acc2);}
+.pb-item.solved .pb-name{color:var(--t4);text-decoration:line-through;}
+.pb-diff{font-family:var(--mono);font-size:9px;flex-shrink:0;}
+.pb-diff.e{color:var(--easy);}
+.pb-diff.m{color:var(--medium);}
+.pb-diff.h{color:var(--hard);}
+.pb-pattern{font-family:var(--mono);font-size:9px;color:var(--t4);flex-shrink:0;display:none;}
+@media(min-width:700px){.pb-pattern{display:block;}}
+
+/* progress bar inside bank */
+.bank-progress{background:var(--s2);border:1px solid var(--s3);border-radius:10px;padding:16px 20px;margin-bottom:16px;}
+.bp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.bp-label{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);}
+.bp-count{font-family:var(--head);font-size:18px;font-weight:800;color:var(--acc2);}
+.bp-track{height:5px;background:var(--s3);border-radius:99px;overflow:hidden;}
+.bp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--green));border-radius:99px;transition:width 0.4s ease;width:0%;}
+
+/* ── Q&A ── */
+.qa-list{display:grid;gap:8px;}
+.qa{background:var(--s1);border:1px solid var(--s3);border-radius:10px;overflow:hidden;}
+.qa-q{padding:14px 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;transition:background 0.15s;}
+.qa-q:hover{background:var(--s2);}
+.qa-arr{color:var(--t3);font-size:10px;flex-shrink:0;margin-top:3px;transition:transform 0.2s;}
+.qa.open .qa-arr{transform:rotate(180deg);}
+.qa-a{display:none;padding:16px 18px;border-top:1px solid var(--s3);font-size:13px;color:var(--t2);line-height:1.8;background:var(--s2);}
+.qa.open .qa-a{display:block;}
+.qa-a strong{color:var(--t1);}
+.qa-a code{font-family:var(--mono);font-size:11px;background:var(--s3);padding:1px 5px;border-radius:3px;color:var(--acc3);}
+.qa-tag{font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;margin-right:6px;vertical-align:middle;}
+.tag-core{background:rgba(124,111,255,0.12);color:var(--acc2);}
+.tag-interview{background:rgba(250,204,21,0.1);color:var(--yellow);}
+.tag-trap{background:rgba(248,113,113,0.1);color:var(--red);}
+
+/* ── REVISION CARD ── */
+.rev-card{background:linear-gradient(135deg,rgba(124,111,255,0.06),rgba(167,139,250,0.03));border:1px solid rgba(124,111,255,0.15);border-radius:14px;padding:24px;margin-top:20px;}
+.rev-title{font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:14px;color:var(--acc2);}
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:580px){.rev-grid{grid-template-columns:1fr;}}
+.rev-item{font-size:12px;color:var(--t2);padding:6px 0 6px 16px;position:relative;line-height:1.5;}
+.rev-item::before{content:'→';position:absolute;left:0;color:var(--acc);font-family:var(--mono);}
+.rev-item strong{color:var(--t1);}
+
+@media(max-width:640px){
+  .section,.hero{padding:28px 20px;}
+  .top-bar{padding:10px 16px;}
+  .hero h1{font-size:32px;}
+  .pc-tabs{overflow-x:auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- ── TOP BAR ── -->
+<div class="top-bar">
+  <div class="bar-left">
+    <span class="bar-badge">Phase 1 · Part 0</span>
+    <span class="bar-title">Arrays + Hashing</span>
+  </div>
+  <div class="bar-right">
+    <a class="nav-pill" href="#concept">Concept</a>
+    <a class="nav-pill" href="#approach">Interview Framework</a>
+    <a class="nav-pill" href="#template">Template</a>
+    <a class="nav-pill" href="#problems">Solved Problems</a>
+    <a class="nav-pill" href="#bank">Problem Bank</a>
+    <a class="nav-pill" href="#qa">Q&amp;A</a>
+  </div>
+</div>
+
+<!-- ── HERO ── -->
+<div class="hero">
+  <div class="h-phase">Phase 1 · Part 0 of 7 · DSA Patterns</div>
+  <h1>Arrays +<br><em>Hashing</em></h1>
+  <p class="hero-desc">The most frequent DSA pattern in coding interviews. Once you see the O(n²) → O(n) jump that a HashMap gives you, you'll recognize this pattern in 30% of all LeetCode problems. Learn it cold.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">40</div><div class="stat-label">Problems</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Solved + Explained</div></div>
+    <div class="stat"><div class="stat-num">15</div><div class="stat-label">Interview Q&amp;As</div></div>
+    <div class="stat"><div class="stat-num">1–2wk</div><div class="stat-label">Suggested Pace</div></div>
+  </div>
+</div>
+
+<!-- ══ CONCEPT ══ -->
+<div class="section" id="concept">
+  <div class="section-label">Section 01</div>
+  <h2>The Core Idea</h2>
+  <div class="section-sub">What the pattern is, why it exists, and exactly when to recognize it during an interview.</div>
+
+  <p class="explain">
+    Almost every array problem starts with <strong>nested loops</strong>. For each element, check all other elements — that's O(n²). The question is: <strong>can you trade space for time?</strong> A HashMap (or JavaScript's Map/Object) gives you O(1) lookup, making the nested loop unnecessary.
+  </p>
+
+  <div class="insight">
+    <strong>The core insight:</strong> When you find yourself writing "for each element, search the rest of the array," that's a signal. Stop. Ask: "Can I store what I've already seen in a HashMap and look it up in O(1) instead?"
+  </div>
+
+  <p class="explain">
+    The transformation is always the same: instead of <strong>scanning backwards</strong> through elements you've already visited, you <strong>store them in a map</strong> as you go and look them up instantly.
+  </p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">O(n²) → O(n) transformation</span></div>
+    <pre>
+<span class="cc">// ❌ Brute force — nested loop — O(n²)</span>
+<span class="ck">function</span> <span class="cf">twoSum_slow</span>(nums, target) {
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i < nums.length; i++) {
+        <span class="ck">for</span> (<span class="ck">let</span> j = i + <span class="cn">1</span>; j < nums.length; j++) {
+            <span class="cc">// For each element, scan all others → O(n²)</span>
+            <span class="ck">if</span> (nums[i] + nums[j] === target) <span class="ck">return</span> [i, j];
+        }
+    }
+}
+
+<span class="cc">// ✅ HashMap — single pass — O(n)</span>
+<span class="ck">function</span> <span class="cf">twoSum_fast</span>(nums, target) {
+    <span class="ck">const</span> seen = <span class="ck">new</span> <span class="ct">Map</span>(); <span class="cc">// stores: value → index</span>
+
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i < nums.length; i++) {
+        <span class="ck">const</span> complement = target - nums[i];
+        <span class="cc">// Instead of scanning: check the map in O(1)</span>
+        <span class="ck">if</span> (seen.<span class="cf">has</span>(complement)) {
+            <span class="ck">return</span> [seen.<span class="cf">get</span>(complement), i];
+        }
+        seen.<span class="cf">set</span>(nums[i], i); <span class="cc">// store: what have I seen so far?</span>
+    }
+}
+<span class="cc">// The map replaces the inner loop. Same logic, O(n) instead of O(n²).</span></pre>
+  </div>
+
+  <p class="explain">
+    <strong>When to recognize this pattern:</strong>
+  </p>
+
+  <div class="good-box">
+    <strong>Use Arrays + Hashing when the problem involves:</strong><br><br>
+    ✓ "Find two elements that sum to X" (Two Sum family)<br>
+    ✓ "Find duplicates" (Contains Duplicate family)<br>
+    ✓ "Check if two strings are anagrams" (frequency counting)<br>
+    ✓ "Group elements by some property" (Group Anagrams)<br>
+    ✓ "Find the most frequent element" (frequency map)<br>
+    ✓ "Check if a string/array contains all elements of another" (subset check)<br>
+    ✓ Any time you need to look something up that you've already seen
+  </div>
+
+  <div class="warn-box">
+    <strong>Don't use this pattern when:</strong><br><br>
+    ✗ Array is sorted → Binary Search or Two Pointers is likely better<br>
+    ✗ Problem involves contiguous subarrays with a condition → Sliding Window<br>
+    ✗ Space must be O(1) → Interviewer wants a different approach<br>
+    ✗ Order matters and you need to look ahead, not back → Two Pointers
+  </div>
+
+  <p class="explain">
+    <strong>HashMap in JavaScript — the three options:</strong>
+  </p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Map vs Object vs Set — when to use each</span></div>
+    <pre>
+<span class="cc">// Map: best general-purpose, any key type, preserves insertion order</span>
+<span class="ck">const</span> map = <span class="ck">new</span> <span class="ct">Map</span>();
+map.<span class="cf">set</span>(<span class="cs">'key'</span>, <span class="cn">1</span>);          <span class="cc">// O(1) set</span>
+map.<span class="cf">get</span>(<span class="cs">'key'</span>);              <span class="cc">// O(1) get → 1</span>
+map.<span class="cf">has</span>(<span class="cs">'key'</span>);              <span class="cc">// O(1) check → true</span>
+map.<span class="cf">delete</span>(<span class="cs">'key'</span>);           <span class="cc">// O(1) delete</span>
+map.size;                     <span class="cc">// length of map</span>
+
+<span class="cc">// Object: fine when keys are strings (simpler syntax)</span>
+<span class="ck">const</span> freq = {};
+freq[<span class="cs">'a'</span>] = (freq[<span class="cs">'a'</span>] || <span class="cn">0</span>) + <span class="cn">1</span>;  <span class="cc">// count frequency</span>
+
+<span class="cc">// Set: when you only need existence check, not a value</span>
+<span class="ck">const</span> seen = <span class="ck">new</span> <span class="ct">Set</span>();
+seen.<span class="cf">add</span>(<span class="cn">42</span>);               <span class="cc">// O(1)</span>
+seen.<span class="cf">has</span>(<span class="cn">42</span>);               <span class="cc">// O(1) → true (no value needed)</span>
+
+<span class="cc">// Rule of thumb:</span>
+<span class="cc">// Need value?     → Map  (twoSum: store index)</span>
+<span class="cc">// Need existence? → Set  (contains duplicate)</span>
+<span class="cc">// Counting chars? → Object  (simpler syntax for string keys)</span></pre>
+  </div>
+</div>
+
+<!-- ══ INTERVIEW FRAMEWORK ══ -->
+<div class="section" id="approach">
+  <div class="section-label">Section 02</div>
+  <h2>The 5-Step Interview Framework</h2>
+  <div class="section-sub">Exactly what to do and say from the moment the interviewer gives you a problem. Do this for every single problem — not just arrays + hashing.</div>
+
+  <div class="insight">
+    <strong>Most freshers fail not because they can't code the solution, but because they jump straight to coding.</strong> Interviewers at Swiggy/PhonePe level test your process, not your speed. A slower thinker who explains clearly beats a fast coder who says nothing.
+  </div>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-n">1</div>
+      <div class="step-content">
+        <div class="step-title">Understand — Ask clarifying questions</div>
+        <div class="step-text">
+          Before touching code or even thinking about the approach, ask questions. You need to understand the constraints. Every question you ask shows maturity. Never assume.
+          <br><br>
+          Ask: <strong>Input type/range</strong> (integers only? can be negative?), <strong>edge cases</strong> (empty array? single element?), <strong>return type</strong> (indices? values?), <strong>space constraints</strong> (must it be O(1) space?), <strong>duplicates</strong> (can there be duplicates?).
+        </div>
+        <div class="step-say">"Before I start — can the array be empty? Can elements be negative? Are there duplicate values? Should I return indices or values?"</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-n">2</div>
+      <div class="step-content">
+        <div class="step-title">Brute Force first — say it aloud, don't code it</div>
+        <div class="step-text">
+          Always identify the brute force solution first — even if you know the optimal. This shows you can reason from first principles. Mention why it's slow. Then say you'll optimize.
+          <br><br>
+          Never skip this step. It shows the interviewer you understand complexity tradeoffs.
+        </div>
+        <div class="step-say">"The naive approach is a nested loop — O(n²) time. For each element, I scan the rest to find its pair. That's too slow for large inputs. Let me optimize."</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-n">3</div>
+      <div class="step-content">
+        <div class="step-title">Explain your approach — before writing a single line</div>
+        <div class="step-text">
+          Describe your optimized solution in plain English. Draw the mental model. If using a HashMap, explain what you're storing as keys and what as values. Only start coding after the interviewer nods.
+          <br><br>
+          <strong>This is where most interviews are won or lost.</strong> A clear explanation means the interviewer can follow your code. Silence means they can't evaluate you.
+        </div>
+        <div class="step-say">"I'll use a HashMap to store elements I've already seen. As I iterate, I compute the complement I need. If the complement is in the map, I found the pair. One pass, O(n) time, O(n) space. Does that approach make sense before I code it?"</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-n">4</div>
+      <div class="step-content">
+        <div class="step-title">Code — while narrating every meaningful line</div>
+        <div class="step-text">
+          Write code top-to-bottom, narrating as you go. Don't code in silence. Skip narrating obvious things (variable declarations), but explain every non-obvious decision.
+          <br><br>
+          If you get stuck: <strong>don't freeze</strong>. Say "let me think through this" and reason aloud. An interviewer who hears your thinking can help you. Silence means they can't.
+        </div>
+        <div class="step-say">"I'm creating a Map... now iterating... computing the complement for this element... checking if I've seen it before... if yes, return the indices... if not, store the current element and keep going."</div>
+      </div>
+    </div>
+
+    <div class="step-card">
+      <div class="step-n">5</div>
+      <div class="step-content">
+        <div class="step-title">Verify — test with an example, state complexity, check edge cases</div>
+        <div class="step-text">
+          After coding: trace through a small example manually. State time and space complexity with reasoning. Then go through edge cases you identified in Step 1.
+          <br><br>
+          Don't wait for the interviewer to ask. Proactively say: "Let me verify this works and check edge cases."
+        </div>
+        <div class="step-say">"Let me trace through: nums=[2,7,11], target=9. i=0: complement=7, not in map, store {2:0}. i=1: complement=2, found in map at index 0, return [0,1]. ✓ Time: O(n) — one pass. Space: O(n) — map up to n entries. Edge case: empty array returns undefined — I should add a guard if needed."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    <strong>When you get stuck mid-problem (it will happen):</strong><br><br>
+    ✓ Say: "Let me think about this for a moment..." — then actually think aloud<br>
+    ✓ Say: "The brute force here would be... can I do better?"<br>
+    ✓ Say: "I'm not sure about this edge case — what should happen when...?"<br>
+    ✗ Never: sit in silence for more than 30 seconds<br>
+    ✗ Never: say "I don't know" and stop — always show your thinking process<br>
+    ✗ Never: start coding before explaining — this is the most common mistake
+  </div>
+</div>
+
+<!-- ══ TEMPLATE ══ -->
+<div class="section" id="template">
+  <div class="section-label">Section 03</div>
+  <h2>The Arrays + Hashing Template</h2>
+  <div class="section-sub">Every arrays + hashing problem is a variation of one of these 4 templates. Memorize the skeleton — fill in the logic per problem.</div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template 1 — Find pair with condition (Two Sum family)</span></div>
+    <pre>
+<span class="ck">function</span> <span class="cf">findPair</span>(nums, target) {
+    <span class="ck">const</span> seen = <span class="ck">new</span> <span class="ct">Map</span>(); <span class="cc">// key: element value, value: index (or anything useful)</span>
+
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i < nums.length; i++) {
+        <span class="ck">const</span> complement = <span class="cc">/* what you need */</span> target - nums[i];
+
+        <span class="ck">if</span> (seen.<span class="cf">has</span>(complement)) {
+            <span class="ck">return</span> [seen.<span class="cf">get</span>(complement), i]; <span class="cc">// found! return what's needed</span>
+        }
+
+        seen.<span class="cf">set</span>(nums[i], i); <span class="cc">// store: element → its index</span>
+    }
+
+    <span class="ck">return</span> []; <span class="cc">// no pair found</span>
+}
+<span class="cc">// What changes per problem: complement formula, what you store, what you return</span></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template 2 — Detect duplicates / check membership</span></div>
+    <pre>
+<span class="ck">function</span> <span class="cf">hasDuplicate</span>(nums) {
+    <span class="ck">const</span> seen = <span class="ck">new</span> <span class="ct">Set</span>(); <span class="cc">// Set when you only need existence, not a value</span>
+
+    <span class="ck">for</span> (<span class="ck">const</span> num <span class="ck">of</span> nums) {
+        <span class="ck">if</span> (seen.<span class="cf">has</span>(num)) <span class="ck">return true</span>; <span class="cc">// seen before → duplicate</span>
+        seen.<span class="cf">add</span>(num);
+    }
+
+    <span class="ck">return false</span>;
+}
+<span class="cc">// What changes: the condition for "already seen", what to return</span></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template 3 — Frequency counting (anagram / most frequent)</span></div>
+    <pre>
+<span class="ck">function</span> <span class="cf">countFreq</span>(s) {
+    <span class="ck">const</span> freq = {}; <span class="cc">// or new Map() — object is cleaner for char counting</span>
+
+    <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> s) {
+        freq[ch] = (freq[ch] || <span class="cn">0</span>) + <span class="cn">1</span>; <span class="cc">// increment or initialize to 1</span>
+    }
+
+    <span class="ck">return</span> freq;
+}
+
+<span class="cc">// Compare two freq maps (for anagram check):</span>
+<span class="ck">function</span> <span class="cf">isAnagram</span>(s, t) {
+    <span class="ck">if</span> (s.length !== t.length) <span class="ck">return false</span>; <span class="cc">// early exit</span>
+    <span class="ck">const</span> freq = {};
+    <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> s) freq[ch] = (freq[ch] || <span class="cn">0</span>) + <span class="cn">1</span>;
+    <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> t) {
+        <span class="ck">if</span> (!freq[ch]) <span class="ck">return false</span>; <span class="cc">// char missing or count exhausted</span>
+        freq[ch]--;
+    }
+    <span class="ck">return true</span>;
+}</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template 4 — Group by key (Group Anagrams family)</span></div>
+    <pre>
+<span class="ck">function</span> <span class="cf">groupBy</span>(items) {
+    <span class="ck">const</span> groups = <span class="ck">new</span> <span class="ct">Map</span>(); <span class="cc">// key: canonical form, value: array of items</span>
+
+    <span class="ck">for</span> (<span class="ck">const</span> item <span class="ck">of</span> items) {
+        <span class="ck">const</span> key = <span class="cf">getKey</span>(item); <span class="cc">// derive a canonical key for the group</span>
+
+        <span class="ck">if</span> (!groups.<span class="cf">has</span>(key)) groups.<span class="cf">set</span>(key, []);
+        groups.<span class="cf">get</span>(key).<span class="cf">push</span>(item);
+    }
+
+    <span class="ck">return</span> [...groups.<span class="cf">values</span>()]; <span class="cc">// return grouped arrays</span>
+}
+<span class="cc">// What changes: getKey() function</span>
+<span class="cc">// For anagrams: key = sorted string ("eat" → "aet")</span>
+<span class="cc">// For same-length: key = item.length</span>
+<span class="cc">// For same-sum: key = sum of digits</span></pre>
+  </div>
+</div>
+
+<!-- ══ SOLVED PROBLEMS ══ -->
+<div class="section" id="problems">
+  <div class="section-label">Section 04</div>
+  <h2>5 Fully Solved Problems</h2>
+  <div class="section-sub">Each problem has 4 tabs: Approach (how to think), Interview Dialogue (what to say), Code (final solution), and Complexity + Edge Cases. Study all 4 tabs — not just the code.</div>
+
+  <!-- ── PROBLEM 1: Two Sum ── -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row">
+        <span class="pc-num">Problem 01 of 05</span>
+        <span class="diff-badge diff-easy">Easy</span>
+      </div>
+      <div class="pc-title">Two Sum</div>
+      <div class="pc-lc">LeetCode #1 · <a href="https://leetcode.com/problems/two-sum/" target="_blank">leetcode.com/problems/two-sum</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p1-approach')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-dialogue')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-code')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-edges')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p1-approach">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Given array <code>nums</code> and integer <code>target</code>. Return indices of two numbers that add to target. Exactly one solution guaranteed.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Brute force:</strong> Two nested loops. For each element at <code>i</code>, scan every element at <code>j &gt; i</code>. Check if <code>nums[i] + nums[j] === target</code>. O(n²) time — too slow.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Key insight:</strong> For each element <code>nums[i]</code>, I need to know if <code>target - nums[i]</code> exists in the array. Instead of scanning — store seen elements in a Map. Check in O(1).</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Optimal plan:</strong> One pass. At each index: compute <code>complement = target - nums[i]</code>. If complement is already in the Map → return both indices. Else store <code>nums[i] → i</code> in the Map and continue.</div></div>
+        <div class="approach-step"><div class="as-num">5</div><div class="as-text"><strong>Why single pass works:</strong> We only need to find the pair. When we're at index <code>i</code>, the complement's index (if it exists) was already stored during a previous iteration. We don't need to look ahead.</div></div>
+      </div>
+
+      <div class="pc-panel" id="p1-dialogue">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Given an array of integers and a target. Return indices of two numbers that add to the target.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Before I start — can there be negative numbers? Can the same element be used twice? Is there always exactly one answer?</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Yes, negatives are possible. No, use each element once. Yes, exactly one answer.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">The brute force is two nested loops — O(n²). For each element, check every other element. That'll work but is too slow. <strong>Let me think of something better.</strong></div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">If I'm at element X, I need to know if <em>target - X</em> exists anywhere earlier. Instead of scanning, I'll use a HashMap — store elements I've seen so far. At each step, compute the complement and look it up in O(1). One pass, O(n) total.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Good. What will you store in the map?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Key: the element's value. Value: its index. When I find the complement, I need to return both indices — so I need to know where the complement was.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Go ahead and code it.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg"><em>[codes while narrating]</em> Creating the map... iterating... complement is target minus current element... if map has it, return the complement's index and current index... else store current element and keep going.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Let me trace: nums=[2,7,11,15], target=9. i=0: comp=7, not in map, store {2:0}. i=1: comp=2, found at index 0. Return [0,1]. ✓ Time O(n), Space O(n).</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What if there's no valid answer?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">The problem guarantees exactly one answer, so this case won't occur. But defensively, the loop exits without returning — I could return an empty array or -1 as a signal.</div></div>
+        </div>
+      </div>
+
+      <div class="pc-panel" id="p1-code">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Two Sum — O(n) solution</span></div>
+          <pre>
+<span class="cc">/**
+ * @param {number[]} nums
+ * @param {number} target
+ * @return {number[]}
+ */</span>
+<span class="ck">function</span> <span class="cf">twoSum</span>(nums, target) {
+    <span class="cc">// Map: element value → index</span>
+    <span class="ck">const</span> seen = <span class="ck">new</span> <span class="ct">Map</span>();
+
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i < nums.length; i++) {
+        <span class="ck">const</span> complement = target - nums[i];
+
+        <span class="cc">// Is the number I need already stored?</span>
+        <span class="ck">if</span> (seen.<span class="cf">has</span>(complement)) {
+            <span class="ck">return</span> [seen.<span class="cf">get</span>(complement), i];
+        }
+
+        <span class="cc">// Store current element so future iterations can find it</span>
+        seen.<span class="cf">set</span>(nums[i], i);
+    }
+
+    <span class="cc">// Problem guarantees one answer, but handle gracefully</span>
+    <span class="ck">return</span> [];
+}</pre>
+        </div>
+      </div>
+
+      <div class="pc-panel" id="p1-edges">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — one pass</span>
+          <span class="cx-badge cx-space">Space: O(n) — map stores up to n elements</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Same element twice:</strong> e.g. [3,3], target=6. Works correctly — at i=1, complement=3, found at index 0 (stored in previous step). Returns [0,1].</li>
+          <li><strong>Negative numbers:</strong> e.g. [-1, -2], target=-3. Works — complement = -3 - (-1) = -2, found at i=1. Map handles negative keys fine.</li>
+          <li><strong>Array of length 2:</strong> Only one pair possible. Works — i=0 stores first element, i=1 finds complement.</li>
+          <li><strong>Large values:</strong> JS Map handles any integer key. No overflow concern in JS (numbers are floats).</li>
+          <li><strong>Multiple possible pairs:</strong> Problem guarantees one answer. If it didn't — we'd need to handle returning multiple or all pairs.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROBLEM 2: Contains Duplicate ── -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row">
+        <span class="pc-num">Problem 02 of 05</span>
+        <span class="diff-badge diff-easy">Easy</span>
+      </div>
+      <div class="pc-title">Contains Duplicate</div>
+      <div class="pc-lc">LeetCode #217 · <a href="https://leetcode.com/problems/contains-duplicate/" target="_blank">leetcode.com/problems/contains-duplicate</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p2-approach')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-dialogue')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-code')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-edges')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p2-approach">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Return <code>true</code> if any value appears at least twice. Return <code>false</code> if all elements are distinct.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Brute force:</strong> Two loops, compare every pair. O(n²). Or sort the array and check adjacent elements — O(n log n). Both valid but not optimal.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Key insight:</strong> I don't need the index or any value associated with what I've seen — just existence. A <code>Set</code> is perfect here. As I iterate, if I've seen the element before, it's a duplicate. Otherwise add it and continue.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Shortcut:</strong> <code>new Set(nums).size !== nums.length</code> — if the set has fewer elements than the array, there were duplicates. One-liner but slightly less efficient (builds entire set even after finding first duplicate).</div></div>
+      </div>
+
+      <div class="pc-panel" id="p2-dialogue">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Given an integer array, return true if any value appears at least twice.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Can the array be empty? What should I return in that case?</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Array will have at least 1 element.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">I can think of three approaches. Brute force: compare every pair — O(n²). Sort and check adjacents — O(n log n). Or use a Set for O(n) time — I only need to know if I've seen something before, not its index, so a Set is ideal.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Go with the O(n) approach.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">As I iterate, before adding each element to the Set, I check if it's already there. If yes — duplicate found, return true immediately. If I finish without finding one — return false. Early return is important here — no need to continue once we've found a duplicate.</div></div>
+        </div>
+      </div>
+
+      <div class="pc-panel" id="p2-code">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Contains Duplicate — O(n)</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">containsDuplicate</span>(nums) {
+    <span class="ck">const</span> seen = <span class="ck">new</span> <span class="ct">Set</span>();
+
+    <span class="ck">for</span> (<span class="ck">const</span> num <span class="ck">of</span> nums) {
+        <span class="ck">if</span> (seen.<span class="cf">has</span>(num)) <span class="ck">return true</span>; <span class="cc">// early return on first duplicate</span>
+        seen.<span class="cf">add</span>(num);
+    }
+
+    <span class="ck">return false</span>;
+}
+
+<span class="cc">// One-liner alternative (slightly less efficient — no early exit):</span>
+<span class="cc">// return new Set(nums).size !== nums.length;</span></pre>
+        </div>
+      </div>
+
+      <div class="pc-panel" id="p2-edges">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — one pass, early exit</span>
+          <span class="cx-badge cx-space">Space: O(n) — set stores up to n elements</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Single element:</strong> [1] → Set gets 1, loop ends, return false. Correct — no duplicate.</li>
+          <li><strong>All duplicates:</strong> [1,1,1] → At i=1, seen has 1, return true immediately. Efficient — doesn't scan rest.</li>
+          <li><strong>Duplicate at end:</strong> [1,2,3,4,1] → All 4 stored, at i=4 sees 1 in set, returns true.</li>
+          <li><strong>The one-liner:</strong> Fine for interviews, but the loop with early exit is better for large arrays — stops as soon as duplicate found.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROBLEM 3: Valid Anagram ── -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row">
+        <span class="pc-num">Problem 03 of 05</span>
+        <span class="diff-badge diff-easy">Easy</span>
+      </div>
+      <div class="pc-title">Valid Anagram</div>
+      <div class="pc-lc">LeetCode #242 · <a href="https://leetcode.com/problems/valid-anagram/" target="_blank">leetcode.com/problems/valid-anagram</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p3-approach')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-dialogue')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-code')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-edges')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p3-approach">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Given strings <code>s</code> and <code>t</code>, return true if <code>t</code> is an anagram of <code>s</code>. An anagram uses the same characters the same number of times, in any order.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Brute force / simple:</strong> Sort both strings and compare — <code>s.split('').sort().join('') === t.split('').sort().join('')</code>. O(n log n) due to sorting. Valid, but O(n) is possible.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Key insight:</strong> Two strings are anagrams if and only if they have the <strong>same character frequency map</strong>. Count chars in <code>s</code>, then subtract counts using <code>t</code>. If any count goes negative or chars from <code>t</code> are absent → not an anagram.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Optimal plan:</strong> Build frequency map for <code>s</code>. Iterate <code>t</code>: for each char, if absent or count is 0 → return false. Decrement count. After both loops, all counts are 0 if truly an anagram — but we don't need a final check since we verified during iteration.</div></div>
+        <div class="approach-step"><div class="as-num">5</div><div class="as-text"><strong>Early exit:</strong> If <code>s.length !== t.length</code>, they can't be anagrams. Return false immediately — saves time.</div></div>
+      </div>
+
+      <div class="pc-panel" id="p3-dialogue">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Check if two strings are anagrams.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Just lowercase letters? Or Unicode characters too?</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Lowercase English letters only.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">First quick win: if lengths differ, immediately return false — can't be an anagram. Otherwise, I need to verify both have the exact same character counts. I'll build a frequency map from s, then subtract using t. If any char is missing or goes to zero before we expect — not an anagram.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Could you also sort both strings?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Yes — sort both and compare. O(n log n). The HashMap approach is O(n) — one pass for each string. For large strings, that's meaningfully faster. I'll go with HashMap unless you want the simpler sorting version.</div></div>
+        </div>
+      </div>
+
+      <div class="pc-panel" id="p3-code">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Valid Anagram — O(n)</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">isAnagram</span>(s, t) {
+    <span class="cc">// Early exit: lengths must match</span>
+    <span class="ck">if</span> (s.length !== t.length) <span class="ck">return false</span>;
+
+    <span class="ck">const</span> freq = {};
+
+    <span class="cc">// Build frequency map from s</span>
+    <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> s) {
+        freq[ch] = (freq[ch] || <span class="cn">0</span>) + <span class="cn">1</span>;
+    }
+
+    <span class="cc">// Subtract using t — if char missing or overused → false</span>
+    <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> t) {
+        <span class="ck">if</span> (!freq[ch]) <span class="ck">return false</span>; <span class="cc">// missing or count is 0</span>
+        freq[ch]--;
+    }
+
+    <span class="ck">return true</span>;
+}
+
+<span class="cc">// Alternative — sorting (O(n log n), easier to remember):</span>
+<span class="cc">// return s.split('').sort().join('') === t.split('').sort().join('');</span></pre>
+        </div>
+      </div>
+
+      <div class="pc-panel" id="p3-edges">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — two single passes</span>
+          <span class="cx-badge cx-space">Space: O(1) — at most 26 chars (lowercase only)</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Same string:</strong> "abc", "abc" → same frequency → true.</li>
+          <li><strong>Extra chars in t:</strong> "ab", "abc" → length check catches this → false.</li>
+          <li><strong>Different char, same length:</strong> "ab", "cd" → freq['c'] is undefined → !freq['c'] is true → return false.</li>
+          <li><strong>Space is O(1) not O(n):</strong> The freq object only has at most 26 keys (lowercase letters) — constant, not proportional to input size. Know this distinction — interviewers ask.</li>
+          <li><strong>Unicode follow-up:</strong> If chars can be Unicode, change to <code>new Map()</code>. Object keys are coerced to strings — might cause issues with some Unicode. Map handles any key type.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROBLEM 4: Group Anagrams ── -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row">
+        <span class="pc-num">Problem 04 of 05</span>
+        <span class="diff-badge diff-medium">Medium</span>
+      </div>
+      <div class="pc-title">Group Anagrams</div>
+      <div class="pc-lc">LeetCode #49 · <a href="https://leetcode.com/problems/group-anagrams/" target="_blank">leetcode.com/problems/group-anagrams</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p4-approach')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-dialogue')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-code')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-edges')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p4-approach">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Given array of strings, group anagrams together. Return list of groups. Order doesn't matter.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Key insight:</strong> All anagrams of a word have the same letters in sorted order. "eat", "tea", "ate" all sort to "aet". This sorted string is the <strong>canonical key</strong> for the group.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Plan:</strong> Use Template 4 (Group By). For each word: sort its characters → use as Map key. Push the word into that group. Return all Map values.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Why Map not Object:</strong> Keys can be any string. A regular object would work too, but Map is more idiomatic for this use case and slightly safer for unusual key values.</div></div>
+        <div class="approach-step"><div class="as-num">5</div><div class="as-text"><strong>Time complexity:</strong> For each of the <code>n</code> strings, sorting it takes <code>O(k log k)</code> where <code>k</code> is the string's length. Total: <code>O(n × k log k)</code>. HashMap operations are O(k) for string key hashing. Overall O(nk log k).</div></div>
+      </div>
+
+      <div class="pc-panel" id="p4-dialogue">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Group anagrams from an array of strings.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Can strings be empty? Can the array be empty? Are strings lowercase only?</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Strings consist of lowercase letters. Array has at least one element.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">The key observation: anagrams are the same word rearranged, so they all have the same characters. If I sort each string's characters, all anagrams in a group will produce the same sorted string. That sorted string is my canonical key.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">I'll use a HashMap: key is the sorted word, value is an array of words that sort to that key. At the end, return all the map's values.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What's the time complexity?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">For each of n words, sorting takes O(k log k) where k is the word length. So total is O(n × k log k). Space is O(n × k) for storing all strings in the map.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Can you do it without sorting each string?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Yes — instead of sorted string, use a character frequency array of length 26 as the key. For "eat": [1,0,0,0,1,0,...,1,...] (a=1, e=1, t=1). Join with a separator like "#" for the key string. That's O(k) per word instead of O(k log k). Total O(nk). Want me to code that version?</div></div>
+        </div>
+      </div>
+
+      <div class="pc-panel" id="p4-code">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Group Anagrams — sorted key approach</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">groupAnagrams</span>(strs) {
+    <span class="ck">const</span> groups = <span class="ck">new</span> <span class="ct">Map</span>(); <span class="cc">// sorted-word → [original words]</span>
+
+    <span class="ck">for</span> (<span class="ck">const</span> word <span class="ck">of</span> strs) {
+        <span class="cc">// Canonical key: sorted characters of the word</span>
+        <span class="ck">const</span> key = word.<span class="cf">split</span>(<span class="cs">''</span>).<span class="cf">sort</span>().<span class="cf">join</span>(<span class="cs">''</span>);
+
+        <span class="ck">if</span> (!groups.<span class="cf">has</span>(key)) groups.<span class="cf">set</span>(key, []);
+        groups.<span class="cf">get</span>(key).<span class="cf">push</span>(word);
+    }
+
+    <span class="ck">return</span> [...groups.<span class="cf">values</span>()];
+}
+
+<span class="cc">// Optimized version — O(n*k) using frequency array key</span>
+<span class="ck">function</span> <span class="cf">groupAnagramsFast</span>(strs) {
+    <span class="ck">const</span> groups = <span class="ck">new</span> <span class="ct">Map</span>();
+
+    <span class="ck">for</span> (<span class="ck">const</span> word <span class="ck">of</span> strs) {
+        <span class="ck">const</span> count = <span class="ck">new</span> <span class="ct">Array</span>(<span class="cn">26</span>).<span class="cf">fill</span>(<span class="cn">0</span>);
+        <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> word) {
+            count[ch.<span class="cf">charCodeAt</span>(<span class="cn">0</span>) - <span class="cs">'a'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>)]++;
+        }
+        <span class="ck">const</span> key = count.<span class="cf">join</span>(<span class="cs">'#'</span>); <span class="cc">// unique key per frequency profile</span>
+
+        <span class="ck">if</span> (!groups.<span class="cf">has</span>(key)) groups.<span class="cf">set</span>(key, []);
+        groups.<span class="cf">get</span>(key).<span class="cf">push</span>(word);
+    }
+
+    <span class="ck">return</span> [...groups.<span class="cf">values</span>()];
+}</pre>
+        </div>
+      </div>
+
+      <div class="pc-panel" id="p4-edges">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n·k·log k) sorted / O(n·k) freq array</span>
+          <span class="cx-badge cx-space">Space: O(n·k) — storing all strings</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Single-char strings:</strong> ["a","b","a"] → "a" and "a" group together, "b" is alone. Works correctly.</li>
+          <li><strong>All same anagram:</strong> ["abc","bca","cab"] → all map to "abc" → one group of 3.</li>
+          <li><strong>No anagrams:</strong> ["abc","def"] → two groups of one each.</li>
+          <li><strong>Empty string:</strong> [""] → sorts to "", groups into one. Multiple ["",""] → grouped together.</li>
+          <li><strong>Why '#' separator in freq key:</strong> Without it, [1,11] and [11,1] might produce same string. With '#': "1#11#" vs "11#1#" — unique.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── PROBLEM 5: Top K Frequent ── -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row">
+        <span class="pc-num">Problem 05 of 05</span>
+        <span class="diff-badge diff-medium">Medium</span>
+      </div>
+      <div class="pc-title">Top K Frequent Elements</div>
+      <div class="pc-lc">LeetCode #347 · <a href="https://leetcode.com/problems/top-k-frequent-elements/" target="_blank">leetcode.com/problems/top-k-frequent-elements</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p5-approach')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-dialogue')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-code')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-edges')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p5-approach">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Given array <code>nums</code> and integer <code>k</code>, return the <code>k</code> most frequent elements. Answer is guaranteed to be unique. Order doesn't matter.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Obvious approach:</strong> Build frequency map. Sort entries by frequency descending. Take first k. O(n log n) due to sorting.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Key insight — Bucket Sort:</strong> The maximum frequency any element can have is <code>n</code> (appears every time). So frequencies range from 1 to n. Create an array of n+1 buckets, where index = frequency. Put each element in its frequency-bucket. Then iterate buckets from right (highest freq) to left, collecting elements until we have k.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Why this is O(n):</strong> Frequency map: O(n). Bucket array: size n+1, fill in O(n). Collect from end: O(n) worst case. Total O(n) — better than sorting. This is the answer interviewers at CRED/Razorpay level expect.</div></div>
+      </div>
+
+      <div class="pc-panel" id="p5-dialogue">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Return the k most frequent elements from an array.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Is k always valid — i.e., k is between 1 and the number of unique elements?</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Yes. Guaranteed unique answer.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Step one — build a frequency map, count how many times each element appears. That's O(n). Then I need the top k by frequency. The obvious approach is sort by frequency — O(n log n). But I think we can do O(n) with bucket sort.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Explain bucket sort.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">The maximum frequency is n — an element can appear at most n times. So I create an array of n+1 buckets where bucket[i] holds all elements that appear exactly i times. Fill it in O(n). Then iterate from the end (highest frequency) and collect until I have k elements. Each operation is O(n). Total O(n) time, O(n) space.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">When would you use a heap instead?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">If k is much smaller than n and we want O(n log k) instead of O(n) space — a min-heap of size k works. Keep the k most frequent elements, evict the smallest when size exceeds k. But bucket sort is simpler here since k and n are both given.</div></div>
+        </div>
+      </div>
+
+      <div class="pc-panel" id="p5-code">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Top K Frequent — O(n) bucket sort</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">topKFrequent</span>(nums, k) {
+    <span class="cc">// Step 1: frequency map</span>
+    <span class="ck">const</span> freq = <span class="ck">new</span> <span class="ct">Map</span>();
+    <span class="ck">for</span> (<span class="ck">const</span> num <span class="ck">of</span> nums) {
+        freq.<span class="cf">set</span>(num, (freq.<span class="cf">get</span>(num) || <span class="cn">0</span>) + <span class="cn">1</span>);
+    }
+
+    <span class="cc">// Step 2: buckets[i] = elements with frequency i</span>
+    <span class="cc">// Max possible frequency = nums.length</span>
+    <span class="ck">const</span> buckets = <span class="ck">new</span> <span class="ct">Array</span>(nums.length + <span class="cn">1</span>).<span class="cf">fill</span>(<span class="ck">null</span>).<span class="cf">map</span>(() => []);
+
+    <span class="ck">for</span> (<span class="ck">const</span> [num, count] <span class="ck">of</span> freq) {
+        buckets[count].<span class="cf">push</span>(num);
+    }
+
+    <span class="cc">// Step 3: collect from highest frequency bucket</span>
+    <span class="ck">const</span> result = [];
+    <span class="ck">for</span> (<span class="ck">let</span> i = buckets.length - <span class="cn">1</span>; i >= <span class="cn">1</span> && result.length < k; i--) {
+        <span class="ck">for</span> (<span class="ck">const</span> num <span class="ck">of</span> buckets[i]) {
+            result.<span class="cf">push</span>(num);
+            <span class="ck">if</span> (result.length === k) <span class="ck">break</span>;
+        }
+    }
+
+    <span class="ck">return</span> result;
+}
+
+<span class="cc">// Simpler but O(n log n) — good to know as alternative:</span>
+<span class="cc">// return [...freq.entries()]</span>
+<span class="cc">//   .sort((a, b) => b[1] - a[1])</span>
+<span class="cc">//   .slice(0, k)</span>
+<span class="cc">//   .map(([num]) => num);</span></pre>
+        </div>
+      </div>
+
+      <div class="pc-panel" id="p5-edges">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — freq map + bucket fill + collect</span>
+          <span class="cx-badge cx-space">Space: O(n) — map + buckets</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>k = 1:</strong> Return just the most frequent element. Bucket scan stops after first non-empty bucket from the end.</li>
+          <li><strong>All elements same frequency:</strong> e.g. [1,2,3], k=2. All in bucket[1]. Return first 2 encountered.</li>
+          <li><strong>One element array:</strong> [5], k=1. freq={5:1}. buckets[1]=[5]. Return [5].</li>
+          <li><strong>Multiple elements in one bucket:</strong> [1,1,2,2,3], k=2. Both 1 and 2 have freq=2. bucket[2]=[1,2]. Return [1,2]. Any order valid.</li>
+          <li><strong>The heap alternative:</strong> O(n log k) time, O(n+k) space. Better if n is huge and k is tiny. Know both — interviewers follow up on this.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROBLEM BANK ══ -->
+<div class="section" id="bank">
+  <div class="section-label">Section 05</div>
+  <h2>Problem Bank — 40 Problems</h2>
+  <div class="section-sub">Solve in order. Easy first, then Medium. Check off as you solve. Pace: 2–3 problems per day = ~2 weeks to finish this pattern.</div>
+
+  <div class="bank-progress">
+    <div class="bp-row">
+      <span class="bp-label">Solved</span>
+      <span class="bp-count" id="bp-count">0 / 40</span>
+    </div>
+    <div class="bp-track"><div class="bp-fill" id="bp-fill"></div></div>
+  </div>
+
+  <div class="pb-filters">
+    <button class="pb-filter active" onclick="filterProblems('all', this)">All (40)</button>
+    <button class="pb-filter easy-filter" onclick="filterProblems('easy', this)">Easy</button>
+    <button class="pb-filter med-filter" onclick="filterProblems('medium', this)">Medium</button>
+    <button class="pb-filter hard-filter" onclick="filterProblems('hard', this)">Hard</button>
+    <button class="pb-filter" onclick="filterProblems('unsolved', this)">Unsolved only</button>
+  </div>
+
+  <div class="pb-list" id="pb-list">
+    <!-- Easy problems -->
+    <div class="pb-item" data-diff="easy" data-id="pb0" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1</div><div class="pb-name"><a href="https://leetcode.com/problems/two-sum/" target="_blank" onclick="e=>e.stopPropagation()">Two Sum</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Map: value→index</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb1" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#217</div><div class="pb-name"><a href="https://leetcode.com/problems/contains-duplicate/" target="_blank">Contains Duplicate</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Set membership</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb2" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#242</div><div class="pb-name"><a href="https://leetcode.com/problems/valid-anagram/" target="_blank">Valid Anagram</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Freq counting</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb3" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1002</div><div class="pb-name"><a href="https://leetcode.com/problems/find-common-characters/" target="_blank">Find Common Characters</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Freq counting</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb4" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#383</div><div class="pb-name"><a href="https://leetcode.com/problems/ransom-note/" target="_blank">Ransom Note</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Freq map subset</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb5" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1365</div><div class="pb-name"><a href="https://leetcode.com/problems/how-many-numbers-are-smaller-than-the-current-number/" target="_blank">How Many Numbers Smaller</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Count + lookup</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb6" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#771</div><div class="pb-name"><a href="https://leetcode.com/problems/jewels-and-stones/" target="_blank">Jewels and Stones</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Set membership</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb7" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2215</div><div class="pb-name"><a href="https://leetcode.com/problems/find-the-difference-of-two-arrays/" target="_blank">Difference of Two Arrays</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Set difference</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb8" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1160</div><div class="pb-name"><a href="https://leetcode.com/problems/find-words-that-can-be-formed-by-characters/" target="_blank">Find Words Formed by Characters</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Freq counting</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb9" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#169</div><div class="pb-name"><a href="https://leetcode.com/problems/majority-element/" target="_blank">Majority Element</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Freq map or Boyer-Moore</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb10" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#349</div><div class="pb-name"><a href="https://leetcode.com/problems/intersection-of-two-arrays/" target="_blank">Intersection of Two Arrays</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Set intersection</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb11" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#350</div><div class="pb-name"><a href="https://leetcode.com/problems/intersection-of-two-arrays-ii/" target="_blank">Intersection of Two Arrays II</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Freq map intersection</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb12" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2657</div><div class="pb-name"><a href="https://leetcode.com/problems/find-the-prefix-common-array-of-two-arrays/" target="_blank">Prefix Common Array</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Running set</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb13" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#268</div><div class="pb-name"><a href="https://leetcode.com/problems/missing-number/" target="_blank">Missing Number</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Set or math</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb14" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1122</div><div class="pb-name"><a href="https://leetcode.com/problems/relative-sort-array/" target="_blank">Relative Sort Array</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Map + custom sort</div></div>
+
+    <!-- Medium problems -->
+    <div class="pb-item" data-diff="medium" data-id="pb15" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#49</div><div class="pb-name"><a href="https://leetcode.com/problems/group-anagrams/" target="_blank">Group Anagrams</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Group by key</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb16" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#347</div><div class="pb-name"><a href="https://leetcode.com/problems/top-k-frequent-elements/" target="_blank">Top K Frequent Elements</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Freq + bucket sort</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb17" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#128</div><div class="pb-name"><a href="https://leetcode.com/problems/longest-consecutive-sequence/" target="_blank">Longest Consecutive Sequence</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Set + sequence start</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb18" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#560</div><div class="pb-name"><a href="https://leetcode.com/problems/subarray-sum-equals-k/" target="_blank">Subarray Sum Equals K</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Prefix sum + map</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb19" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#238</div><div class="pb-name"><a href="https://leetcode.com/problems/product-of-array-except-self/" target="_blank">Product of Array Except Self</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Prefix + suffix product</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb20" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#36</div><div class="pb-name"><a href="https://leetcode.com/problems/valid-sudoku/" target="_blank">Valid Sudoku</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">3 Sets per row/col/box</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb21" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#454</div><div class="pb-name"><a href="https://leetcode.com/problems/4sum-ii/" target="_blank">4Sum II</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Two-sum in two pairs</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb22" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2260</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-consecutive-cards-to-pick-up/" target="_blank">Minimum Consecutive Cards to Pick Up</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Last seen index in map</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb23" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1207</div><div class="pb-name"><a href="https://leetcode.com/problems/unique-number-of-occurrences/" target="_blank">Unique Number of Occurrences</a></div><div class="pb-diff m">Easy-Medium</div><div class="pb-pattern">Freq map + Set</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb24" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2342</div><div class="pb-name"><a href="https://leetcode.com/problems/max-sum-of-a-pair-with-equal-sum-of-digits/" target="_blank">Max Sum of Pair with Equal Digit Sum</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Group by digit sum</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb25" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1679</div><div class="pb-name"><a href="https://leetcode.com/problems/max-number-of-k-sum-pairs/" target="_blank">Max Number of K-Sum Pairs</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Two Sum variant</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb26" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#974</div><div class="pb-name"><a href="https://leetcode.com/problems/subarray-sums-divisible-by-k/" target="_blank">Subarray Sums Divisible by K</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Prefix sum + modulo map</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb27" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#525</div><div class="pb-name"><a href="https://leetcode.com/problems/contiguous-array/" target="_blank">Contiguous Array</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Prefix sum trick</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb28" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1570</div><div class="pb-name"><a href="https://leetcode.com/problems/dot-product-of-two-sparse-vectors/" target="_blank">Dot Product of Sparse Vectors</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Map non-zero indices</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb29" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1010</div><div class="pb-name"><a href="https://leetcode.com/problems/pairs-of-songs-with-total-durations-divisible-by-60/" target="_blank">Pairs of Songs Divisible by 60</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Two Sum with modulo</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb30" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2352</div><div class="pb-name"><a href="https://leetcode.com/problems/equal-row-and-column-pairs/" target="_blank">Equal Row and Column Pairs</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Stringify + map</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb31" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2364</div><div class="pb-name"><a href="https://leetcode.com/problems/count-number-of-bad-pairs/" target="_blank">Count Number of Bad Pairs</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Complement counting</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb32" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1512</div><div class="pb-name"><a href="https://leetcode.com/problems/number-of-good-pairs/" target="_blank">Number of Good Pairs</a></div><div class="pb-diff m">Easy</div><div class="pb-pattern">Freq map combinatorics</div></div>
+
+    <!-- Hard problems -->
+    <div class="pb-item" data-diff="hard" data-id="pb33" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#41</div><div class="pb-name"><a href="https://leetcode.com/problems/first-missing-positive/" target="_blank">First Missing Positive</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Index-as-hash</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb34" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#76</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-window-substring/" target="_blank">Minimum Window Substring</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Freq map + sliding window</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb35" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#432</div><div class="pb-name"><a href="https://leetcode.com/problems/all-oone-data-structure/" target="_blank">All O'one Data Structure</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Map + doubly linked list</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb36" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#37</div><div class="pb-name"><a href="https://leetcode.com/problems/sudoku-solver/" target="_blank">Sudoku Solver</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Sets + backtracking</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb37" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#895</div><div class="pb-name"><a href="https://leetcode.com/problems/maximum-frequency-stack/" target="_blank">Maximum Frequency Stack</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Freq map + group stacks</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb38" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#460</div><div class="pb-name"><a href="https://leetcode.com/problems/lfu-cache/" target="_blank">LFU Cache</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Freq map + doubly LL</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb39" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#218</div><div class="pb-name"><a href="https://leetcode.com/problems/the-skyline-problem/" target="_blank">The Skyline Problem</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Sorted map heights</div></div>
+  </div>
+</div>
+
+<!-- ══ Q&A ══ -->
+<div class="section" id="qa">
+  <div class="section-label">Section 06</div>
+  <h2>15 Interview Questions</h2>
+  <div class="section-sub">Answer out loud before expanding. Mix of concept, trap, and pattern-recognition questions — exactly what Swiggy/PhonePe interviewers ask.</div>
+
+  <div class="qa-list">
+    <div class="qa" id="qa1"><div class="qa-q" onclick="toggleQA('qa1')"><span><span class="qa-tag tag-core">Core</span>When do you choose a HashMap over a brute-force nested loop?</span><span class="qa-arr">▼</span></div><div class="qa-a">When you find yourself writing "for each element, scan all others to find a matching partner" — that's the signal. A HashMap converts the inner scan from O(n) to O(1) lookup. The trade-off: O(n) extra space for the map. When the interviewer hasn't specified space constraints, this trade is almost always worth it. Pattern recognition: if the problem involves "find X that satisfies condition with another element", "check if Y has been seen before", or "count occurrences" — HashMap is your first thought.</div></div>
+
+    <div class="qa" id="qa2"><div class="qa-q" onclick="toggleQA('qa2')"><span><span class="qa-tag tag-trap">Trap</span>What is the difference between Map and Object in JavaScript for this pattern?</span><span class="qa-arr">▼</span></div><div class="qa-a"><strong>Object:</strong> Keys are always strings (or Symbols). Numbers are coerced to strings: <code>{1: "a"}</code> stores key "1", not 1. Fast, simple syntax. Fine for string and char counting. <strong>Map:</strong> Keys can be any type — numbers, objects, arrays, etc. Preserves insertion order. Slightly more syntax overhead. Better for non-string keys or when you need .size, .entries(), .keys(). For this pattern: use Object for character/string frequency counting (simpler). Use Map when keys are numbers or when you need Map-specific methods. Common mistake: using Object and expecting number keys — <code>{1:"a"}[1]</code> works, but <code>Object.keys({1:"a"})</code> returns <code>["1"]</code> (string) which can cause subtle bugs.</div></div>
+
+    <div class="qa" id="qa3"><div class="qa-q" onclick="toggleQA('qa3')"><span><span class="qa-tag tag-interview">Interview</span>Walk me through your approach when you get a Two Sum variant you've never seen before.</span><span class="qa-arr">▼</span></div><div class="qa-a">Step 1: Identify it's a "find pair" problem. Step 2: Define the complement — what's the value I need to find given the current element? In Two Sum: target - nums[i]. In other variants: it might be target / nums[i], or target XOR nums[i], etc. Step 3: Can I compute this complement and look it up in O(1)? If yes, HashMap. Step 4: What do I store as value in the map? Depends on what the problem asks — index, frequency, count of pairs, etc. Step 5: Code Template 1 with the new complement formula. Most "find pair" variants are solved this way — the only thing that changes is the complement formula and what you store/return.</div></div>
+
+    <div class="qa" id="qa4"><div class="qa-q" onclick="toggleQA('qa4')"><span><span class="qa-tag tag-core">Core</span>What is the time and space complexity of building a frequency map?</span><span class="qa-arr">▼</span></div><div class="qa-a"><strong>Time: O(n)</strong> — one pass through the input, O(1) Map operations per element. <strong>Space: O(k)</strong> where k is the number of distinct elements. For an array of n integers: worst case O(n) (all unique). For lowercase English characters: O(26) = O(1) — the map never has more than 26 entries regardless of input size. This distinction matters in interviews: "Valid Anagram with only lowercase letters is O(1) space, not O(n)." Always mention the distinction between k (distinct elements) and n (input size) when analyzing space.</div></div>
+
+    <div class="qa" id="qa5"><div class="qa-q" onclick="toggleQA('qa5')"><span><span class="qa-tag tag-trap">Trap</span>In Two Sum, why do you check the map BEFORE inserting the current element?</span><span class="qa-arr">▼</span></div><div class="qa-a">The problem says you cannot use the same element twice. If you insert first, then check — you might find the element you just inserted as the complement of itself. Example: nums=[3,3], target=6. If you insert nums[0]=3 first, then check complement=3 for nums[0] — you'd return [0,0] (same index twice). By checking first, then inserting: at i=0, complement=3 not in map (map is empty), so insert {3:0}. At i=1, complement=3 IS in map at index 0 ≠ 1, so return [0,1]. Correct. This order also means you're only looking at elements you've already visited — no need to look ahead.</div></div>
+
+    <div class="qa" id="qa6"><div class="qa-q" onclick="toggleQA('qa6')"><span><span class="qa-tag tag-interview">Interview</span>What are 3 different ways to solve "Contains Duplicate"? Which would you code first in an interview?</span><span class="qa-arr">▼</span></div><div class="qa-a"><strong>1. Brute force:</strong> Two nested loops, compare each pair. O(n²) time, O(1) space. Say this exists, don't code it. <strong>2. Sort:</strong> Sort array, check adjacent elements. O(n log n) time, O(1) or O(log n) space (sorting). Simple, worth mentioning. <strong>3. Set (optimal):</strong> O(n) time, O(n) space. Add elements to Set as you go; if already present, return true. Code this one. In an interview: mention all 3, explain the trade-offs (space vs time), then code option 3. The one-liner <code>return new Set(nums).size !== nums.length</code> is fine to mention as an alternative, but the loop with early exit is better because it stops as soon as a duplicate is found.</div></div>
+
+    <div class="qa" id="qa7"><div class="qa-q" onclick="toggleQA('qa7')"><span><span class="qa-tag tag-core">Core</span>What is bucket sort? When does it apply in this pattern?</span><span class="qa-arr">▼</span></div><div class="qa-a">Bucket sort: when values fall within a known, bounded range [0, max], create an array of buckets where index = value. Place each element in its bucket. Read results in order. O(n + max) time, O(max) space. In arrays+hashing: frequency values are bounded by n (an element appears at most n times). So instead of sorting by frequency (O(n log n)), create n+1 frequency buckets (O(n)), place elements, read from highest bucket. Result: O(n) for Top K Frequent Elements instead of O(n log n). Know when to suggest it: "If frequency is bounded and we can use O(n) extra space, bucket sort beats comparison-based sorting."</div></div>
+
+    <div class="qa" id="qa8"><div class="qa-q" onclick="toggleQA('qa8')"><span><span class="qa-tag tag-interview">Interview</span>How do you handle the follow-up: "Can you solve it in O(1) space?"</span><span class="qa-arr">▼</span></div><div class="qa-a">This is a constraint change — you can't use a HashMap anymore. Now think about what other structural properties can help. For sorted arrays: Two Pointers (no extra space). For finding missing number: math (sum formula n*(n+1)/2 - actual sum = missing). For contains duplicate with extra constraint (duplicates within k positions): sliding window with Set of size k (O(k) space, which may qualify as "O(1)" if k is constant). For anagram: sort both strings (O(1) extra space, O(n log n) time). The key is: O(1) space usually means you exploit structure of the data (sorted order, math relationships, modifying input in-place) rather than storing seen elements. Always ask: "Is the array sorted, or can I sort it?" before agreeing that O(n) space is necessary.</div></div>
+
+    <div class="qa" id="qa9"><div class="qa-q" onclick="toggleQA('qa9')"><span><span class="qa-tag tag-trap">Trap</span>Why does the one-liner `new Set(nums).size !== nums.length` have a downside?</span><span class="qa-arr">▼</span></div><div class="qa-a">It builds the entire Set even if the first two elements are duplicates. There's no early exit. If the array is [1, 1, 2, 3, 4, ... 10000 elements], the one-liner still processes all 10000 elements to find what was obvious after element 2. The loop with early return is O(n) worst case but terminates early when the duplicate is found — much better for large arrays with early duplicates. In an interview: mention the one-liner as a clean alternative, but explain this trade-off and code the loop version with early exit. This shows you think about performance at scale, not just correctness.</div></div>
+
+    <div class="qa" id="qa10"><div class="qa-q" onclick="toggleQA('qa10')"><span><span class="qa-tag tag-core">Core</span>What is the "canonical key" trick and where does it apply?</span><span class="qa-arr">▼</span></div><div class="qa-a">A canonical key is a normalized representation of a value that's the same for all items in the same "equivalence class". Used in Group By pattern (Template 4). Examples: Anagram grouping → sorted string ("eat","tea","ate" all become "aet"). Same digit sum → sum of digits. Same character frequency → frequency array joined with separator. Same XOR → XOR value. Same modulo → value % k. The trick: you need to map different representations of the "same thing" to a single key for grouping. Whatever property makes them equivalent becomes the key. In interviews: when asked "group these by some property," the question becomes "what is the canonical key that identifies each group?"</div></div>
+
+    <div class="qa" id="qa11"><div class="qa-q" onclick="toggleQA('qa11')"><span><span class="qa-tag tag-interview">Interview</span>How would you find the longest consecutive sequence? (LeetCode #128)</span><span class="qa-arr">▼</span></div><div class="qa-a">Problem: find the length of the longest consecutive sequence (e.g., [100,4,200,1,3,2] → 4 because [1,2,3,4]). Brute: O(n²) or O(n log n) with sorting. Optimal O(n) with Set: Put all numbers in a Set. For each number n, check if n-1 is in the Set. If n-1 is NOT there, n is a sequence start. From a start, count how long the consecutive sequence goes by checking n+1, n+2, etc. Why check for n-1: you only start counting from the beginning of a sequence — avoids counting the same sequence multiple times. Key insight: by only starting from sequence beginnings (elements with no left neighbor), each element is visited at most twice — O(n) total.</div></div>
+
+    <div class="qa" id="qa12"><div class="qa-q" onclick="toggleQA('qa12')"><span><span class="qa-tag tag-trap">Trap</span>What is a prefix sum and when does it combine with hashing?</span><span class="qa-arr">▼</span></div><div class="qa-a">Prefix sum: running cumulative sum where <code>prefix[i]</code> = sum of elements from index 0 to i. Sum of subarray [i+1..j] = <code>prefix[j] - prefix[i]</code>. Combined with HashMap: to find if a subarray sums to k, you need <code>prefix[j] - prefix[i] = k</code>, i.e., <code>prefix[j] - k = prefix[i]</code>. Store prefix sums seen so far in a Map. For each prefix sum, check if <code>prefix - k</code> exists in the map. This is the Two Sum pattern applied to prefix sums — O(n) for Subarray Sum Equals K (#560). Classic problem that looks hard but is O(n) once you recognize this. Pattern: "subarray with sum/count condition" → prefix sum + HashMap.</div></div>
+
+    <div class="qa" id="qa13"><div class="qa-q" onclick="toggleQA('qa13')"><span><span class="qa-tag tag-interview">Interview</span>How do you approach a problem you've never seen before but suspect involves hashing?</span><span class="qa-arr">▼</span></div><div class="qa-a">Say this out loud: "I'm going to ask what I'm looking for and what I've seen so far." If "what I've seen" is relevant to finding "what I'm looking for," hashing is the tool. Process: 1. Read problem slowly. Identify what you're searching for and what information from earlier elements is needed. 2. If the answer at each step depends on previously seen elements → HashMap stores those elements. 3. Define the key (what you look up) and value (what you need when you find it). 4. Choose Map/Set/Object based on whether you need a value or just existence. 5. Code Template 1, 2, 3, or 4 with the specific logic filled in. The templates don't change — only the formulas inside change. Recognize the pattern, slot in the formula, code it.</div></div>
+
+    <div class="qa" id="qa14"><div class="qa-q" onclick="toggleQA('qa14')"><span><span class="qa-tag tag-core">Core</span>Explain the time complexity of Group Anagrams carefully.</span><span class="qa-arr">▼</span></div><div class="qa-a">Let n = number of words. Let k = maximum length of a word. For each word: sorting it is O(k log k). Hashing the sorted string as a Map key is O(k) (need to hash all k chars). So per word: O(k log k). For all n words: O(n × k log k). Total time: O(nk log k). Space: O(nk) — storing all original strings in the map's arrays. The optimized frequency-array key approach: for each word, build a 26-element array in O(k), join it in O(26) = O(1). Per word: O(k). Total: O(nk) — better by log k factor. The distinction between O(nk log k) and O(nk) is the answer to "can you optimize Group Anagrams?" — shows depth that impresses interviewers.</div></div>
+
+    <div class="qa" id="qa15"><div class="qa-q" onclick="toggleQA('qa15')"><span><span class="qa-tag tag-interview">Interview</span>What would you say if stuck on an arrays+hashing problem?</span><span class="qa-arr">▼</span></div><div class="qa-a">Never go silent. Say: "Let me think about what information from earlier elements I need right now." Then: "The brute force scans the array again for each element — O(n²). The question is what I'd be scanning for." Then identify the complement formula. If still stuck: "Can I work through a small example and see what pattern emerges?" Walk through [2,7,11,15], target=9. At element 7 — I need 2. Where is 2? I saw it at index 0. How would I know without scanning? I'd have stored it. That's the HashMap insight. Getting yourself unstuck by working an example aloud is a legitimate interview technique. Interviewers want to see your thinking process — not just the answer.</div></div>
+  </div>
+
+  <div class="rev-card">
+    <div class="rev-title">Arrays + Hashing — done when you can...</div>
+    <div class="rev-grid">
+      <div class="rev-item">Explain the O(n²) → O(n) HashMap transformation in 60 seconds</div>
+      <div class="rev-item">Choose Map vs Set vs Object for a given problem without hesitation</div>
+      <div class="rev-item">Write all 4 templates from memory without looking</div>
+      <div class="rev-item">Solve Two Sum, Group Anagrams, Top K Frequent cold (no hints)</div>
+      <div class="rev-item">Explain bucket sort and why it gives O(n) for Top K</div>
+      <div class="rev-item">Answer "O(1) space follow-up" for at least 2 problems</div>
+      <div class="rev-item">Explain prefix sum + HashMap for Subarray Sum = K</div>
+      <div class="rev-item"><strong>Solve 30+ of the 40 problems before moving to Two Pointers</strong></div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Tab switching ──
+function switchTab(btn, panelId) {
+  const card = btn.closest('.problem-card');
+  card.querySelectorAll('.pc-tab').forEach(t => t.classList.remove('active'));
+  card.querySelectorAll('.pc-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+
+// ── Q&A toggle ──
+function toggleQA(id) { document.getElementById(id).classList.toggle('open'); }
+
+// ── Problem bank ──
+const PB_KEY = 'p1_p0_problems';
+function loadPB() { try { return JSON.parse(localStorage.getItem(PB_KEY)||'{}'); } catch(e) { return {}; } }
+function savePB(d) { try { localStorage.setItem(PB_KEY, JSON.stringify(d)); } catch(e) {} }
+
+let pbState = loadPB();
+
+function toggleProblem(item) {
+  const id = item.dataset.id;
+  pbState[id] = !pbState[id];
+  if (pbState[id]) item.classList.add('solved');
+  else item.classList.remove('solved');
+  savePB(pbState);
+  updateProgress();
+}
+
+function updateProgress() {
+  const all = document.querySelectorAll('#pb-list .pb-item');
+  const solved = document.querySelectorAll('#pb-list .pb-item.solved');
+  const pct = all.length ? Math.round(solved.length / all.length * 100) : 0;
+  document.getElementById('bp-count').textContent = solved.length + ' / ' + all.length;
+  document.getElementById('bp-fill').style.width = pct + '%';
+}
+
+// Restore solved state
+(function() {
+  document.querySelectorAll('#pb-list .pb-item').forEach(item => {
+    if (pbState[item.dataset.id]) item.classList.add('solved');
+  });
+  updateProgress();
+})();
+
+// ── Filters ──
+let currentFilter = 'all';
+function filterProblems(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.pb-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  document.querySelectorAll('#pb-list .pb-item').forEach(item => {
+    const diff = item.dataset.diff;
+    const isSolved = item.classList.contains('solved');
+    let show = true;
+    if (filter === 'easy') show = diff === 'easy';
+    else if (filter === 'medium') show = diff === 'medium';
+    else if (filter === 'hard') show = diff === 'hard';
+    else if (filter === 'unsolved') show = !isSolved;
+    item.style.display = show ? 'flex' : 'none';
+  });
+}
+
+// ── Nav active state ──
+window.addEventListener('scroll', () => {
+  const sections = document.querySelectorAll('.section[id]');
+  const pills = document.querySelectorAll('.nav-pill');
+  let active = '';
+  sections.forEach(s => { if (s.getBoundingClientRect().top < 120) active = s.id; });
+  pills.forEach(p => p.classList.toggle('active', p.getAttribute('href') === '#' + active));
+});
+
+document.querySelectorAll('.nav-pill').forEach(p => {
+  p.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
