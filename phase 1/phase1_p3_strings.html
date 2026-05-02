@@ -1,0 +1,1122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 1 · Part 3 — Strings</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap');
+:root{
+  --bg:#08060a;--s1:#100e14;--s2:#18161e;--s3:#201e28;--s4:#282630;
+  --b1:#38344a;--b2:#584e70;--b3:#786890;
+  --t1:#f0eef8;--t2:#a098c0;--t3:#605878;--t4:#382e50;
+  --mono:'JetBrains Mono',monospace;
+  --head:'Bricolage Grotesque',sans-serif;
+  --body:'DM Sans',sans-serif;
+  --acc:#e040fb;--acc2:#ea80fc;--acc3:#f3b3fd;
+  --green:#4ade80;--yellow:#facc15;--red:#f87171;--blue:#60a5fa;--orange:#fb923c;--teal:#2dd4bf;
+  --easy:#4ade80;--medium:#facc15;--hard:#f87171;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--t1);font-family:var(--body);font-size:14px;line-height:1.7;min-height:100vh;}
+
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(8,6,10,0.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--s3);padding:10px 32px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.bar-left{display:flex;align-items:center;gap:16px;}
+.bar-badge{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--acc);background:rgba(224,64,251,0.1);padding:4px 10px;border-radius:99px;border:1px solid rgba(224,64,251,0.25);}
+.bar-title{font-family:var(--mono);font-size:11px;color:var(--t2);}
+.bar-right{display:flex;gap:6px;flex-wrap:wrap;}
+.nav-pill{font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:99px;border:1px solid var(--b1);color:var(--t3);cursor:pointer;text-decoration:none;transition:all 0.15s;background:none;}
+.nav-pill:hover,.nav-pill.active{border-color:var(--acc);color:var(--acc2);}
+
+.hero{padding:64px 48px 52px;position:relative;overflow:hidden;border-bottom:1px solid var(--s3);}
+.hero::before{content:'';position:absolute;top:-100px;right:-80px;width:500px;height:500px;background:radial-gradient(circle,rgba(224,64,251,0.07) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'STRINGS';position:absolute;bottom:-28px;right:-10px;font-family:var(--head);font-size:140px;font-weight:800;color:rgba(255,255,255,0.012);pointer-events:none;line-height:1;white-space:nowrap;}
+.h-phase{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--acc);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.h-phase::before{content:'';width:24px;height:2px;background:var(--acc);}
+.hero h1{font-family:var(--head);font-size:clamp(32px,6vw,68px);font-weight:800;line-height:1.0;letter-spacing:-0.03em;margin-bottom:16px;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--acc),var(--acc3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-desc{font-size:14px;color:var(--t2);max-width:580px;line-height:1.75;margin-bottom:24px;}
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-num{font-family:var(--head);font-size:28px;font-weight:800;color:var(--acc2);}
+.stat-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-top:2px;}
+
+.section{padding:48px;border-bottom:1px solid var(--s3);}
+.section-label{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--t3);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--s3);}
+.section h2{font-family:var(--head);font-size:28px;font-weight:800;margin-bottom:8px;letter-spacing:-0.01em;}
+.section-sub{font-size:13px;color:var(--t2);margin-bottom:24px;max-width:600px;line-height:1.6;}
+
+.explain{font-size:14px;color:var(--t2);line-height:1.8;margin-bottom:16px;}
+.explain strong{color:var(--t1);}
+.explain code{font-family:var(--mono);font-size:12px;background:var(--s3);padding:1px 6px;border-radius:4px;color:var(--acc3);}
+
+.insight{background:linear-gradient(135deg,rgba(224,64,251,0.07),rgba(234,128,252,0.03));border:1px solid rgba(224,64,251,0.18);border-left:3px solid var(--acc);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:var(--t1);line-height:1.7;}
+.insight strong{color:var(--acc2);}
+.warn-box{background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.2);border-left:3px solid var(--orange);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:#fcd9b6;line-height:1.7;}
+.warn-box strong{color:var(--orange);}
+.good-box{background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:#bbf7d0;line-height:1.7;}
+.good-box strong{color:var(--green);}
+.teal-box{background:rgba(45,212,191,0.06);border:1px solid rgba(45,212,191,0.2);border-left:3px solid var(--teal);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:#99f6e4;line-height:1.7;}
+.teal-box strong{color:var(--teal);}
+
+.code-wrap{background:var(--s1);border:1px solid var(--s3);border-radius:12px;overflow:hidden;margin:16px 0;}
+.code-header{background:var(--s2);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--s3);}
+.code-lang{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc2);}
+.code-label{font-family:var(--mono);font-size:9px;color:var(--t3);}
+.code-wrap pre{font-family:var(--mono);font-size:12px;line-height:1.85;padding:20px;color:#d0c8e8;overflow-x:auto;white-space:pre;}
+.ck{color:#f87171;}.cs{color:#86efac;}.cn{color:#a5b4fc;}.cf{color:#fde68a;}
+.cc{color:#48406a;font-style:italic;}.ct{color:#7dd3fc;font-weight:600;}.co{color:#fb923c;}.cm{color:#c084fc;}
+
+/* techniques grid */
+.tech-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:16px 0;}
+.tech-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:18px;transition:border-color 0.2s;}
+.tech-card:hover{border-color:var(--b2);}
+.tc-num{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc2);margin-bottom:6px;}
+.tc-title{font-family:var(--head);font-size:15px;font-weight:700;margin-bottom:6px;}
+.tc-desc{font-size:12px;color:var(--t2);line-height:1.6;}
+.tc-when{font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:8px;background:var(--s2);padding:6px 10px;border-radius:4px;line-height:1.6;}
+
+/* steps */
+.steps-grid{display:grid;gap:10px;margin:16px 0;}
+.step-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start;}
+.step-n{font-family:var(--head);font-size:32px;font-weight:800;color:var(--s4);flex-shrink:0;line-height:1;}
+.step-title{font-family:var(--head);font-size:15px;font-weight:700;color:var(--t1);margin-bottom:6px;}
+.step-text{font-size:12px;color:var(--t2);line-height:1.6;}
+.step-say{background:var(--s2);border-radius:6px;padding:8px 12px;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--green);line-height:1.6;}
+.step-say::before{content:'SAY: ';color:var(--t3);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;}
+
+/* problem cards */
+.problem-card{background:var(--s1);border:1px solid var(--s3);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.pc-header{padding:20px 24px 16px;border-bottom:1px solid var(--s3);}
+.pc-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.pc-num{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);}
+.diff-badge{font-family:var(--mono);font-size:9px;padding:3px 10px;border-radius:99px;font-weight:600;}
+.diff-easy{background:rgba(74,222,128,0.1);color:var(--easy);border:1px solid rgba(74,222,128,0.25);}
+.diff-medium{background:rgba(250,204,21,0.1);color:var(--medium);border:1px solid rgba(250,204,21,0.25);}
+.diff-hard{background:rgba(248,113,113,0.1);color:var(--hard);border:1px solid rgba(248,113,113,0.25);}
+.pc-title{font-family:var(--head);font-size:20px;font-weight:800;margin-bottom:4px;}
+.pc-lc{font-family:var(--mono);font-size:10px;color:var(--t3);}
+.pc-lc a{color:var(--acc2);text-decoration:none;}
+.pc-lc a:hover{text-decoration:underline;}
+.pc-tabs{display:flex;border-bottom:1px solid var(--s3);overflow-x:auto;}
+.pc-tab{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:10px 18px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;transition:all 0.15s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;}
+.pc-tab:hover{color:var(--t2);}
+.pc-tab.active{color:var(--acc2);border-bottom-color:var(--acc);}
+.pc-body{padding:22px 24px;}
+.pc-panel{display:none;}
+.pc-panel.active{display:block;}
+
+.approach-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+.as-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--acc2);background:rgba(224,64,251,0.1);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.as-text{font-size:13px;color:var(--t2);line-height:1.6;}
+.as-text strong{color:var(--t1);}
+.as-text code{font-family:var(--mono);font-size:11px;background:var(--s3);padding:1px 5px;border-radius:3px;color:var(--acc3);}
+
+.dialogue{background:var(--s2);border-radius:10px;padding:4px 0;margin:8px 0;}
+.d-line{display:flex;gap:10px;padding:8px 16px;font-size:13px;line-height:1.6;}
+.d-line:nth-child(even){background:var(--s3);}
+.d-speaker{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;flex-shrink:0;padding-top:2px;min-width:60px;}
+.d-iv{color:var(--orange);}
+.d-you{color:var(--acc2);}
+.d-msg{color:var(--t2);}
+.d-msg strong{color:var(--t1);}
+.d-msg em{color:var(--green);font-style:normal;font-family:var(--mono);font-size:11px;}
+
+.complexity-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 8px;}
+.cx-badge{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--s4);}
+.cx-time{border-color:rgba(224,64,251,0.3);color:var(--acc2);}
+.cx-space{border-color:rgba(74,222,128,0.3);color:var(--green);}
+
+.edge-list{list-style:none;}
+.edge-list li{font-size:13px;color:var(--t2);padding:6px 0;border-bottom:1px solid var(--s3);display:flex;gap:10px;}
+.edge-list li:last-child{border-bottom:none;}
+.edge-list li::before{content:'⚠';font-size:11px;margin-top:2px;flex-shrink:0;}
+
+/* problem bank */
+.pb-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.pb-filter{font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:6px;border:1px solid var(--b1);color:var(--t3);cursor:pointer;background:none;transition:all 0.15s;}
+.pb-filter:hover,.pb-filter.active{background:var(--s2);border-color:var(--b2);color:var(--t1);}
+.pb-filter.easy-filter.active{border-color:var(--easy);color:var(--easy);}
+.pb-filter.med-filter.active{border-color:var(--medium);color:var(--medium);}
+.pb-filter.hard-filter.active{border-color:var(--hard);color:var(--hard);}
+.pb-list{display:grid;gap:6px;}
+.pb-item{background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;transition:border-color 0.15s;cursor:pointer;}
+.pb-item:hover{border-color:var(--b2);}
+.pb-cb{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--b1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all 0.15s;}
+.pb-item.solved .pb-cb{background:var(--green);border-color:var(--green);color:#000;}
+.pb-num{font-family:var(--mono);font-size:10px;color:var(--t3);flex-shrink:0;min-width:40px;}
+.pb-name{flex:1;font-size:13px;color:var(--t2);}
+.pb-name a{color:inherit;text-decoration:none;}
+.pb-name a:hover{color:var(--acc2);}
+.pb-item.solved .pb-name{color:var(--t4);text-decoration:line-through;}
+.pb-diff{font-family:var(--mono);font-size:9px;flex-shrink:0;}
+.pb-diff.e{color:var(--easy);}
+.pb-diff.m{color:var(--medium);}
+.pb-diff.h{color:var(--hard);}
+.pb-pattern{font-family:var(--mono);font-size:9px;color:var(--t4);flex-shrink:0;}
+@media(max-width:640px){.pb-pattern{display:none;}}
+.bank-progress{background:var(--s2);border:1px solid var(--s3);border-radius:10px;padding:16px 20px;margin-bottom:16px;}
+.bp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.bp-label{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);}
+.bp-count{font-family:var(--head);font-size:18px;font-weight:800;color:var(--acc2);}
+.bp-track{height:5px;background:var(--s3);border-radius:99px;overflow:hidden;}
+.bp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--blue));border-radius:99px;transition:width 0.4s ease;width:0%;}
+
+/* Q&A */
+.qa-list{display:grid;gap:8px;}
+.qa{background:var(--s1);border:1px solid var(--s3);border-radius:10px;overflow:hidden;}
+.qa-q{padding:14px 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;transition:background 0.15s;}
+.qa-q:hover{background:var(--s2);}
+.qa-arr{color:var(--t3);font-size:10px;flex-shrink:0;margin-top:3px;transition:transform 0.2s;}
+.qa.open .qa-arr{transform:rotate(180deg);}
+.qa-a{display:none;padding:16px 18px;border-top:1px solid var(--s3);font-size:13px;color:var(--t2);line-height:1.8;background:var(--s2);}
+.qa.open .qa-a{display:block;}
+.qa-a strong{color:var(--t1);}
+.qa-a code{font-family:var(--mono);font-size:11px;background:var(--s3);padding:1px 5px;border-radius:3px;color:var(--acc3);}
+.qa-tag{font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;margin-right:6px;vertical-align:middle;}
+.tag-core{background:rgba(224,64,251,0.1);color:var(--acc2);}
+.tag-interview{background:rgba(250,204,21,0.1);color:var(--yellow);}
+.tag-trap{background:rgba(248,113,113,0.1);color:var(--red);}
+.tag-algo{background:rgba(45,212,191,0.1);color:var(--teal);}
+
+.rev-card{background:linear-gradient(135deg,rgba(224,64,251,0.06),rgba(234,128,252,0.02));border:1px solid rgba(224,64,251,0.15);border-radius:14px;padding:24px;margin-top:20px;}
+.rev-title{font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:14px;color:var(--acc2);}
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:580px){.rev-grid{grid-template-columns:1fr;}}
+.rev-item{font-size:12px;color:var(--t2);padding:6px 0 6px 16px;position:relative;line-height:1.5;}
+.rev-item::before{content:'→';position:absolute;left:0;color:var(--acc);font-family:var(--mono);}
+.rev-item strong{color:var(--t1);}
+
+/* reference table */
+.ref-table{width:100%;border-collapse:collapse;font-size:12px;margin:16px 0;}
+.ref-table th{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);text-align:left;padding:8px 12px;border-bottom:2px solid var(--b1);background:var(--s2);}
+.ref-table td{padding:8px 12px;border-bottom:1px solid var(--s3);color:var(--t2);vertical-align:top;line-height:1.5;font-family:var(--mono);font-size:11px;}
+.ref-table tr:hover td{background:var(--s1);}
+.ref-table td:first-child{color:var(--acc3);}
+
+@media(max-width:640px){.section,.hero{padding:28px 20px;}.top-bar{padding:10px 16px;}.hero h1{font-size:32px;}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="bar-left">
+    <span class="bar-badge">Phase 1 · Part 3</span>
+    <span class="bar-title">Strings</span>
+  </div>
+  <div class="bar-right">
+    <a class="nav-pill" href="#concept">Concept</a>
+    <a class="nav-pill" href="#techniques">Techniques</a>
+    <a class="nav-pill" href="#jsref">JS Reference</a>
+    <a class="nav-pill" href="#framework">Framework</a>
+    <a class="nav-pill" href="#problems">Solved</a>
+    <a class="nav-pill" href="#bank">Bank</a>
+    <a class="nav-pill" href="#qa">Q&amp;A</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="h-phase">Phase 1 · Part 3 of 7 · DSA Patterns</div>
+  <h1>String<br><em>Manipulation</em></h1>
+  <p class="hero-desc">Strings are arrays of characters — almost every string problem is solved with techniques from Parts 0–2. What makes strings unique: immutability in JS/Java, char code arithmetic, pattern matching algorithms (KMP, Rabin-Karp), and the subtleties of Unicode vs ASCII. Nail these and 30% of interviews get easier.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">35</div><div class="stat-label">Problems</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Solved + Explained</div></div>
+    <div class="stat"><div class="stat-num">15</div><div class="stat-label">Interview Q&amp;As</div></div>
+    <div class="stat"><div class="stat-num">1wk</div><div class="stat-label">Suggested Pace</div></div>
+  </div>
+</div>
+
+<!-- CONCEPT -->
+<div class="section" id="concept">
+  <div class="section-label">Section 01</div>
+  <h2>Strings Are Arrays — With Caveats</h2>
+  <div class="section-sub">What makes string problems different from array problems, and the fundamental operations you must know cold.</div>
+
+  <p class="explain">
+    A string is a sequence of characters. Almost every string technique you'll use is from Parts 0–2: HashMap for frequency counting, Two Pointers for palindrome checks, Sliding Window for substring problems. What's unique to strings: <strong>immutability</strong>, <strong>char arithmetic</strong>, and <strong>pattern matching algorithms</strong>.
+  </p>
+
+  <div class="insight">
+    <strong>The most important string fact for interviews:</strong> Strings are immutable in JavaScript and Java. Concatenating strings in a loop is O(n²) — each concatenation creates a new string. Always use an array and join at the end, or use a StringBuilder in Java. This is a performance trap that immediately signals experience level to interviewers.
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">String immutability — the O(n²) trap</span></div>
+    <pre>
+<span class="cc">// ❌ WRONG — O(n²): each concatenation creates a new string</span>
+<span class="ck">function</span> <span class="cf">buildString_slow</span>(chars) {
+    <span class="ck">let</span> result = <span class="cs">""</span>;
+    <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> chars) {
+        result += ch; <span class="cc">// new string allocated each time → O(n²) total</span>
+    }
+    <span class="ck">return</span> result;
+}
+
+<span class="cc">// ✅ CORRECT — O(n): build array, join once at end</span>
+<span class="ck">function</span> <span class="cf">buildString_fast</span>(chars) {
+    <span class="ck">const</span> parts = [];
+    <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> chars) {
+        parts.<span class="cf">push</span>(ch);
+    }
+    <span class="ck">return</span> parts.<span class="cf">join</span>(<span class="cs">""</span>); <span class="cc">// single allocation at the end</span>
+}
+
+<span class="cc">// Also fine for small strings (most interview problems):</span>
+<span class="ck">const</span> reversed = s.<span class="cf">split</span>(<span class="cs">""</span>).<span class="cf">reverse</span>().<span class="cf">join</span>(<span class="cs">""</span>);
+
+<span class="cc">// In Java: use StringBuilder</span>
+<span class="cc">// StringBuilder sb = new StringBuilder();</span>
+<span class="cc">// sb.append(ch);  // O(1) amortized</span>
+<span class="cc">// return sb.toString();  // O(n) once at the end</span></pre>
+  </div>
+
+  <p class="explain">
+    <strong>Character arithmetic</strong> — you'll use this constantly:
+  </p>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Char code arithmetic — used in 40% of string problems</span></div>
+    <pre>
+<span class="cc">// Get char code (ASCII value)</span>
+<span class="cs">'a'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>)  <span class="cc">// → 97</span>
+<span class="cs">'z'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>)  <span class="cc">// → 122</span>
+<span class="cs">'A'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>)  <span class="cc">// → 65</span>
+<span class="cs">'Z'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>)  <span class="cc">// → 90</span>
+<span class="cs">'0'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>)  <span class="cc">// → 48</span>
+<span class="cs">'9'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>)  <span class="cc">// → 57</span>
+
+<span class="cc">// Convert char code back to char</span>
+<span class="ct">String</span>.<span class="cf">fromCharCode</span>(<span class="cn">97</span>)  <span class="cc">// → 'a'</span>
+<span class="ct">String</span>.<span class="cf">fromCharCode</span>(<span class="cn">65</span>)  <span class="cc">// → 'A'</span>
+
+<span class="cc">// Index a character in a 26-element frequency array</span>
+<span class="ck">const</span> idx = ch.<span class="cf">charCodeAt</span>(<span class="cn">0</span>) - <span class="cs">'a'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>);  <span class="cc">// 'a'→0, 'b'→1, ..., 'z'→25</span>
+<span class="ck">const</span> freq = <span class="ck">new</span> <span class="ct">Array</span>(<span class="cn">26</span>).<span class="cf">fill</span>(<span class="cn">0</span>);
+freq[idx]++;
+
+<span class="cc">// Check if char is digit</span>
+<span class="ck">const</span> isDigit = ch >= <span class="cs">'0'</span> && ch <= <span class="cs">'9'</span>;
+<span class="cc">// Or: /[0-9]/.test(ch)</span>
+
+<span class="cc">// Convert digit char to integer</span>
+<span class="ck">const</span> digit = ch.<span class="cf">charCodeAt</span>(<span class="cn">0</span>) - <span class="cs">'0'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>);  <span class="cc">// '5' → 5</span>
+<span class="cc">// Or: parseInt(ch, 10)  or  Number(ch)</span>
+
+<span class="cc">// Caesar cipher: shift 'a' by 3 positions → 'd'</span>
+<span class="ck">const</span> shifted = <span class="ct">String</span>.<span class="cf">fromCharCode</span>(
+    ((<span class="cs">'a'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>) - <span class="cn">97</span> + <span class="cn">3</span>) % <span class="cn">26</span>) + <span class="cn">97</span>
+);  <span class="cc">// → 'd'</span></pre>
+  </div>
+</div>
+
+<!-- TECHNIQUES -->
+<div class="section" id="techniques">
+  <div class="section-label">Section 02</div>
+  <h2>6 Core String Techniques</h2>
+  <div class="section-sub">Every string problem uses one (or a combination) of these 6 techniques. Identify the technique first, then code it.</div>
+
+  <div class="tech-grid">
+    <div class="tech-card">
+      <div class="tc-num">Technique 01</div>
+      <div class="tc-title">Two Pointers</div>
+      <div class="tc-desc">L from start, R from end. Compare characters, skip non-alphanumeric, detect palindromes. Same as Part 1 — strings are just char arrays.</div>
+      <div class="tc-when">Palindrome check · Reverse words in place · Matching brackets from outside</div>
+    </div>
+    <div class="tech-card">
+      <div class="tc-num">Technique 02</div>
+      <div class="tc-title">Sliding Window</div>
+      <div class="tc-desc">Window of chars, track state (freq map, distinct count). Part 2 pattern applied to strings. Longest/shortest substring with condition.</div>
+      <div class="tc-when">Longest no-repeat · Min window substring · Find all anagrams</div>
+    </div>
+    <div class="tech-card">
+      <div class="tc-num">Technique 03</div>
+      <div class="tc-title">Frequency Map</div>
+      <div class="tc-desc">Count character occurrences. Compare two freq maps for anagram/permutation check. Use 26-element array for lowercase-only. Use Map for arbitrary chars.</div>
+      <div class="tc-when">Anagram check · Permutation check · Most/least frequent char · Ransom note</div>
+    </div>
+    <div class="tech-card">
+      <div class="tc-num">Technique 04</div>
+      <div class="tc-title">Stack-based</div>
+      <div class="tc-desc">Push and pop characters based on rules. Classic for matching brackets, removing adjacent duplicates, decoding patterns, building result incrementally.</div>
+      <div class="tc-when">Valid parentheses · Remove adjacent duplicates · Decode string · Simplify path</div>
+    </div>
+    <div class="tech-card">
+      <div class="tc-num">Technique 05</div>
+      <div class="tc-title">String Building</div>
+      <div class="tc-desc">Construct result incrementally using array + join. Reverse, rotate, split on delimiter, parse tokens. The "build the answer" approach for transformation problems.</div>
+      <div class="tc-when">Reverse words · Compress string · Zigzag conversion · Integer to Roman</div>
+    </div>
+    <div class="tech-card">
+      <div class="tc-num">Technique 06</div>
+      <div class="tc-title">Pattern Matching (KMP)</div>
+      <div class="tc-desc">Find if pattern p exists in string s. Brute force O(nm). KMP runs in O(n+m) using a failure function. Know the concept and be able to explain it — coding KMP from scratch is rare but explaining it is not.</div>
+      <div class="tc-when">Find needle in haystack · Repeated substring pattern · String rotation check</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>How to identify which technique:</strong><br><br>
+    "Is it a palindrome?" → Two Pointers<br>
+    "Longest/shortest substring with condition?" → Sliding Window<br>
+    "Are these two strings anagrams?" → Frequency Map<br>
+    "Matching brackets / decode / remove duplicates?" → Stack<br>
+    "Reverse, rotate, reformat, compress?" → String Building<br>
+    "Does this pattern appear inside this string?" → KMP or indexOf
+  </div>
+</div>
+
+<!-- JS REFERENCE -->
+<div class="section" id="jsref">
+  <div class="section-label">Section 03</div>
+  <h2>JavaScript String Reference</h2>
+  <div class="section-sub">Every string method you'll use in interviews. Know the time complexity of each. These come up constantly.</div>
+
+  <table class="ref-table">
+    <tr><th>Method</th><th>Returns</th><th>Complexity</th><th>Notes</th></tr>
+    <tr><td>s.length</td><td>number</td><td>O(1)</td><td>Property, not method. Instant.</td></tr>
+    <tr><td>s[i] or s.charAt(i)</td><td>char</td><td>O(1)</td><td>Access by index. charAt safer for edge cases.</td></tr>
+    <tr><td>s.charCodeAt(i)</td><td>number</td><td>O(1)</td><td>ASCII value. s[i].charCodeAt(0) also works.</td></tr>
+    <tr><td>String.fromCharCode(n)</td><td>string</td><td>O(1)</td><td>Number → char. Used in cipher problems.</td></tr>
+    <tr><td>s.toLowerCase() / toUpperCase()</td><td>string</td><td>O(n)</td><td>Creates new string.</td></tr>
+    <tr><td>s.split('')</td><td>char[]</td><td>O(n)</td><td>Convert to array for mutation. split(' ') splits on space.</td></tr>
+    <tr><td>arr.join('')</td><td>string</td><td>O(n)</td><td>Convert array back to string. Use after mutations.</td></tr>
+    <tr><td>s.indexOf(sub)</td><td>number</td><td>O(nm)</td><td>Returns first index or -1. Internally not KMP.</td></tr>
+    <tr><td>s.includes(sub)</td><td>boolean</td><td>O(nm)</td><td>Cleaner than indexOf !== -1.</td></tr>
+    <tr><td>s.substring(i, j)</td><td>string</td><td>O(j-i)</td><td>Extracts [i, j). j is exclusive. Non-negative only.</td></tr>
+    <tr><td>s.slice(i, j)</td><td>string</td><td>O(j-i)</td><td>Like substring but allows negative indices.</td></tr>
+    <tr><td>s.replace(pat, rep)</td><td>string</td><td>O(n)</td><td>Replaces first match. Use replaceAll for all.</td></tr>
+    <tr><td>s.replaceAll(pat, rep)</td><td>string</td><td>O(n)</td><td>Replace all occurrences.</td></tr>
+    <tr><td>s.trim()</td><td>string</td><td>O(n)</td><td>Remove leading/trailing whitespace.</td></tr>
+    <tr><td>s.split(' ').filter(Boolean)</td><td>string[]</td><td>O(n)</td><td>Split on spaces AND remove empty strings (multiple spaces).</td></tr>
+    <tr><td>s.repeat(k)</td><td>string</td><td>O(nk)</td><td>Repeat string k times. "ab".repeat(3) = "ababab".</td></tr>
+    <tr><td>s.startsWith(pre)</td><td>boolean</td><td>O(pre.length)</td><td>Check prefix.</td></tr>
+    <tr><td>s.endsWith(suf)</td><td>boolean</td><td>O(suf.length)</td><td>Check suffix.</td></tr>
+    <tr><td>s.match(regex)</td><td>array|null</td><td>O(n)</td><td>Regex match. /\d+/g finds all numbers.</td></tr>
+  </table>
+
+  <div class="warn-box">
+    <strong>Common JS string pitfalls in interviews:</strong><br><br>
+    ✗ <code>s.reverse()</code> doesn't exist on strings — do <code>s.split('').reverse().join('')</code><br>
+    ✗ <code>s[i] = 'x'</code> doesn't work — strings are immutable, convert to array first<br>
+    ✗ <code>s.sort()</code> doesn't exist — sort the array version<br>
+    ✗ <code>s.split(' ')</code> gives empty strings for multiple spaces — use <code>.filter(Boolean)</code><br>
+    ✗ <code>s.substring(-1)</code> treats negative as 0 — use <code>s.slice(-1)</code> for last char<br>
+    ✗ Comparing strings: <code>s1 === s2</code> works for value comparison in JS (unlike Java where you need <code>.equals()</code>)
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">KMP — Pattern Matching Algorithm (know for Hard problems)</span></div>
+    <pre>
+<span class="cc">// KMP: find all occurrences of pattern in text — O(n + m)</span>
+<span class="cc">// Step 1: Build failure function (LPS array)</span>
+<span class="cc">// LPS[i] = length of longest proper prefix of pattern[0..i] that is also a suffix</span>
+<span class="ck">function</span> <span class="cf">buildLPS</span>(pattern) {
+    <span class="ck">const</span> lps = <span class="ck">new</span> <span class="ct">Array</span>(pattern.length).<span class="cf">fill</span>(<span class="cn">0</span>);
+    <span class="ck">let</span> len = <span class="cn">0</span>, i = <span class="cn">1</span>;
+
+    <span class="ck">while</span> (i < pattern.length) {
+        <span class="ck">if</span> (pattern[i] === pattern[len]) {
+            lps[i++] = ++len;
+        } <span class="ck">else if</span> (len !== <span class="cn">0</span>) {
+            len = lps[len - <span class="cn">1</span>]; <span class="cc">// fall back, don't increment i</span>
+        } <span class="ck">else</span> {
+            lps[i++] = <span class="cn">0</span>;
+        }
+    }
+    <span class="ck">return</span> lps;
+}
+
+<span class="cc">// Step 2: Use LPS to search</span>
+<span class="ck">function</span> <span class="cf">kmpSearch</span>(text, pattern) {
+    <span class="ck">const</span> lps = <span class="cf">buildLPS</span>(pattern);
+    <span class="ck">const</span> result = [];
+    <span class="ck">let</span> i = <span class="cn">0</span>, j = <span class="cn">0</span>; <span class="cc">// i = text pointer, j = pattern pointer</span>
+
+    <span class="ck">while</span> (i < text.length) {
+        <span class="ck">if</span> (text[i] === pattern[j]) {
+            i++; j++;
+        }
+        <span class="ck">if</span> (j === pattern.length) {
+            result.<span class="cf">push</span>(i - j); <span class="cc">// found at index i - j</span>
+            j = lps[j - <span class="cn">1</span>];       <span class="cc">// use LPS to continue searching</span>
+        } <span class="ck">else if</span> (i < text.length && text[i] !== pattern[j]) {
+            <span class="ck">if</span> (j !== <span class="cn">0</span>) j = lps[j - <span class="cn">1</span>]; <span class="cc">// fall back using LPS</span>
+            <span class="ck">else</span> i++;                        <span class="cc">// no fallback possible</span>
+        }
+    }
+    <span class="ck">return</span> result;
+}
+<span class="cc">// In interviews: explain concept, code if asked. Most pattern matching</span>
+<span class="cc">// problems accept indexOf (O(nm)) at the Easy/Medium level.</span></pre>
+  </div>
+</div>
+
+<!-- FRAMEWORK -->
+<div class="section" id="framework">
+  <div class="section-label">Section 04</div>
+  <h2>Interview Framework for String Problems</h2>
+  <div class="section-sub">What to say, ask, and think about before writing code.</div>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-n">1</div>
+      <div class="step-content">
+        <div class="step-title">Ask about charset and case</div>
+        <div class="step-text">Always clarify: lowercase only? Uppercase? ASCII (128 chars)? Unicode (any char)? Numbers? Spaces? This determines whether to use a 26-element array (lowercase only, O(1) space) vs a Map (arbitrary chars). Also: case-sensitive or not?</div>
+        <div class="step-say">"Is it only lowercase English letters, or can there be uppercase, numbers, or special characters? Is the comparison case-sensitive?"</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">2</div>
+      <div class="step-content">
+        <div class="step-title">Identify the technique from the problem type</div>
+        <div class="step-text">Map the problem type to the technique: palindrome → Two Pointers. Anagram → Frequency Map. Substring condition → Sliding Window. Brackets/decode → Stack. Reverse/compress → String Building. Pattern in text → KMP or indexOf. Say the technique name before coding.</div>
+        <div class="step-say">"This is an anagram check — I'll use a frequency array. Since it's lowercase letters only, I need 26 slots. Count characters in s, subtract characters in t. If all counts are 0 at the end, they're anagrams."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">3</div>
+      <div class="step-content">
+        <div class="step-title">Decide: array or Map for frequency counting</div>
+        <div class="step-text">Lowercase letters only → 26-element int array. Faster, O(1) space (fixed size). Any ASCII → 128-element array or Map. Unicode/arbitrary → Map only. Be explicit: "Since the problem says lowercase only, I'll use a 26-element array indexed by char code minus 'a'."</div>
+        <div class="step-say">"For lowercase letters, I'll use an array of size 26 — freq[ch.charCodeAt(0) - 97]. This gives O(1) space since it never grows beyond 26 entries, regardless of input size."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">4</div>
+      <div class="step-content">
+        <div class="step-title">Handle string mutability explicitly</div>
+        <div class="step-text">If you need to modify the string (reverse, replace, swap), convert to array first. If you're building a result character by character, use an array and join at the end — never concatenate in a loop. Mention this proactively.</div>
+        <div class="step-say">"Strings are immutable in JavaScript, so I'll convert to a char array with split(''), perform the operation, then join back. This avoids the O(n²) concatenation trap."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">5</div>
+      <div class="step-content">
+        <div class="step-title">Edge cases: empty string, single char, all same</div>
+        <div class="step-text">Always mention before coding: empty string → return 0/""/false? Single character → always a palindrome. All same characters → affects anagram, frequency, sliding window logic. String length 1 vs 0. Mention these proactively.</div>
+        <div class="step-say">"Edge cases: empty string returns 0. Single character is always a palindrome. I'll add a length check at the top — if lengths differ for anagram check, immediately return false."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SOLVED PROBLEMS -->
+<div class="section" id="problems">
+  <div class="section-label">Section 05</div>
+  <h2>5 Fully Solved Problems</h2>
+  <div class="section-sub">Each covers a different core string technique. Study all 4 tabs per problem.</div>
+
+  <!-- P1: Valid Anagram (already done in P0 but deep dive here) -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 01 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">Longest Palindromic Substring</div>
+      <div class="pc-lc">LeetCode #5 · <a href="https://leetcode.com/problems/longest-palindromic-substring/" target="_blank">leetcode.com/problems/longest-palindromic-substring</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p1-a')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-d')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-c')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-e')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p1-a">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Find the longest palindromic substring in s. A palindrome reads the same forwards and backwards.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Brute force:</strong> Check every substring — O(n³). For each of O(n²) substrings, palindrome check is O(n). Too slow.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Expand Around Center:</strong> A palindrome has a center. Expand outward from each possible center, checking if characters match. There are 2n-1 centers: n single characters (odd-length palindromes) and n-1 gaps between characters (even-length palindromes). O(n) centers × O(n) expansion = O(n²) total. Much better.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>For each center:</strong> Start with L=center, R=center (odd) or L=center, R=center+1 (even). While L >= 0 and R < n and s[L] === s[R], expand: L--, R++. When done, the palindrome was s[L+1..R-1]. Track the longest.</div></div>
+        <div class="approach-step"><div class="as-num">5</div><div class="as-text"><strong>Manacher's Algorithm</strong> solves this in O(n) but is complex. Interviewers almost never expect it — Expand Around Center is the expected answer at Medium level.</div></div>
+      </div>
+      <div class="pc-panel" id="p1-d">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Find the longest palindromic substring.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Can the string be empty? And is there always at least one palindrome?</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Non-empty string. Single characters are palindromes.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Brute force: check every substring — O(n³). I can do O(n²) with expand-around-center. Every palindrome has a center — either a single character for odd length, or a gap between two characters for even length. I expand outward from each center, comparing characters until they don't match. O(n) centers, O(n) expansion each = O(n²) total. O(1) space.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">How do you handle even-length palindromes like "abba"?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">"abba" has its center between the two b's. I handle this by trying two center types for each position i: single character (L=i, R=i for odd-length) and gap between i and i+1 (L=i, R=i+1 for even-length). I run expand-around-center for both and take the longer result.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Is there an O(n) solution?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Yes — Manacher's algorithm uses the symmetry of palindromes to avoid redundant expansion. It's O(n) time and space. It's complex to implement correctly in an interview setting. I'd use expand-around-center for this problem — O(n²) is usually sufficient. If you want, I can explain Manacher's concept without coding it.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p1-c">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Longest Palindromic Substring — O(n²), O(1) space</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">longestPalindrome</span>(s) {
+    <span class="ck">let</span> start = <span class="cn">0</span>, maxLen = <span class="cn">1</span>;
+
+    <span class="ck">function</span> <span class="cf">expand</span>(L, R) {
+        <span class="cc">// Expand outward while characters match</span>
+        <span class="ck">while</span> (L >= <span class="cn">0</span> && R < s.length && s[L] === s[R]) {
+            <span class="ck">if</span> (R - L + <span class="cn">1</span> > maxLen) {
+                maxLen = R - L + <span class="cn">1</span>;
+                start = L;
+            }
+            L--; R++;
+        }
+    }
+
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i < s.length; i++) {
+        <span class="cf">expand</span>(i, i);     <span class="cc">// odd-length palindromes  (center at i)</span>
+        <span class="cf">expand</span>(i, i + <span class="cn">1</span>); <span class="cc">// even-length palindromes (center between i and i+1)</span>
+    }
+
+    <span class="ck">return</span> s.<span class="cf">substring</span>(start, start + maxLen);
+}
+
+<span class="cc">// Example: s = "babad"</span>
+<span class="cc">// i=0: expand('b','b') → "b" (len 1). expand('b','a') → no match</span>
+<span class="cc">// i=1: expand('a','a') → "a", "bab" (len 3, start=0)</span>
+<span class="cc">// i=2: expand('b','b') → "b", "aba" (len 3, start=1)</span>
+<span class="cc">// Result: "bab" (first found of length 3)</span></pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p1-e">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n²) — n centers × O(n) expansion</span>
+          <span class="cx-badge cx-space">Space: O(1) — just start and maxLen variables</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Single char "a":</strong> expand(0,0) → "a" (len 1). expand(0,1) → R out of bounds, no expansion. Return "a".</li>
+          <li><strong>All same "aaaa":</strong> Center at i=1, expand finds "aaaa". Returns "aaaa".</li>
+          <li><strong>Even palindrome "abba":</strong> At i=1: expand(1,2) → s[1]='b'=s[2]='b', expand to s[0]='a'=s[3]='a'. Found "abba" len 4. Return "abba".</li>
+          <li><strong>Two equal substrings "babad":</strong> "bab" and "aba" both have length 3. Return whichever is found first. The problem says any valid answer is acceptable.</li>
+          <li><strong>Why start at maxLen=1:</strong> Single characters are always palindromes. Initialize to 1 so the worst case is returning s[0] (single char).</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- P2: Valid Parentheses -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 02 of 05</span><span class="diff-badge diff-easy">Easy</span></div>
+      <div class="pc-title">Valid Parentheses</div>
+      <div class="pc-lc">LeetCode #20 · <a href="https://leetcode.com/problems/valid-parentheses/" target="_blank">leetcode.com/problems/valid-parentheses</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p2-a')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-d')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-c')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-e')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p2-a">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Given string of '(', ')', '{', '}', '[', ']', determine if it's valid. Valid means every open bracket has a matching close bracket in the correct order.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Stack technique:</strong> Push open brackets. When seeing a close bracket, check if stack top is the matching open bracket. If yes, pop. If no, invalid. At the end, stack must be empty (all brackets matched).</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Matching map:</strong> Use a Map or object to store close → open pairs: <code>{')'→'(', '}'→'{', ']'→'['}</code>. Clean and extendable.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Why stack:</strong> Brackets are LIFO — the most recently opened bracket must be closed first. A stack naturally enforces this ordering. This is the textbook stack problem and the correct approach for any matching/nesting problem.</div></div>
+      </div>
+      <div class="pc-panel" id="p2-d">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Check if a string of brackets is valid.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Only brackets, no other characters? And an empty string is valid?</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Only brackets. Empty string is valid.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">This is a stack problem. Brackets are LIFO — the last opened must be the first closed. I push open brackets onto a stack. When I see a closing bracket, I check the top of the stack for the matching opener. If it matches, pop and continue. If it doesn't match or the stack is empty, return false. If the stack is empty at the end, all brackets were matched.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What's the matching logic?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">I use a Map: closing bracket → expected opening bracket. When I see ')' — the top must be '('. When I see '}' — must be '{'. When I see ']' — must be '['. If the top doesn't match, the string is invalid.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What if there's a closing bracket but the stack is empty?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Return false immediately — there's no matching opener. I check stack.length === 0 before accessing the top. Or I can just check: if the top of the stack doesn't match the expected opener (including when stack is empty, so top would be undefined), return false.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p2-c">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Valid Parentheses — O(n) with stack</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">isValid</span>(s) {
+    <span class="ck">const</span> stack = [];
+    <span class="ck">const</span> match = {
+        <span class="cs">')'</span>: <span class="cs">'('</span>,
+        <span class="cs">'}'</span>: <span class="cs">'{'</span>,
+        <span class="cs">']'</span>: <span class="cs">'['</span>
+    };
+
+    <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> s) {
+        <span class="ck">if</span> (<span class="cs">'([{'</span>.<span class="cf">includes</span>(ch)) {
+            stack.<span class="cf">push</span>(ch);             <span class="cc">// open bracket → push</span>
+        } <span class="ck">else</span> {
+            <span class="cc">// close bracket: top must be the matching opener</span>
+            <span class="ck">if</span> (stack.<span class="cf">pop</span>() !== match[ch]) <span class="ck">return false</span>;
+        }
+    }
+
+    <span class="ck">return</span> stack.length === <span class="cn">0</span>; <span class="cc">// all opened brackets were closed</span>
+}
+
+<span class="cc">// Alternative: push expected closer instead of opener</span>
+<span class="cc">// When seeing '(', push ')'. When seeing close bracket, pop and compare.</span>
+<span class="cc">// Slightly cleaner logic, same complexity.</span></pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p2-e">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — single pass</span>
+          <span class="cx-badge cx-space">Space: O(n) — stack up to n/2 in worst case (all opens)</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Empty string "":</strong> Loop doesn't run, stack is empty, return true. Correct.</li>
+          <li><strong>Single char "(":</strong> Push '(', loop ends. Stack has 1 element. Return false (unmatched).</li>
+          <li><strong>Closing first ")(":</strong> ch=')'. Stack empty, pop() = undefined ≠ '('. Return false. Correct.</li>
+          <li><strong>Wrong order "([)]":</strong> Push '(', push '['. ch=')': pop returns '[' ≠ '('. Return false. Correct.</li>
+          <li><strong>Why stack.pop() when empty returns undefined:</strong> undefined !== match[ch] evaluates to true → return false. This elegantly handles the "empty stack but close bracket seen" case without an explicit check.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- P3: Encode and Decode Strings -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 03 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">Encode and Decode Strings</div>
+      <div class="pc-lc">LeetCode #271 · <a href="https://leetcode.com/problems/encode-and-decode-strings/" target="_blank">leetcode.com/problems/encode-and-decode-strings</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p3-a')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-d')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-c')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-e')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p3-a">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Design encode/decode functions for a list of strings. Encode joins them into one string; decode splits back. The challenge: strings can contain any character including your delimiter.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Why simple delimiters fail:</strong> If you use ',' or '#' as delimiter, what if a string contains that character? e.g. ["a,b", "c"] encoded as "a,b,c" can't be decoded unambiguously.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Length-prefixed encoding:</strong> Encode each string as <code>length + '#' + string</code>. The '#' is just a separator between the length number and the string content — it's not used as a delimiter between strings. Example: ["abc", "de"] → "3#abc2#de". Decode by reading the length number, then reading exactly that many characters.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Why this works for any string:</strong> We always know exactly how many characters to read for each string (from the prefix number). No ambiguity about where one string ends and another begins, even if the strings contain '#' or any other character.</div></div>
+      </div>
+      <div class="pc-panel" id="p3-d">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Design encode and decode functions for a list of strings. Strings can contain any character.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">The challenge is that strings can contain any character — so any delimiter I choose might appear in the strings themselves. A simple join/split won't work reliably.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">I'll use length-prefix encoding. For each string, encode it as its length, a '#' separator, then the actual string. "#" here separates the length number from the content — it's not a delimiter between strings. "abc" becomes "3#abc". ["abc","de"] becomes "3#abc2#de".</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">How do you decode?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Scan from left. Find the '#' to get the length number. Then read exactly that many characters after '#'. That's one string. Advance the pointer past those characters. Repeat until the end. Since we know the exact length, no ambiguity — even if the string itself contains '#'.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What about strings with multi-digit lengths?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">The length can be any number of digits — "100#[100 chars]". I scan until I hit '#' to get the full number, then parseInt. Works for any length.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p3-c">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Encode and Decode — length-prefix approach</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">encode</span>(strs) {
+    <span class="cc">// Format each string as: length + '#' + string</span>
+    <span class="ck">return</span> strs.<span class="cf">map</span>(s => `${s.length}#${s}`).<span class="cf">join</span>(<span class="cs">''</span>);
+}
+
+<span class="ck">function</span> <span class="cf">decode</span>(str) {
+    <span class="ck">const</span> result = [];
+    <span class="ck">let</span> i = <span class="cn">0</span>;
+
+    <span class="ck">while</span> (i < str.length) {
+        <span class="cc">// Find the '#' that separates length from content</span>
+        <span class="ck">let</span> j = i;
+        <span class="ck">while</span> (str[j] !== <span class="cs">'#'</span>) j++;
+
+        <span class="cc">// Read the length</span>
+        <span class="ck">const</span> len = <span class="ct">parseInt</span>(str.<span class="cf">substring</span>(i, j));
+
+        <span class="cc">// Extract exactly 'len' characters after '#'</span>
+        result.<span class="cf">push</span>(str.<span class="cf">substring</span>(j + <span class="cn">1</span>, j + <span class="cn">1</span> + len));
+
+        <span class="cc">// Advance pointer past this string</span>
+        i = j + <span class="cn">1</span> + len;
+    }
+
+    <span class="ck">return</span> result;
+}
+
+<span class="cc">// encode(["abc", "d#e", ""]) → "3#abcd#d#e0#"</span>
+<span class="cc">// decode("3#abcd#d#e0#") → ["abc", "d#e", ""]</span>
+<span class="cc">// Note: "d#e" encoded as "4#d#e" — the content '#' is just a char</span></pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p3-e">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) encode, O(n) decode — n = total chars</span>
+          <span class="cx-badge cx-space">Space: O(n) — encoded string + result array</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>String containing '#': "d#e"</strong> → encoded as "4#d#e". Decoder reads length 4, takes next 4 chars "d#e" — wait, that's only 3. Actually "d#e" has length 3 → "3#d#e". Decodes: reads 3, takes "d#e". Correct.</li>
+          <li><strong>Empty string "":</strong> Encoded as "0#". Decoder reads 0, substring(j+1, j+1) = "". Pushes "". Correct.</li>
+          <li><strong>Empty list []:</strong> encode returns "". decode("") loop doesn't run. Returns []. Correct.</li>
+          <li><strong>Single character strings:</strong> "a" → "1#a". Decode reads 1, takes "a". Works.</li>
+          <li><strong>Why length+# not just #:</strong> "#" alone would be confused with a '#' inside the string. Using length first tells us where the real content starts regardless of what's in the string.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- P4: Reverse Words in a String -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 04 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">Reverse Words in a String</div>
+      <div class="pc-lc">LeetCode #151 · <a href="https://leetcode.com/problems/reverse-words-in-a-string/" target="_blank">leetcode.com/problems/reverse-words-in-a-string</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p4-a')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-d')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-c')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-e')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p4-a">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Given string with words separated by spaces (may have leading/trailing/multiple spaces). Return string with words in reversed order, single space between each word.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Easy approach (JS):</strong> Split on whitespace, filter empty strings, reverse array, join with single space. 4 operations, very clean. O(n) time.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>O(1) space approach (follow-up):</strong> If working in-place on a char array: (1) Reverse the entire string. (2) Reverse each individual word. (3) Clean up extra spaces. This is the "triple reverse" trick — commonly asked as a follow-up.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>The triple reverse insight:</strong> "the sky is blue" → reverse all: "eulb si yks eht" → reverse each word: "blue is sky the". Words are in reverse order and correctly spelled.</div></div>
+      </div>
+      <div class="pc-panel" id="p4-d">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Reverse the words in a string. Words may be separated by multiple spaces.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">So I need to strip leading/trailing spaces and reduce multiple spaces to one?</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Yes. "  the  sky  " should return "sky the".</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">In JavaScript, the clean approach: split on whitespace using a regex that handles multiple spaces, filter out empty strings from the array, reverse the array, and join with a single space. One line effectively: s.trim().split(/\s+/).reverse().join(' '). O(n) time and space.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Can you do it in O(1) extra space?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Yes — the triple reverse technique. Working on a char array: first reverse the entire array. Then reverse each individual word within it. Then clean up extra spaces. This gives words in reverse order with correct spelling, using only in-place operations. The key insight: reversing all twice (once globally, once per word) is a net rotation that reverses word order.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p4-c">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Reverse Words — easy O(n) + O(1) follow-up</span></div>
+          <pre>
+<span class="cc">// ── Simple approach — O(n) time, O(n) space ──────────────────</span>
+<span class="ck">function</span> <span class="cf">reverseWords</span>(s) {
+    <span class="cc">// split(/\s+/) splits on one or more spaces, filter removes empty strings</span>
+    <span class="ck">return</span> s.<span class="cf">trim</span>().<span class="cf">split</span>(<span class="cs">/\s+/</span>).<span class="cf">reverse</span>().<span class="cf">join</span>(<span class="cs">' '</span>);
+}
+
+<span class="cc">// ── O(1) extra space — triple reverse on char array ──────────</span>
+<span class="ck">function</span> <span class="cf">reverseWords_inplace</span>(s) {
+    <span class="ck">const</span> arr = s.<span class="cf">split</span>(<span class="cs">''</span>);
+    <span class="ck">const</span> n = arr.length;
+
+    <span class="cc">// Helper: reverse arr[L..R] in place</span>
+    <span class="ck">function</span> <span class="cf">reverse</span>(arr, L, R) {
+        <span class="ck">while</span> (L < R) {
+            [arr[L], arr[R]] = [arr[R], arr[L]];
+            L++; R--;
+        }
+    }
+
+    <span class="cc">// Step 1: reverse the entire array</span>
+    <span class="cf">reverse</span>(arr, <span class="cn">0</span>, n - <span class="cn">1</span>);
+
+    <span class="cc">// Step 2: reverse each word</span>
+    <span class="ck">let</span> start = <span class="cn">0</span>;
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i <= n; i++) {
+        <span class="ck">if</span> (i === n || arr[i] === <span class="cs">' '</span>) {
+            <span class="cf">reverse</span>(arr, start, i - <span class="cn">1</span>);
+            start = i + <span class="cn">1</span>;
+        }
+    }
+
+    <span class="cc">// Step 3: clean extra spaces (fast/slow pointer)</span>
+    <span class="ck">let</span> slow = <span class="cn">0</span>, inWord = <span class="ck">false</span>;
+    <span class="ck">for</span> (<span class="ck">let</span> fast = <span class="cn">0</span>; fast < n; fast++) {
+        <span class="ck">if</span> (arr[fast] !== <span class="cs">' '</span>) {
+            <span class="ck">if</span> (inWord) arr[slow++] = arr[fast];
+            <span class="ck">else</span> { inWord = <span class="ck">true</span>; arr[slow++] = arr[fast]; }
+        } <span class="ck">else if</span> (inWord) {
+            arr[slow++] = <span class="cs">' '</span>;
+            inWord = <span class="ck">false</span>;
+        }
+    }
+    <span class="ck">if</span> (arr[slow - <span class="cn">1</span>] === <span class="cs">' '</span>) slow--; <span class="cc">// trim trailing space</span>
+
+    <span class="ck">return</span> arr.<span class="cf">slice</span>(<span class="cn">0</span>, slow).<span class="cf">join</span>(<span class="cs">''</span>);
+}</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p4-e">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) both versions</span>
+          <span class="cx-badge cx-space">Space: O(n) simple / O(1) extra for in-place</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Multiple spaces "  the  sky  ":</strong> Simple: split(/\s+/) handles multiple spaces, filter(Boolean) handles leading/trailing empty strings. Returns "sky the".</li>
+          <li><strong>Single word "hello":</strong> Simple: trim() → "hello", split → ["hello"], reverse → ["hello"], join → "hello".</li>
+          <li><strong>The /\s+/ regex:</strong> Matches one or more whitespace characters. Better than split(' ') which produces empty strings for multiple spaces.</li>
+          <li><strong>When to code the O(1) version:</strong> The interviewer asks "can you do it with O(1) extra space?" It's a follow-up, not the primary solution. The simple version is always correct to code first.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- P5: String to Integer (atoi) -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 05 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">String to Integer (atoi)</div>
+      <div class="pc-lc">LeetCode #8 · <a href="https://leetcode.com/problems/string-to-integer-atoi/" target="_blank">leetcode.com/problems/string-to-integer-atoi</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p5-a')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-d')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-c')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-e')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p5-a">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Implement atoi (string to integer). Rules: skip leading whitespace, read optional sign (+/-), read digits until non-digit or end, clamp to 32-bit signed integer range [−2³¹, 2³¹−1].</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Why this problem is asked:</strong> It tests methodical state handling and edge case awareness, not algorithm cleverness. Interviewers want to see you enumerate and handle all the edge cases correctly.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Step by step:</strong> (1) Trim leading whitespace. (2) Read sign if present. (3) Read digits, building the number: <code>result = result * 10 + digit</code>. (4) Stop at first non-digit. (5) Clamp to [−2³¹, 2³¹−1].</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Integer overflow:</strong> In JS, numbers are 64-bit floats — no overflow during computation. But the problem requires clamping to 32-bit range. Check: if result > 2³¹-1 → return 2³¹-1. If result < -2³¹ → return -2³¹. Apply sign before clamping.</div></div>
+      </div>
+      <div class="pc-panel" id="p5-d">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Implement string to integer. Handle edge cases.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Let me enumerate the edge cases first: leading whitespace, optional + or - sign, non-digit characters stopping the parsing, no digits at all returning 0, and overflow clamping to 32-bit signed range.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">My approach: skip whitespace, read sign, then iterate reading digits until a non-digit is found. Build the number as result = result * 10 + digit. Apply sign, then clamp to [-2^31, 2^31-1].</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What if there are no digits after the sign?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">If we see a '+' or '-' but the next character isn't a digit, the number is 0. My digit loop simply won't execute, result stays 0, return 0. Cases like "+-12" or "++" — after reading the first sign, the next char is also a sign (not a digit), so the loop doesn't run. Return 0.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">How do you detect overflow?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">In JavaScript, numbers won't overflow — they're 64-bit floats. But the problem wants 32-bit signed integer behavior. I clamp AFTER computing the full number. INT_MAX = 2^31 - 1 = 2147483647. INT_MIN = -2^31 = -2147483648. If result * sign exceeds these bounds, return the bound.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p5-c">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">String to Integer (atoi) — O(n)</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">myAtoi</span>(s) {
+    <span class="ck">const</span> INT_MAX = <span class="cn">2147483647</span>;   <span class="cc">// 2^31 - 1</span>
+    <span class="ck">const</span> INT_MIN = <span class="cn">-2147483648</span>;  <span class="cc">// -2^31</span>
+
+    <span class="ck">let</span> i = <span class="cn">0</span>;
+
+    <span class="cc">// Step 1: skip leading whitespace</span>
+    <span class="ck">while</span> (i < s.length && s[i] === <span class="cs">' '</span>) i++;
+
+    <span class="cc">// Step 2: read optional sign</span>
+    <span class="ck">let</span> sign = <span class="cn">1</span>;
+    <span class="ck">if</span> (i < s.length && (s[i] === <span class="cs">'+'</span> || s[i] === <span class="cs">'-'</span>)) {
+        <span class="ck">if</span> (s[i] === <span class="cs">'-'</span>) sign = <span class="cn">-1</span>;
+        i++;
+    }
+
+    <span class="cc">// Step 3: read digits</span>
+    <span class="ck">let</span> result = <span class="cn">0</span>;
+    <span class="ck">while</span> (i < s.length && s[i] >= <span class="cs">'0'</span> && s[i] <= <span class="cs">'9'</span>) {
+        <span class="ck">const</span> digit = s[i].<span class="cf">charCodeAt</span>(<span class="cn">0</span>) - <span class="cn">48</span>; <span class="cc">// '0'.charCodeAt(0) = 48</span>
+        result = result * <span class="cn">10</span> + digit;
+        i++;
+    }
+
+    <span class="cc">// Step 4: apply sign and clamp</span>
+    result *= sign;
+    <span class="ck">if</span> (result > INT_MAX) <span class="ck">return</span> INT_MAX;
+    <span class="ck">if</span> (result < INT_MIN) <span class="ck">return</span> INT_MIN;
+    <span class="ck">return</span> result;
+}</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p5-e">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — single pass</span>
+          <span class="cx-badge cx-space">Space: O(1) — no extra data structures</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>"" empty string:</strong> Skip whitespace loop doesn't run. No sign. Digit loop doesn't run. Return 0.</li>
+          <li><strong>"   -42":</strong> Skip 3 spaces, sign = -1, read 42, result = 42 * -1 = -42. Return -42.</li>
+          <li><strong>"4193 with words":</strong> Read 4193, hit ' ', stop. Return 4193. Non-digit stops parsing.</li>
+          <li><strong>"words and 987":</strong> After skipping spaces, first char 'w' is not digit and not sign. Digit loop doesn't run. Return 0.</li>
+          <li><strong>"21474836460" (overflow):</strong> Result builds up to 21474836460 > INT_MAX. Return INT_MAX = 2147483647.</li>
+          <li><strong>"-91283472332" (underflow):</strong> Result = -91283472332 &lt; INT_MIN. Return INT_MIN = -2147483648.</li>
+          <li><strong>"+-12":</strong> Read '+', sign=1, i++. Next char is '-', not a digit. Digit loop doesn't run. Return 0.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM BANK -->
+<div class="section" id="bank">
+  <div class="section-label">Section 06</div>
+  <h2>Problem Bank — 35 Problems</h2>
+  <div class="section-sub">Grouped by technique. Start with the technique you just studied.</div>
+
+  <div class="bank-progress">
+    <div class="bp-row"><span class="bp-label">Solved</span><span class="bp-count" id="bp-count">0 / 35</span></div>
+    <div class="bp-track"><div class="bp-fill" id="bp-fill"></div></div>
+  </div>
+
+  <div class="pb-filters">
+    <button class="pb-filter active" onclick="filterProblems('all',this)">All (35)</button>
+    <button class="pb-filter easy-filter" onclick="filterProblems('easy',this)">Easy</button>
+    <button class="pb-filter med-filter" onclick="filterProblems('medium',this)">Medium</button>
+    <button class="pb-filter hard-filter" onclick="filterProblems('hard',this)">Hard</button>
+    <button class="pb-filter" onclick="filterProblems('unsolved',this)">Unsolved</button>
+  </div>
+
+  <div class="pb-list" id="pb-list">
+    <!-- Two Pointers / Palindrome -->
+    <div class="pb-item" data-diff="easy" data-id="pb0" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#125</div><div class="pb-name"><a href="https://leetcode.com/problems/valid-palindrome/" target="_blank">Valid Palindrome</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Two Pointers</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb1" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#5</div><div class="pb-name"><a href="https://leetcode.com/problems/longest-palindromic-substring/" target="_blank">Longest Palindromic Substring</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Expand Around Center</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb2" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#680</div><div class="pb-name"><a href="https://leetcode.com/problems/valid-palindrome-ii/" target="_blank">Valid Palindrome II (delete 1 char)</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Two Pointers + one skip</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb3" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#647</div><div class="pb-name"><a href="https://leetcode.com/problems/palindromic-substrings/" target="_blank">Palindromic Substrings (count)</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Expand Around Center, count</div></div>
+    <!-- Stack -->
+    <div class="pb-item" data-diff="easy" data-id="pb4" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#20</div><div class="pb-name"><a href="https://leetcode.com/problems/valid-parentheses/" target="_blank">Valid Parentheses</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Stack</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb5" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1047</div><div class="pb-name"><a href="https://leetcode.com/problems/remove-all-adjacent-duplicates-in-string/" target="_blank">Remove Adjacent Duplicates</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Stack-based removal</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb6" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#394</div><div class="pb-name"><a href="https://leetcode.com/problems/decode-string/" target="_blank">Decode String</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Stack (number + string pairs)</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb7" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#71</div><div class="pb-name"><a href="https://leetcode.com/problems/simplify-path/" target="_blank">Simplify Path</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Stack + split('/')</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb8" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#856</div><div class="pb-name"><a href="https://leetcode.com/problems/score-of-parentheses/" target="_blank">Score of Parentheses</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Stack depth counting</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb9" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#32</div><div class="pb-name"><a href="https://leetcode.com/problems/longest-valid-parentheses/" target="_blank">Longest Valid Parentheses</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Stack with indices</div></div>
+    <!-- Frequency Map / Anagram -->
+    <div class="pb-item" data-diff="easy" data-id="pb10" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#242</div><div class="pb-name"><a href="https://leetcode.com/problems/valid-anagram/" target="_blank">Valid Anagram</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Freq array</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb11" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#383</div><div class="pb-name"><a href="https://leetcode.com/problems/ransom-note/" target="_blank">Ransom Note</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Freq map subset</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb12" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#387</div><div class="pb-name"><a href="https://leetcode.com/problems/first-unique-character-in-a-string/" target="_blank">First Unique Character</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Freq map, find count=1</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb13" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#205</div><div class="pb-name"><a href="https://leetcode.com/problems/isomorphic-strings/" target="_blank">Isomorphic Strings</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Two maps: s→t and t→s</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb14" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#290</div><div class="pb-name"><a href="https://leetcode.com/problems/word-pattern/" target="_blank">Word Pattern</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Bijection map check</div></div>
+    <!-- String Building / Transformation -->
+    <div class="pb-item" data-diff="easy" data-id="pb15" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#14</div><div class="pb-name"><a href="https://leetcode.com/problems/longest-common-prefix/" target="_blank">Longest Common Prefix</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Vertical scan</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb16" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#58</div><div class="pb-name"><a href="https://leetcode.com/problems/length-of-last-word/" target="_blank">Length of Last Word</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Scan from end</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb17" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#443</div><div class="pb-name"><a href="https://leetcode.com/problems/string-compression/" target="_blank">String Compression</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Fast/Slow pointer, write compressed</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb18" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#151</div><div class="pb-name"><a href="https://leetcode.com/problems/reverse-words-in-a-string/" target="_blank">Reverse Words in a String</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Split + reverse + join</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb19" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#6</div><div class="pb-name"><a href="https://leetcode.com/problems/zigzag-conversion/" target="_blank">Zigzag Conversion</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Row index tracking</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb20" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#8</div><div class="pb-name"><a href="https://leetcode.com/problems/string-to-integer-atoi/" target="_blank">String to Integer (atoi)</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">State machine parsing</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb21" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#12</div><div class="pb-name"><a href="https://leetcode.com/problems/integer-to-roman/" target="_blank">Integer to Roman</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Greedy with lookup table</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb22" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#13</div><div class="pb-name"><a href="https://leetcode.com/problems/roman-to-integer/" target="_blank">Roman to Integer</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Map + look-ahead</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb23" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#271</div><div class="pb-name"><a href="https://leetcode.com/problems/encode-and-decode-strings/" target="_blank">Encode and Decode Strings</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Length-prefix encoding</div></div>
+    <!-- Pattern Matching / Substring -->
+    <div class="pb-item" data-diff="easy" data-id="pb24" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#28</div><div class="pb-name"><a href="https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/" target="_blank">Find Index of First Occurrence</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">indexOf / KMP</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb25" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#459</div><div class="pb-name"><a href="https://leetcode.com/problems/repeated-substring-pattern/" target="_blank">Repeated Substring Pattern</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">KMP / string doubling trick</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb26" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#796</div><div class="pb-name"><a href="https://leetcode.com/problems/rotate-string/" target="_blank">Rotate String</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Concatenation + indexOf</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb27" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#686</div><div class="pb-name"><a href="https://leetcode.com/problems/repeated-string-match/" target="_blank">Repeated String Match</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Repeat until length ≥ len(b) + indexOf</div></div>
+    <!-- Hard / Mixed -->
+    <div class="pb-item" data-diff="hard" data-id="pb28" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#76</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-window-substring/" target="_blank">Minimum Window Substring</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Sliding Window + freq map</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb29" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#10</div><div class="pb-name"><a href="https://leetcode.com/problems/regular-expression-matching/" target="_blank">Regular Expression Matching</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">DP 2D table</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb30" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#44</div><div class="pb-name"><a href="https://leetcode.com/problems/wildcard-matching/" target="_blank">Wildcard Matching</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">DP / greedy</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb31" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#65</div><div class="pb-name"><a href="https://leetcode.com/problems/valid-number/" target="_blank">Valid Number</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">State machine parsing</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb32" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1143</div><div class="pb-name"><a href="https://leetcode.com/problems/longest-common-subsequence/" target="_blank">Longest Common Subsequence</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">DP (preview of Phase 2)</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb33" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#165</div><div class="pb-name"><a href="https://leetcode.com/problems/compare-version-numbers/" target="_blank">Compare Version Numbers</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Split + parse + compare</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb34" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2390</div><div class="pb-name"><a href="https://leetcode.com/problems/removing-stars-from-a-string/" target="_blank">Removing Stars From a String</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Stack simulation</div></div>
+  </div>
+</div>
+
+<!-- Q&A -->
+<div class="section" id="qa">
+  <div class="section-label">Section 07</div>
+  <h2>15 Interview Questions</h2>
+  <div class="section-sub">Answer out loud first. These cover every angle that FAANG and product company interviewers probe on strings.</div>
+
+  <div class="qa-list">
+
+    <div class="qa" id="qa1"><div class="qa-q" onclick="toggleQA('qa1')"><span><span class="qa-tag tag-trap">Trap</span>Why is string concatenation in a loop O(n²)? How do you fix it?</span><span class="qa-arr">▼</span></div><div class="qa-a">Strings in JavaScript (and Java, Python) are immutable. When you do <code>result += ch</code>, the runtime creates a brand new string of length result.length + 1, copies all existing characters, and adds the new character. For n concatenations: first copy costs 1 op, second 2, third 3... total = 1+2+...+n = O(n²). Fix: push characters into an array (O(1) per push), then join() once at the end (O(n) for the final join). In Java: use StringBuilder — it maintains an internal buffer and only copies when the buffer is full (amortized O(1) append). Saying this proactively in an interview shows you understand string immutability and production-level performance concerns.</div></div>
+
+    <div class="qa" id="qa2"><div class="qa-q" onclick="toggleQA('qa2')"><span><span class="qa-tag tag-core">Core</span>How do you check if two strings are anagrams? What are the two approaches?</span><span class="qa-arr">▼</span></div><div class="qa-a"><strong>Approach 1 — Sort and compare:</strong> Sort both strings, compare. If equal, anagrams. O(n log n) time, O(n) space for sorted copies. Simple but slower. <strong>Approach 2 — Frequency map:</strong> Build frequency array/map for one string. Decrement for the other. If all counts are 0, they're anagrams. O(n) time. If only lowercase letters, O(1) space (26-element array). If arbitrary chars, O(k) space where k = number of distinct characters. Always use approach 2 in interviews — it's faster and shows you know the optimal solution. Early exit: if lengths differ, immediately return false (can't be anagrams).</div></div>
+
+    <div class="qa" id="qa3"><div class="qa-q" onclick="toggleQA('qa3')"><span><span class="qa-tag tag-algo">Algorithm</span>Explain the Expand Around Center approach for palindromes. Why O(n²) and not O(n³)?</span><span class="qa-arr">▼</span></div><div class="qa-a">Brute force palindrome check: generate all O(n²) substrings, check each in O(n) → O(n³). Expand Around Center insight: every palindrome has a center. Odd-length palindromes have a single character center. Even-length have a gap center. There are 2n-1 centers total. For each center, expand outward — compare s[L] and s[R], if equal expand further. Expansion is O(n) per center in the worst case (entire string is a palindrome). But total expansion across all centers is also O(n) — each character is "visited" as a center once and as a boundary a bounded number of times. The naive analysis gives O(n²), and more careful analysis confirms this. Why not O(n³): we don't check every possible substring length from scratch — we expand incrementally and stop at the first mismatch. No wasted work.</div></div>
+
+    <div class="qa" id="qa4"><div class="qa-q" onclick="toggleQA('qa4')"><span><span class="qa-tag tag-interview">Interview</span>What is Manacher's Algorithm? Do you need to code it?</span><span class="qa-arr">▼</span></div><div class="qa-a">Manacher's is an O(n) algorithm for finding all palindromic substrings simultaneously. Key idea: if there's a palindrome centered at C with right boundary R, any palindrome center within [C, R] has a mirror center on the left side of C. We can use the mirror's palindrome length as a starting point for the new expansion — no need to re-verify already-checked characters. This gives amortized O(1) per center → O(n) total. Do you need to code it? In an interview: No — almost never expected. Expand Around Center (O(n²)) is the expected answer for "Longest Palindromic Substring" at Medium level. What you should do: mention Manacher's exists when asked "can you do better than O(n²)?", explain the concept (mirror palindrome insight), and offer to code it if specifically asked. Saying "there's an O(n) solution called Manacher's, I can explain the concept" demonstrates knowledge without requiring you to memorize the complex implementation.</div></div>
+
+    <div class="qa" id="qa5"><div class="qa-q" onclick="toggleQA('qa5')"><span><span class="qa-tag tag-core">Core</span>Why is a stack the right data structure for bracket matching?</span><span class="qa-arr">▼</span></div><div class="qa-a">Bracket matching is a LIFO (Last In, First Out) problem. The most recently opened bracket must be the first one closed. This is exactly what a stack models. When you open a bracket, push it. When you see a closing bracket, the bracket that should close is the most recently opened — the stack top. If the top matches, pop (it's been closed). If it doesn't match or the stack is empty, invalid. At the end, the stack must be empty (all brackets closed). Any data structure other than a stack would require scanning backwards to find the matching opener — O(n) per close bracket → O(n²). The stack gives O(1) access to the most recent opener. This principle generalizes: any "matching/nesting" problem where the inner scope must close before the outer scope → Stack.</div></div>
+
+    <div class="qa" id="qa6"><div class="qa-q" onclick="toggleQA('qa6')"><span><span class="qa-tag tag-interview">Interview</span>How do you decode an encoded string like "3[a2[bc]]" → "abcbcabcbc"?</span><span class="qa-arr">▼</span></div><div class="qa-a">LeetCode #394. Use a stack to handle nesting. Two stacks or a stack of pairs: one for current string, one for repeat count. Scan left to right: digit → build number. '[' → push (current string, current number) onto stack, reset current string and count. letter → append to current string. ']' → pop (prev_string, count) from stack. current = prev_string + current.repeat(count). Walk through "3[a2[bc]]": push ("", 3). Push ("a", 2). See 'b','c': current = "bc". See ']': pop ("a",2), current = "a" + "bc".repeat(2) = "abcbc". See ']': pop ("",3), current = "" + "abcbc".repeat(3) = "abcbcabcbc". Return "abcbcabcbc". O(n * output size) time where output can be exponentially large.</div></div>
+
+    <div class="qa" id="qa7"><div class="qa-q" onclick="toggleQA('qa7')"><span><span class="qa-tag tag-trap">Trap</span>What are the edge cases in string-to-integer (atoi) problems?</span><span class="qa-arr">▼</span></div><div class="qa-a">Enumerate all edge cases before coding atoi-style problems: (1) Leading whitespace — skip spaces only, not other chars. (2) Sign — optional '+' or '-'. Only one. After sign, must be digit or return 0. (3) Multiple signs "+-12" — read first sign, then next char is '-' (not digit) → return 0. (4) No digits "  " or "abc" → return 0. (5) Digits followed by non-digits "4193 with words" → parse 4193, stop at space. (6) Overflow: number exceeds 32-bit signed range. Clamp to INT_MAX (2147483647) or INT_MIN (-2147483648). (7) All zeros "0000" → return 0. (8) Leading zeros "007" → return 7. The art is not the algorithm (it's just loop through digits) but correctly handling all these cases. Mentioning them all before coding is what impresses interviewers.</div></div>
+
+    <div class="qa" id="qa8"><div class="qa-q" onclick="toggleQA('qa8')"><span><span class="qa-tag tag-algo">Algorithm</span>What is KMP? When would you use it over indexOf?</span><span class="qa-arr">▼</span></div><div class="qa-a">KMP (Knuth-Morris-Pratt): pattern matching in O(n+m) where n = text length, m = pattern length. Brute force is O(nm). KMP preprocesses the pattern to build an LPS (Longest Proper Prefix which is also Suffix) array — this tells us how far to "fall back" in the pattern when a mismatch occurs, avoiding re-comparison of characters we've already matched. Use KMP when: (1) The interviewer explicitly asks for O(n+m) matching. (2) The problem requires finding multiple non-overlapping occurrences efficiently. (3) The problem is "does s rotate to t" (check if t appears in s+s — use KMP for O(n)). In interviews: JavaScript's indexOf is O(nm) internally but usually fast enough for problem constraints. At Easy/Medium level, using indexOf is accepted. At Hard level or when asked for optimal complexity, know KMP. In practice (industry), you'd use built-in string methods — KMP is academic knowledge that shows depth.</div></div>
+
+    <div class="qa" id="qa9"><div class="qa-q" onclick="toggleQA('qa9')"><span><span class="qa-tag tag-interview">Interview</span>How do you check if one string is a rotation of another?</span><span class="qa-arr">▼</span></div><div class="qa-a">String s is a rotation of t if and only if s appears as a substring of t+t. Example: "abcde" rotated is "cdeab". t+t = "abcdeabcde". "cdeab" appears inside it. Why: concatenating t with itself creates all possible rotations as substrings. So: return s.length === t.length && (t+t).includes(s). O(n) with KMP, O(n²) with naive substring search. The includes/indexOf approach is O(n²) in the worst case but accepted in interviews. Key insight: t+t contains all rotations — this is an elegant trick worth knowing. If s and t have different lengths, they can't be rotations. Check that first.</div></div>
+
+    <div class="qa" id="qa10"><div class="qa-q" onclick="toggleQA('qa10')"><span><span class="qa-tag tag-core">Core</span>What is the difference between substring, subsequence, and subarray?</span><span class="qa-arr">▼</span></div><div class="qa-a"><strong>Subarray / Substring</strong>: contiguous elements from the original sequence. "abc" from "xabcx". Order preserved, no gaps. Two Pointers and Sliding Window work here because contiguity enables the "expand/shrink" logic. <strong>Subsequence</strong>: elements in order but not necessarily contiguous. "ac" from "abc". Can skip elements. DP (Dynamic Programming) is usually needed — can't use sliding window because there's no "invalid window" concept when elements can be skipped. <strong>Subset</strong>: any elements, any order. "ca" from "abc". For strings, this typically means character counts (anagram problems). This distinction matters: "longest substring without repeating characters" → sliding window. "longest common subsequence" → DP. "valid anagram" → frequency map (subset equality). Misidentifying which type the problem asks for leads to the wrong algorithm entirely.</div></div>
+
+    <div class="qa" id="qa11"><div class="qa-q" onclick="toggleQA('qa11')"><span><span class="qa-tag tag-trap">Trap</span>How do you handle multiple spaces when splitting a string into words?</span><span class="qa-arr">▼</span></div><div class="qa-a">s.split(' ') on "  hello   world  " produces ["", "", "hello", "", "", "world", "", ""] — empty strings for consecutive spaces and leading/trailing spaces. Two fixes: (1) s.trim().split(/\s+/) — trim removes leading/trailing spaces, /\s+/ splits on one or more whitespace characters. Produces ["hello", "world"]. (2) s.split(' ').filter(Boolean) — split(' ') and filter out empty strings. Produces the same result. For most interview problems: use s.trim().split(/\s+/) — it's the cleanest one-liner. Note: /\s+/ matches any whitespace including tabs and newlines, not just spaces. If the problem guarantees single-space separators, s.trim().split(' ') works fine. Always test with "  hello   world  " mentally before submitting.</div></div>
+
+    <div class="qa" id="qa12"><div class="qa-q" onclick="toggleQA('qa12')"><span><span class="qa-tag tag-interview">Interview</span>How do you find the first non-repeating character?</span><span class="qa-arr">▼</span></div><div class="qa-a">LeetCode #387. Two passes: (1) Build frequency map — count each character's occurrences. (2) Iterate the string again in order — return the first character whose frequency is 1. O(n) time, O(k) space where k is charset size. Code: <code>const freq = {}; for(const c of s) freq[c] = (freq[c]||0)+1; for(let i=0; i&lt;s.length; i++) if(freq[s[i]]===1) return i; return -1</code>. The two-pass approach preserves the original order — the second pass iterates in input order, guaranteeing "first" means leftmost. One-pass approach using ordered Map: in JavaScript, Map preserves insertion order, so you could do one pass building the map, then iterate map entries looking for count 1. Same O(n) — the two-pass approach is cleaner to explain.</div></div>
+
+    <div class="qa" id="qa13"><div class="qa-q" onclick="toggleQA('qa13')"><span><span class="qa-tag tag-algo">Algorithm</span>Explain the "triple reverse" for reversing words in-place.</span><span class="qa-arr">▼</span></div><div class="qa-a">Triple reverse for in-place word reversal: (1) Reverse the entire string. (2) Reverse each individual word. (3) Clean up spaces. Why it works: "the sky is blue" → reverse all → "eulb si yks eht". Now words are in reverse order but each word's characters are also reversed. Fix each word: reverse each word individually → "blue is sky the". The two reversal operations cancel each other for within-word character order, but the word-level reversal remains. This uses O(1) extra space (in-place swaps). The clean version in JavaScript: split to char array, reverse whole array, find word boundaries and reverse each word, handle multiple spaces with fast/slow pointer. This is a classic follow-up question when you give the simple O(n) space answer — good to know the technique by name.</div></div>
+
+    <div class="qa" id="qa14"><div class="qa-q" onclick="toggleQA('qa14')"><span><span class="qa-tag tag-interview">Interview</span>How do you compress a string like "aaabbbcc" → "a3b3c2"?</span><span class="qa-arr">▼</span></div><div class="qa-a">LeetCode #443. Two-pointer: read with 'fast', write with 'slow'. For each group of same characters: count them (advance fast while fast and fast-1 are same). Write the character at slow position. If count > 1, write each digit of count as individual characters. Advance slow past written characters. Why write digits individually: "a123" needs 4 chars, count=123. JavaScript: convert to string and write each char. In-place modifies the original array, returns new length. Edge cases: single character groups ("a") — count is 1, don't write the "1" (LeetCode's constraint). Groups of exactly 10, 100 — multi-digit counts. The slow/fast approach gives O(n) time, O(1) extra space. A simpler O(n) space approach: build a new string with array and join — but the problem requires in-place.</div></div>
+
+    <div class="qa" id="qa15"><div class="qa-q" onclick="toggleQA('qa15')"><span><span class="qa-tag tag-core">Core</span>What's the space complexity difference between a 26-element array and a Map for character frequency?</span><span class="qa-arr">▼</span></div><div class="qa-a"><strong>26-element array:</strong> Always exactly 26 integers, regardless of input. O(1) space — fixed size. Only works for lowercase a-z. Index = charCode - 97. Fast — array indexing vs hash computation. <strong>Map (or object):</strong> O(k) space where k = number of distinct characters in the input. For a 26-char lowercase-only string, Map has at most 26 entries. For ASCII strings, at most 128 entries. For Unicode, could be much more. Both are O(1) in terms of dependence on input size n when charset is bounded. But interviewers appreciate the explicit distinction: "Since the problem constrains to lowercase letters only, I'll use a 26-element fixed array — O(1) space, no hash overhead." vs "Since the input can have any Unicode character, I'll use a Map — O(k) space where k is the number of distinct characters." Saying this shows you're thinking about both correctness and performance.</div></div>
+
+  </div>
+
+  <div class="rev-card">
+    <div class="rev-title">Strings — done when you can...</div>
+    <div class="rev-grid">
+      <div class="rev-item">Name all 6 techniques and give an example problem for each</div>
+      <div class="rev-item">Explain why string concatenation in a loop is O(n²) and how to fix it</div>
+      <div class="rev-item">Code expand-around-center for longest palindromic substring from memory</div>
+      <div class="rev-item">Solve Valid Parentheses cold — push open, pop and check on close</div>
+      <div class="rev-item">Convert char to index: charCodeAt(0) - 'a'.charCodeAt(0)</div>
+      <div class="rev-item">Explain Manacher's concept (without coding) when asked for O(n)</div>
+      <div class="rev-item">Handle all 6 edge cases in atoi without being prompted</div>
+      <div class="rev-item"><strong>Solve 25+ of 35 problems before moving to Linked Lists</strong></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(btn, panelId) {
+  const card = btn.closest('.problem-card');
+  card.querySelectorAll('.pc-tab').forEach(t => t.classList.remove('active'));
+  card.querySelectorAll('.pc-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+function toggleQA(id) { document.getElementById(id).classList.toggle('open'); }
+
+const PB_KEY = 'p1_p3_problems';
+function loadPB() { try { return JSON.parse(localStorage.getItem(PB_KEY)||'{}'); } catch(e) { return {}; } }
+function savePB(d) { try { localStorage.setItem(PB_KEY, JSON.stringify(d)); } catch(e) {} }
+let pbState = loadPB();
+
+function toggleProblem(item) {
+  const id = item.dataset.id;
+  pbState[id] = !pbState[id];
+  item.classList.toggle('solved', pbState[id]);
+  savePB(pbState);
+  updateProgress();
+}
+function updateProgress() {
+  const all = document.querySelectorAll('#pb-list .pb-item');
+  const solved = document.querySelectorAll('#pb-list .pb-item.solved');
+  const pct = all.length ? Math.round(solved.length / all.length * 100) : 0;
+  document.getElementById('bp-count').textContent = solved.length + ' / ' + all.length;
+  document.getElementById('bp-fill').style.width = pct + '%';
+}
+(function() {
+  document.querySelectorAll('#pb-list .pb-item').forEach(item => {
+    if (pbState[item.dataset.id]) item.classList.add('solved');
+  });
+  updateProgress();
+})();
+function filterProblems(filter, btn) {
+  document.querySelectorAll('.pb-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#pb-list .pb-item').forEach(item => {
+    const diff = item.dataset.diff;
+    const isSolved = item.classList.contains('solved');
+    let show = true;
+    if (filter === 'easy') show = diff === 'easy';
+    else if (filter === 'medium') show = diff === 'medium';
+    else if (filter === 'hard') show = diff === 'hard';
+    else if (filter === 'unsolved') show = !isSolved;
+    item.style.display = show ? 'flex' : 'none';
+  });
+}
+window.addEventListener('scroll', () => {
+  const sections = document.querySelectorAll('.section[id]');
+  const pills = document.querySelectorAll('.nav-pill');
+  let active = '';
+  sections.forEach(s => { if (s.getBoundingClientRect().top < 120) active = s.id; });
+  pills.forEach(p => p.classList.toggle('active', p.getAttribute('href') === '#' + active));
+});
+document.querySelectorAll('.nav-pill').forEach(p => {
+  p.addEventListener('click', function(e) {
+    e.preventDefault();
+    const t = document.querySelector(this.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>

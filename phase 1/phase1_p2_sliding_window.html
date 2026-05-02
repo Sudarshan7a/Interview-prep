@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 1 · Part 2 — Sliding Window</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap');
+:root{
+  --bg:#060a08;--s1:#0d1410;--s2:#141e18;--s3:#1c2820;--s4:#242e28;
+  --b1:#2e3e34;--b2:#485a50;--b3:#607a68;
+  --t1:#eef8f0;--t2:#90b898;--t3:#507858;--t4:#303e34;
+  --mono:'JetBrains Mono',monospace;
+  --head:'Bricolage Grotesque',sans-serif;
+  --body:'DM Sans',sans-serif;
+  --acc:#00e87a;--acc2:#34f092;--acc3:#80ffbe;
+  --green:#4ade80;--yellow:#facc15;--red:#f87171;--blue:#60a5fa;--orange:#fb923c;--purple:#a78bfa;--teal:#2dd4bf;
+  --easy:#4ade80;--medium:#facc15;--hard:#f87171;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--t1);font-family:var(--body);font-size:14px;line-height:1.7;min-height:100vh;}
+
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(6,10,8,0.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--s3);padding:10px 32px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.bar-left{display:flex;align-items:center;gap:16px;}
+.bar-badge{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--acc);background:rgba(0,232,122,0.1);padding:4px 10px;border-radius:99px;border:1px solid rgba(0,232,122,0.25);}
+.bar-title{font-family:var(--mono);font-size:11px;color:var(--t2);}
+.bar-right{display:flex;gap:6px;flex-wrap:wrap;}
+.nav-pill{font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:99px;border:1px solid var(--b1);color:var(--t3);cursor:pointer;text-decoration:none;transition:all 0.15s;background:none;}
+.nav-pill:hover,.nav-pill.active{border-color:var(--acc);color:var(--acc2);}
+
+.hero{padding:64px 48px 52px;position:relative;overflow:hidden;border-bottom:1px solid var(--s3);}
+.hero::before{content:'';position:absolute;top:-80px;right:-80px;width:440px;height:440px;background:radial-gradient(circle,rgba(0,232,122,0.07) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'SLIDING WINDOW';position:absolute;bottom:-24px;right:-10px;font-family:var(--head);font-size:100px;font-weight:800;color:rgba(255,255,255,0.015);pointer-events:none;line-height:1;white-space:nowrap;}
+.h-phase{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--acc);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.h-phase::before{content:'';width:24px;height:2px;background:var(--acc);}
+.hero h1{font-family:var(--head);font-size:clamp(32px,6vw,68px);font-weight:800;line-height:1.0;letter-spacing:-0.03em;margin-bottom:16px;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--acc),var(--acc3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-desc{font-size:14px;color:var(--t2);max-width:580px;line-height:1.75;margin-bottom:24px;}
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-num{font-family:var(--head);font-size:28px;font-weight:800;color:var(--acc2);}
+.stat-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-top:2px;}
+
+.section{padding:48px;border-bottom:1px solid var(--s3);}
+.section-label{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--t3);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--s3);}
+.section h2{font-family:var(--head);font-size:28px;font-weight:800;margin-bottom:8px;letter-spacing:-0.01em;}
+.section-sub{font-size:13px;color:var(--t2);margin-bottom:24px;max-width:600px;line-height:1.6;}
+
+.explain{font-size:14px;color:var(--t2);line-height:1.8;margin-bottom:16px;}
+.explain strong{color:var(--t1);}
+.explain code{font-family:var(--mono);font-size:12px;background:var(--s3);padding:1px 6px;border-radius:4px;color:var(--acc3);}
+
+.insight{background:linear-gradient(135deg,rgba(0,232,122,0.07),rgba(52,240,146,0.03));border:1px solid rgba(0,232,122,0.18);border-left:3px solid var(--acc);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:var(--t1);line-height:1.7;}
+.insight strong{color:var(--acc2);}
+.warn-box{background:rgba(251,146,60,0.06);border:1px solid rgba(251,146,60,0.2);border-left:3px solid var(--orange);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:#fcd9b6;line-height:1.7;}
+.warn-box strong{color:var(--orange);}
+.good-box{background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:#bbf7d0;line-height:1.7;}
+.good-box strong{color:var(--green);}
+
+/* window visualizer */
+.viz-wrap{background:var(--s1);border:1px solid var(--s3);border-radius:12px;padding:20px;margin:16px 0;}
+.viz-label{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);margin-bottom:12px;}
+.viz-array{display:flex;gap:3px;margin-bottom:10px;flex-wrap:wrap;}
+.viz-cell{width:40px;height:40px;border:1px solid var(--b1);border-radius:6px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13px;font-weight:600;color:var(--t2);flex-shrink:0;}
+.viz-cell.win{border-color:var(--acc);color:var(--acc);background:rgba(0,232,122,0.08);}
+.viz-cell.left{border-color:var(--blue);color:var(--blue);background:rgba(96,165,250,0.08);}
+.viz-cell.right{border-color:var(--purple);color:var(--purple);background:rgba(167,139,250,0.08);}
+.viz-cell.bad{border-color:var(--red);color:var(--red);background:rgba(248,113,113,0.08);}
+.viz-step{font-size:12px;color:var(--t2);line-height:1.6;padding:10px 12px;background:var(--s2);border-radius:6px;margin-top:10px;}
+
+/* code */
+.code-wrap{background:var(--s1);border:1px solid var(--s3);border-radius:12px;overflow:hidden;margin:16px 0;}
+.code-header{background:var(--s2);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--s3);}
+.code-lang{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc2);}
+.code-label{font-family:var(--mono);font-size:9px;color:var(--t3);}
+.code-wrap pre{font-family:var(--mono);font-size:12px;line-height:1.85;padding:20px;color:#c8e0d0;overflow-x:auto;white-space:pre;}
+.ck{color:#f87171;}.cs{color:#86efac;}.cn{color:#a5b4fc;}.cf{color:#fde68a;}
+.cc{color:#3a5044;font-style:italic;}.ct{color:#7dd3fc;font-weight:600;}.co{color:#fb923c;}.cm{color:#c084fc;}
+
+/* steps */
+.steps-grid{display:grid;gap:10px;margin:16px 0;}
+.step-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start;}
+.step-n{font-family:var(--head);font-size:32px;font-weight:800;color:var(--s4);flex-shrink:0;line-height:1;}
+.step-title{font-family:var(--head);font-size:15px;font-weight:700;color:var(--t1);margin-bottom:6px;}
+.step-text{font-size:12px;color:var(--t2);line-height:1.6;}
+.step-say{background:var(--s2);border-radius:6px;padding:8px 12px;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--green);line-height:1.6;}
+.step-say::before{content:'SAY: ';color:var(--t3);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;}
+
+/* variant cards */
+.variant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:16px 0;}
+.variant-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:18px;}
+.vc-tag{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--acc2);margin-bottom:8px;}
+.vc-title{font-family:var(--head);font-size:15px;font-weight:700;margin-bottom:6px;}
+.vc-desc{font-size:12px;color:var(--t2);line-height:1.6;}
+.vc-ex{font-family:var(--mono);font-size:10px;color:var(--t3);margin-top:8px;background:var(--s2);padding:6px 10px;border-radius:4px;}
+
+/* problem cards */
+.problem-card{background:var(--s1);border:1px solid var(--s3);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.pc-header{padding:20px 24px 16px;border-bottom:1px solid var(--s3);}
+.pc-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.pc-num{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);}
+.diff-badge{font-family:var(--mono);font-size:9px;padding:3px 10px;border-radius:99px;font-weight:600;}
+.diff-easy{background:rgba(74,222,128,0.1);color:var(--easy);border:1px solid rgba(74,222,128,0.25);}
+.diff-medium{background:rgba(250,204,21,0.1);color:var(--medium);border:1px solid rgba(250,204,21,0.25);}
+.diff-hard{background:rgba(248,113,113,0.1);color:var(--hard);border:1px solid rgba(248,113,113,0.25);}
+.pc-title{font-family:var(--head);font-size:20px;font-weight:800;margin-bottom:4px;}
+.pc-lc{font-family:var(--mono);font-size:10px;color:var(--t3);}
+.pc-lc a{color:var(--acc2);text-decoration:none;}
+.pc-lc a:hover{text-decoration:underline;}
+.pc-tabs{display:flex;border-bottom:1px solid var(--s3);overflow-x:auto;}
+.pc-tab{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:10px 18px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;transition:all 0.15s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;}
+.pc-tab:hover{color:var(--t2);}
+.pc-tab.active{color:var(--acc2);border-bottom-color:var(--acc);}
+.pc-body{padding:22px 24px;}
+.pc-panel{display:none;}
+.pc-panel.active{display:block;}
+
+.approach-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+.as-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--acc2);background:rgba(0,232,122,0.1);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.as-text{font-size:13px;color:var(--t2);line-height:1.6;}
+.as-text strong{color:var(--t1);}
+.as-text code{font-family:var(--mono);font-size:11px;background:var(--s3);padding:1px 5px;border-radius:3px;color:var(--acc3);}
+
+.dialogue{background:var(--s2);border-radius:10px;padding:4px 0;margin:8px 0;}
+.d-line{display:flex;gap:10px;padding:8px 16px;font-size:13px;line-height:1.6;}
+.d-line:nth-child(even){background:var(--s3);}
+.d-speaker{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;flex-shrink:0;padding-top:2px;min-width:60px;}
+.d-iv{color:var(--orange);}
+.d-you{color:var(--acc2);}
+.d-msg{color:var(--t2);}
+.d-msg strong{color:var(--t1);}
+.d-msg em{color:var(--green);font-style:normal;font-family:var(--mono);font-size:11px;}
+
+.complexity-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 8px;}
+.cx-badge{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--s4);}
+.cx-time{border-color:rgba(0,232,122,0.3);color:var(--acc2);}
+.cx-space{border-color:rgba(74,222,128,0.3);color:var(--green);}
+
+.edge-list{list-style:none;}
+.edge-list li{font-size:13px;color:var(--t2);padding:6px 0;border-bottom:1px solid var(--s3);display:flex;gap:10px;}
+.edge-list li:last-child{border-bottom:none;}
+.edge-list li::before{content:'⚠';font-size:11px;margin-top:2px;flex-shrink:0;}
+
+/* problem bank */
+.pb-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.pb-filter{font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:6px;border:1px solid var(--b1);color:var(--t3);cursor:pointer;background:none;transition:all 0.15s;}
+.pb-filter:hover,.pb-filter.active{background:var(--s2);border-color:var(--b2);color:var(--t1);}
+.pb-filter.easy-filter.active{border-color:var(--easy);color:var(--easy);}
+.pb-filter.med-filter.active{border-color:var(--medium);color:var(--medium);}
+.pb-filter.hard-filter.active{border-color:var(--hard);color:var(--hard);}
+.pb-list{display:grid;gap:6px;}
+.pb-item{background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;transition:border-color 0.15s;cursor:pointer;}
+.pb-item:hover{border-color:var(--b2);}
+.pb-cb{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--b1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all 0.15s;}
+.pb-item.solved .pb-cb{background:var(--green);border-color:var(--green);color:#000;}
+.pb-num{font-family:var(--mono);font-size:10px;color:var(--t3);flex-shrink:0;min-width:40px;}
+.pb-name{flex:1;font-size:13px;color:var(--t2);}
+.pb-name a{color:inherit;text-decoration:none;}
+.pb-name a:hover{color:var(--acc2);}
+.pb-item.solved .pb-name{color:var(--t4);text-decoration:line-through;}
+.pb-diff{font-family:var(--mono);font-size:9px;flex-shrink:0;}
+.pb-diff.e{color:var(--easy);}
+.pb-diff.m{color:var(--medium);}
+.pb-diff.h{color:var(--hard);}
+.pb-pattern{font-family:var(--mono);font-size:9px;color:var(--t4);flex-shrink:0;}
+@media(max-width:640px){.pb-pattern{display:none;}}
+
+.bank-progress{background:var(--s2);border:1px solid var(--s3);border-radius:10px;padding:16px 20px;margin-bottom:16px;}
+.bp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.bp-label{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);}
+.bp-count{font-family:var(--head);font-size:18px;font-weight:800;color:var(--acc2);}
+.bp-track{height:5px;background:var(--s3);border-radius:99px;overflow:hidden;}
+.bp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--teal));border-radius:99px;transition:width 0.4s ease;width:0%;}
+
+/* Q&A */
+.qa-list{display:grid;gap:8px;}
+.qa{background:var(--s1);border:1px solid var(--s3);border-radius:10px;overflow:hidden;}
+.qa-q{padding:14px 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;transition:background 0.15s;}
+.qa-q:hover{background:var(--s2);}
+.qa-arr{color:var(--t3);font-size:10px;flex-shrink:0;margin-top:3px;transition:transform 0.2s;}
+.qa.open .qa-arr{transform:rotate(180deg);}
+.qa-a{display:none;padding:16px 18px;border-top:1px solid var(--s3);font-size:13px;color:var(--t2);line-height:1.8;background:var(--s2);}
+.qa.open .qa-a{display:block;}
+.qa-a strong{color:var(--t1);}
+.qa-a code{font-family:var(--mono);font-size:11px;background:var(--s3);padding:1px 5px;border-radius:3px;color:var(--acc3);}
+.qa-tag{font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;margin-right:6px;vertical-align:middle;}
+.tag-core{background:rgba(0,232,122,0.1);color:var(--acc2);}
+.tag-interview{background:rgba(250,204,21,0.1);color:var(--yellow);}
+.tag-trap{background:rgba(248,113,113,0.1);color:var(--red);}
+.tag-vs{background:rgba(167,139,250,0.1);color:var(--purple);}
+
+.rev-card{background:linear-gradient(135deg,rgba(0,232,122,0.06),rgba(52,240,146,0.02));border:1px solid rgba(0,232,122,0.15);border-radius:14px;padding:24px;margin-top:20px;}
+.rev-title{font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:14px;color:var(--acc2);}
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:580px){.rev-grid{grid-template-columns:1fr;}}
+.rev-item{font-size:12px;color:var(--t2);padding:6px 0 6px 16px;position:relative;line-height:1.5;}
+.rev-item::before{content:'→';position:absolute;left:0;color:var(--acc);font-family:var(--mono);}
+.rev-item strong{color:var(--t1);}
+
+.cmp{width:100%;border-collapse:collapse;font-size:13px;margin:16px 0;}
+.cmp th{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);text-align:left;padding:8px 12px;border-bottom:2px solid var(--b1);background:var(--s2);}
+.cmp td{padding:9px 12px;border-bottom:1px solid var(--s3);color:var(--t2);vertical-align:top;line-height:1.5;}
+.cmp tr:hover td{background:var(--s1);}
+.cmp td:first-child{color:var(--t1);font-weight:500;}
+
+@media(max-width:640px){.section,.hero{padding:28px 20px;}.top-bar{padding:10px 16px;}.hero h1{font-size:32px;}.pc-tabs{overflow-x:auto;}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="bar-left">
+    <span class="bar-badge">Phase 1 · Part 2</span>
+    <span class="bar-title">Sliding Window</span>
+  </div>
+  <div class="bar-right">
+    <a class="nav-pill" href="#concept">Concept</a>
+    <a class="nav-pill" href="#variants">Variants</a>
+    <a class="nav-pill" href="#framework">Framework</a>
+    <a class="nav-pill" href="#template">Templates</a>
+    <a class="nav-pill" href="#problems">Solved</a>
+    <a class="nav-pill" href="#bank">Bank</a>
+    <a class="nav-pill" href="#qa">Q&amp;A</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="h-phase">Phase 1 · Part 2 of 7 · DSA Patterns</div>
+  <h1>Sliding<br><em>Window</em></h1>
+  <p class="hero-desc">A window that slides over an array or string, expanding and shrinking to maintain a condition. Converts O(n²) subarray problems into O(n). The pattern behind longest/shortest substring problems, maximum sum subarrays, and more.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">36</div><div class="stat-label">Problems</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Solved + Explained</div></div>
+    <div class="stat"><div class="stat-num">15</div><div class="stat-label">Interview Q&amp;As</div></div>
+    <div class="stat"><div class="stat-num">1–2wk</div><div class="stat-label">Suggested Pace</div></div>
+  </div>
+</div>
+
+<!-- CONCEPT -->
+<div class="section" id="concept">
+  <div class="section-label">Section 01</div>
+  <h2>The Core Idea</h2>
+  <div class="section-sub">A window is a contiguous subarray or substring defined by two pointers: left (L) and right (R). The window slides by moving R right to expand and L right to shrink.</div>
+
+  <p class="explain">
+    Many problems ask about <strong>contiguous subarrays or substrings</strong> — "find the longest/shortest/maximum/minimum subarray that satisfies some condition." The brute force checks every possible subarray: O(n²) or worse. Sliding Window avoids this by maintaining a window that never needs to restart from scratch.
+  </p>
+
+  <div class="insight">
+    <strong>The sliding window insight:</strong> Instead of checking every subarray independently, maintain a window [L, R]. Expand R to include more elements. When the window violates the condition, shrink from L. <strong>Neither pointer ever moves backward</strong> — each pointer traverses at most n positions, giving O(n) total.
+  </div>
+
+  <!-- Fixed window visual -->
+  <div class="viz-wrap">
+    <div class="viz-label">Fixed Size Window (k=3) — Maximum Sum</div>
+    <div class="viz-array">
+      <div class="viz-cell win">2</div>
+      <div class="viz-cell win">1</div>
+      <div class="viz-cell win">5</div>
+      <div class="viz-cell">1</div>
+      <div class="viz-cell">3</div>
+      <div class="viz-cell">2</div>
+    </div>
+    <div class="viz-step">
+      Window sum = 2+1+5 = 8. Slide right: remove 2, add 1 → sum = 7. Slide: remove 1, add 3 → sum = 9. Slide: remove 5, add 2 → sum = 6. Max = 9.<br>
+      Key: instead of re-summing k elements each time (O(k) per slide), just subtract left element and add right element — O(1) per slide.
+    </div>
+  </div>
+
+  <!-- Variable window visual -->
+  <div class="viz-wrap">
+    <div class="viz-label">Variable Size Window — Longest Subarray with Sum ≤ 7</div>
+    <div class="viz-array">
+      <div class="viz-cell left">1</div>
+      <div class="viz-cell win">3</div>
+      <div class="viz-cell win">2</div>
+      <div class="viz-cell right">1</div>
+      <div class="viz-cell">4</div>
+      <div class="viz-cell">1</div>
+    </div>
+    <div class="viz-step">
+      L=0, R=3: window=[1,3,2,1], sum=7 ≤ 7. Valid! Length=4. R expands to 4.<br>
+      L=0, R=4: window=[1,3,2,1,4], sum=11 &gt; 7. Invalid. Shrink: L=1. sum=10 &gt; 7. L=2. sum=7. Valid. R expands again...<br>
+      L moves only right. R moves only right. Total steps ≤ 2n.
+    </div>
+  </div>
+
+  <div class="good-box">
+    <strong>Use Sliding Window when:</strong><br><br>
+    ✓ Problem involves a <strong>contiguous subarray or substring</strong><br>
+    ✓ Keywords: "longest", "shortest", "maximum", "minimum" + "subarray/substring"<br>
+    ✓ Problem has a <strong>condition on what's inside the window</strong> (sum ≤ k, at most k distinct chars, no repeats)<br>
+    ✓ You need to <strong>avoid re-computing</strong> the same overlapping subarray from scratch<br>
+    ✓ Fixed window size k given explicitly
+  </div>
+
+  <div class="warn-box">
+    <strong>Don't use Sliding Window when:</strong><br><br>
+    ✗ Elements in the subarray don't need to be contiguous → Subsequence, not subarray → DP or Two Pointers<br>
+    ✗ The window condition requires looking at all previous subarrays, not just the current window → Prefix sum + HashMap<br>
+    ✗ Problem is about pairs or sorted data → Two Pointers<br>
+    ✗ "Count subarrays where sum equals k exactly" — a shrinking window won't work cleanly → Prefix sum + HashMap (#560)
+  </div>
+
+  <p class="explain">
+    <strong>The critical mental model — when to expand vs shrink:</strong>
+  </p>
+
+  <table class="cmp">
+    <tr><th>Window state</th><th>Action</th><th>Why</th></tr>
+    <tr><td>Valid (condition satisfied)</td><td>Record result. Expand R.</td><td>Current window is a candidate. Try to make it bigger/better.</td></tr>
+    <tr><td>Invalid (condition violated)</td><td>Shrink L until valid again.</td><td>Window broke the rule. Remove elements from left to fix it.</td></tr>
+    <tr><td>R reached end</td><td>Stop. Return recorded result.</td><td>All windows explored.</td></tr>
+  </table>
+</div>
+
+<!-- VARIANTS -->
+<div class="section" id="variants">
+  <div class="section-label">Section 02</div>
+  <h2>The 3 Sliding Window Variants</h2>
+  <div class="section-sub">Recognize the variant from the problem statement — the template you use changes accordingly.</div>
+
+  <div class="variant-grid">
+    <div class="variant-card">
+      <div class="vc-tag">Variant A</div>
+      <div class="vc-title">Fixed Size Window</div>
+      <div class="vc-desc">Window size k is given. Slide the window by adding right element and removing left element. No need to shrink — just slide. Track max/min of window metric.</div>
+      <div class="vc-ex">Maximum Average Subarray I, Contains Duplicate II (within k), Sliding Window Maximum</div>
+    </div>
+    <div class="variant-card">
+      <div class="vc-tag">Variant B</div>
+      <div class="vc-title">Variable Window — Find Longest</div>
+      <div class="vc-desc">Expand R. When condition violated → shrink from L until valid. Track max window size seen. Condition on what's INSIDE window (at most k distinct, no repeats, sum ≤ target).</div>
+      <div class="vc-ex">Longest Substring Without Repeating, Longest Subarray with Sum ≤ K, Fruit Into Baskets</div>
+    </div>
+    <div class="variant-card">
+      <div class="vc-tag">Variant C</div>
+      <div class="vc-title">Variable Window — Find Shortest</div>
+      <div class="vc-desc">Expand R until condition met (valid window found). Then shrink L while still valid — find minimum. Record shortest. Condition on SATISFYING something (sum ≥ target, contains all chars).</div>
+      <div class="vc-ex">Minimum Window Substring, Minimum Size Subarray Sum, Smallest Subarray Covering All</div>
+    </div>
+  </div>
+
+  <div class="insight">
+    <strong>Longest vs Shortest — the direction reversal:</strong><br><br>
+    Longest: expand R eagerly, shrink L when violated. Max = widest valid window.<br>
+    Shortest: expand R until valid, then shrink L while still valid. Min = narrowest valid window.<br><br>
+    The code structure is almost identical — only what triggers shrinking changes, and whether you record size before or after shrinking.
+  </div>
+</div>
+
+<!-- FRAMEWORK -->
+<div class="section" id="framework">
+  <div class="section-label">Section 03</div>
+  <h2>Interview Framework for Sliding Window</h2>
+  <div class="section-sub">What to say at each stage. Sliding Window has nuances — state the variant, the condition, and the data structure you'll use inside the window.</div>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-n">1</div>
+      <div class="step-content">
+        <div class="step-title">Identify: is it a subarray/substring problem with a condition?</div>
+        <div class="step-text">Listen for: "longest/shortest/maximum subarray where..." — the "where" is the window condition. Also check: are we looking for contiguous elements? If non-contiguous, it's a subsequence problem (different pattern). Confirm the problem is about a contiguous range before committing to Sliding Window.</div>
+        <div class="step-say">"This is asking for the longest contiguous subarray where [condition]. That's a sliding window problem — the window maintains the condition as it slides."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">2</div>
+      <div class="step-content">
+        <div class="step-title">Identify the variant and what data structure tracks the window state</div>
+        <div class="step-text">Fixed k → Variant A. Finding longest → Variant B. Finding shortest → Variant C. Then: what do you track inside the window? Sum → running total. Distinct characters → Map/frequency count. Presence of duplicates → Set. This tracking structure is key — name it before coding.</div>
+        <div class="step-say">"It's a variable window finding the longest. I'll use a HashMap to track character frequencies inside the window. When distinct character count exceeds k, I shrink from the left."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">3</div>
+      <div class="step-content">
+        <div class="step-title">State the expand condition and shrink condition explicitly</div>
+        <div class="step-text">Before coding: say what makes the window expand (always: R moves right), what makes it invalid (the condition is violated), and what you do when invalid (move L right until valid). This is the algorithm in plain English — say it before touching code.</div>
+        <div class="step-say">"Window expands by adding s[R] to the frequency map. If the number of distinct chars exceeds 2, shrink: remove s[L] from map, delete if count reaches 0, move L right. Record max window size whenever window is valid."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">4</div>
+      <div class="step-content">
+        <div class="step-title">Code while narrating — especially the shrink loop</div>
+        <div class="step-text">The expand step is usually one line. The shrink is a while loop — narrate what it's doing: "This inner while loop shrinks the window from the left until the condition is satisfied again. L moves right, we remove the element leaving the window." Explain why it's still O(n) — L never moves backward.</div>
+        <div class="step-say">"The inner while loop shrinks from L... L only ever moves right — so total L movements across all iterations is at most n. That's why the overall algorithm is O(n) despite the nested loops."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">5</div>
+      <div class="step-content">
+        <div class="step-title">Trace one full expand-shrink cycle + state complexity</div>
+        <div class="step-text">Walk through 2–3 steps of the example. Show one expansion, one shrink, and the result recording. State O(n) time (both L and R traverse at most n positions). State the space: O(k) for fixed distinct elements, O(n) worst case for unbounded maps.</div>
+        <div class="step-say">"Time: O(n) — R advances n times, L advances at most n times, total 2n operations. Space: O(k) where k is the number of distinct characters in the window — bounded by the alphabet size, so O(26) = O(1) for lowercase letters."</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    <strong>The most common Sliding Window mistakes in interviews:</strong><br><br>
+    ✗ Shrinking with <code>if</code> instead of <code>while</code> — one shrink might not be enough to restore validity<br>
+    ✗ Not updating the window tracking structure when shrinking (forgetting to decrement/delete from map)<br>
+    ✗ Recording the max INSIDE the shrink loop instead of AFTER — captures invalid window sizes<br>
+    ✗ Off-by-one: window size = R - L + 1, not R - L<br>
+    ✗ Using Sliding Window for "sum equals k exactly" (not ≤ k) — that needs Prefix Sum + HashMap
+  </div>
+</div>
+
+<!-- TEMPLATES -->
+<div class="section" id="template">
+  <div class="section-label">Section 04</div>
+  <h2>The 3 Templates</h2>
+  <div class="section-sub">Memorize these. The only part that changes per problem is the condition check and what you track.</div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template A — Fixed Window Size k</span></div>
+    <pre>
+<span class="ck">function</span> <span class="cf">fixedWindow</span>(arr, k) {
+    <span class="cc">// Build initial window of size k</span>
+    <span class="ck">let</span> windowVal = <span class="cn">0</span>;
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i < k; i++) windowVal += arr[i];
+
+    <span class="ck">let</span> best = windowVal;
+
+    <span class="cc">// Slide: remove left element, add right element</span>
+    <span class="ck">for</span> (<span class="ck">let</span> R = k; R < arr.length; R++) {
+        windowVal += arr[R];          <span class="cc">// add incoming right</span>
+        windowVal -= arr[R - k];      <span class="cc">// remove outgoing left</span>
+        best = <span class="ct">Math</span>.<span class="cf">max</span>(best, windowVal);
+    }
+
+    <span class="ck">return</span> best;
+}
+<span class="cc">// What changes: windowVal computation (sum, count, etc.), what "best" means</span></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template B — Variable Window, Find LONGEST (at most k distinct)</span></div>
+    <pre>
+<span class="ck">function</span> <span class="cf">longestWindow</span>(s, k) {
+    <span class="ck">const</span> freq = <span class="ck">new</span> <span class="ct">Map</span>(); <span class="cc">// track what's inside window</span>
+    <span class="ck">let</span> L = <span class="cn">0</span>, maxLen = <span class="cn">0</span>;
+
+    <span class="ck">for</span> (<span class="ck">let</span> R = <span class="cn">0</span>; R < s.length; R++) {
+        <span class="cc">// 1. Expand: add s[R] into the window</span>
+        freq.<span class="cf">set</span>(s[R], (freq.<span class="cf">get</span>(s[R]) || <span class="cn">0</span>) + <span class="cn">1</span>);
+
+        <span class="cc">// 2. Shrink: while window is INVALID, move L right</span>
+        <span class="ck">while</span> (freq.size > k) {             <span class="cc">// condition: too many distinct chars</span>
+            <span class="ck">const</span> leftChar = s[L];
+            freq.<span class="cf">set</span>(leftChar, freq.<span class="cf">get</span>(leftChar) - <span class="cn">1</span>);
+            <span class="ck">if</span> (freq.<span class="cf">get</span>(leftChar) === <span class="cn">0</span>) freq.<span class="cf">delete</span>(leftChar);
+            L++;
+        }
+
+        <span class="cc">// 3. Record: window is now valid — update max</span>
+        maxLen = <span class="ct">Math</span>.<span class="cf">max</span>(maxLen, R - L + <span class="cn">1</span>); <span class="cc">// R - L + 1 = window size</span>
+    }
+
+    <span class="ck">return</span> maxLen;
+}
+<span class="cc">// What changes: what you add/remove from freq, the invalid condition, what you record</span></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template C — Variable Window, Find SHORTEST (sum ≥ target)</span></div>
+    <pre>
+<span class="ck">function</span> <span class="cf">shortestWindow</span>(arr, target) {
+    <span class="ck">let</span> L = <span class="cn">0</span>, sum = <span class="cn">0</span>;
+    <span class="ck">let</span> minLen = <span class="ct">Infinity</span>;
+
+    <span class="ck">for</span> (<span class="ck">let</span> R = <span class="cn">0</span>; R < arr.length; R++) {
+        <span class="cc">// 1. Expand: add arr[R] into window</span>
+        sum += arr[R];
+
+        <span class="cc">// 2. Shrink while VALID: record minimum, then shrink</span>
+        <span class="ck">while</span> (sum >= target) {            <span class="cc">// condition: window is valid (sum met)</span>
+            minLen = <span class="ct">Math</span>.<span class="cf">min</span>(minLen, R - L + <span class="cn">1</span>);
+            sum -= arr[L];                  <span class="cc">// remove left element</span>
+            L++;                            <span class="cc">// shrink from left</span>
+        }
+        <span class="cc">// Note: record INSIDE the shrink loop (while valid)</span>
+    }
+
+    <span class="ck">return</span> minLen === <span class="ct">Infinity</span> ? <span class="cn">0</span> : minLen;
+}
+<span class="cc">// Key difference from Template B:</span>
+<span class="cc">// B shrinks while INVALID, records AFTER shrinking</span>
+<span class="cc">// C shrinks while VALID, records BEFORE removing L</span></pre>
+  </div>
+
+  <div class="insight">
+    <strong>The shrink-while-valid vs shrink-while-invalid distinction:</strong><br><br>
+    Template B (find longest): shrink while invalid → restore the window → record max size. Goal: keep window as big as possible.<br>
+    Template C (find shortest): shrink while valid → record minimum → keep shrinking until invalid. Goal: find smallest window that still satisfies condition.
+  </div>
+</div>
+
+<!-- SOLVED PROBLEMS -->
+<div class="section" id="problems">
+  <div class="section-label">Section 05</div>
+  <h2>5 Fully Solved Problems</h2>
+  <div class="section-sub">Study all 4 tabs per problem. The dialogue tab is the most important — it shows exactly how to communicate each step.</div>
+
+  <!-- PROBLEM 1: Best Time to Buy and Sell Stock -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 01 of 05</span><span class="diff-badge diff-easy">Easy</span></div>
+      <div class="pc-title">Best Time to Buy and Sell Stock</div>
+      <div class="pc-lc">LeetCode #121 · <a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/" target="_blank">leetcode.com/problems/best-time-to-buy-and-sell-stock</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p1-approach')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-dialogue')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-code')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-edges')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p1-approach">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Find the maximum profit from buying on one day and selling on a later day. If no profit possible, return 0.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Brute force:</strong> Try every pair (buy day, sell day) where buy &lt; sell. O(n²). Too slow.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Sliding Window insight:</strong> The left pointer tracks the minimum price seen so far (buy day). The right pointer scans ahead (sell day). If prices[R] &lt; prices[L], we found a cheaper buy day — move L to R. Otherwise, compute profit and update max.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Why this is sliding window:</strong> The window [L, R] represents a potential buy-sell pair. We only move L when we find a cheaper price (the window shrinks to a better left boundary). We never look backward — O(n).</div></div>
+        <div class="approach-step"><div class="as-num">5</div><div class="as-text"><strong>Alternative framing:</strong> Track <code>minPrice</code> as you scan. At each R, compute <code>prices[R] - minPrice</code>. Update <code>minPrice = min(minPrice, prices[R])</code>. This is equivalent but cleaner to code.</div></div>
+      </div>
+      <div class="pc-panel" id="p1-dialogue">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Find the maximum profit from buying and selling once.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Can I buy and sell on the same day? And I must buy before selling?</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Must buy before sell. Same day counts as 0 profit.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Brute force: check every pair — O(n²). But I can do O(n). As I scan forward, I track the minimum price seen so far. At each day, profit is today's price minus that minimum. I update the minimum if today's price is lower.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">This is a sliding window — left pointer holds the cheapest buy day seen so far. If today's price is cheaper, I reset the buy day to today. Otherwise, I check if today's profit beats the maximum.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What if prices always decrease?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Every profit calculation would be negative or zero. I initialize maxProfit to 0 — the "do nothing" case. If no trade is profitable, we return 0.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p1-code">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Best Time to Buy and Sell — O(n)</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">maxProfit</span>(prices) {
+    <span class="ck">let</span> minPrice = <span class="ct">Infinity</span>;
+    <span class="ck">let</span> maxProfit = <span class="cn">0</span>;    <span class="cc">// 0 = no trade (guaranteed minimum)</span>
+
+    <span class="ck">for</span> (<span class="ck">const</span> price <span class="ck">of</span> prices) {
+        <span class="cc">// Update minimum buy price seen so far</span>
+        minPrice = <span class="ct">Math</span>.<span class="cf">min</span>(minPrice, price);
+
+        <span class="cc">// Compute profit if selling today at best possible buy price</span>
+        maxProfit = <span class="ct">Math</span>.<span class="cf">max</span>(maxProfit, price - minPrice);
+    }
+
+    <span class="ck">return</span> maxProfit;
+}
+
+<span class="cc">// Two-pointer framing (equivalent, shows sliding window explicitly):</span>
+<span class="ck">function</span> <span class="cf">maxProfitTP</span>(prices) {
+    <span class="ck">let</span> L = <span class="cn">0</span>, R = <span class="cn">1</span>, maxProfit = <span class="cn">0</span>;
+
+    <span class="ck">while</span> (R < prices.length) {
+        <span class="ck">if</span> (prices[R] > prices[L]) {
+            maxProfit = <span class="ct">Math</span>.<span class="cf">max</span>(maxProfit, prices[R] - prices[L]);
+        } <span class="ck">else</span> {
+            L = R;  <span class="cc">// found cheaper buy price — reset window</span>
+        }
+        R++;
+    }
+
+    <span class="ck">return</span> maxProfit;
+}</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p1-edges">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — single pass</span>
+          <span class="cx-badge cx-space">Space: O(1)</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Prices always increasing [1,2,3,4,5]:</strong> minPrice stays 1. Max profit = 5-1=4. Correct.</li>
+          <li><strong>Prices always decreasing [5,4,3,2,1]:</strong> Every profit is negative. maxProfit stays 0. Return 0. Correct.</li>
+          <li><strong>Single price [7]:</strong> No second day to sell. maxProfit stays 0. Return 0. Correct.</li>
+          <li><strong>Two prices [2,4]:</strong> min=2. profit=4-2=2. maxProfit=2. Return 2.</li>
+          <li><strong>Why initialize maxProfit to 0, not -Infinity:</strong> Problem says return 0 if no profit possible. 0 is the "no trade" baseline, not a real profit computation.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM 2: Longest Substring Without Repeating Characters -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 02 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">Longest Substring Without Repeating Characters</div>
+      <div class="pc-lc">LeetCode #3 · <a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/" target="_blank">leetcode.com/problems/longest-substring-without-repeating-characters</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p2-approach')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-dialogue')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-code')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-edges')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p2-approach">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Find length of longest substring without repeating characters.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Window condition:</strong> Window is valid when it contains NO duplicate characters. Violation: adding s[R] creates a duplicate.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Tracking:</strong> Use a <code>Set</code> (we only need existence, not count) OR a <code>Map</code> storing last seen index (for the jump optimization). Set is simpler; Map allows jumping L directly to the duplicate's position + 1.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Set approach:</strong> Expand R. If s[R] is in Set → remove s[L] from Set, L++. Repeat until s[R] not in Set. Add s[R] to Set. Record window size.</div></div>
+        <div class="approach-step"><div class="as-num">5</div><div class="as-text"><strong>Map approach (optimization):</strong> Store each char's last seen index. When duplicate found at R, jump L directly to <code>max(L, lastSeen[s[R]] + 1)</code>. The <code>max(L, ...)</code> is crucial — ensures L never moves backward.</div></div>
+      </div>
+      <div class="pc-panel" id="p2-dialogue">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Find the longest substring without repeating characters.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">This is a classic sliding window — variable size, finding the longest. The window condition is: no duplicate characters inside. I'll use a Set to track what's in the window.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">R expands right. When s[R] is already in the Set — duplicate found, window is invalid. Shrink from L: remove s[L] from Set, advance L. Keep shrinking until s[R] is no longer in the Set. Then add s[R] and record window size R - L + 1.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Can you make it faster?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Yes — use a Map storing the last index of each character. When we find s[R] at a previous position, instead of shrinking L one step at a time, jump L directly to lastSeen[s[R]] + 1. We skip the entire prefix. Still O(n) total, but fewer iterations in practice. Need to take max of current L and the jump position — can't let L go backward.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p2-code">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Longest Substring No Repeats — Set approach (simpler)</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">lengthOfLongestSubstring</span>(s) {
+    <span class="ck">const</span> seen = <span class="ck">new</span> <span class="ct">Set</span>();
+    <span class="ck">let</span> L = <span class="cn">0</span>, maxLen = <span class="cn">0</span>;
+
+    <span class="ck">for</span> (<span class="ck">let</span> R = <span class="cn">0</span>; R < s.length; R++) {
+        <span class="cc">// Shrink while duplicate exists in window</span>
+        <span class="ck">while</span> (seen.<span class="cf">has</span>(s[R])) {
+            seen.<span class="cf">delete</span>(s[L]);  <span class="cc">// remove from window</span>
+            L++;                 <span class="cc">// shrink from left</span>
+        }
+
+        seen.<span class="cf">add</span>(s[R]);                         <span class="cc">// add new char</span>
+        maxLen = <span class="ct">Math</span>.<span class="cf">max</span>(maxLen, R - L + <span class="cn">1</span>); <span class="cc">// record max</span>
+    }
+
+    <span class="ck">return</span> maxLen;
+}
+
+<span class="cc">// Optimized: Map stores last index, jump L instead of stepping</span>
+<span class="ck">function</span> <span class="cf">lengthOfLongestSubstringFast</span>(s) {
+    <span class="ck">const</span> lastSeen = <span class="ck">new</span> <span class="ct">Map</span>();
+    <span class="ck">let</span> L = <span class="cn">0</span>, maxLen = <span class="cn">0</span>;
+
+    <span class="ck">for</span> (<span class="ck">let</span> R = <span class="cn">0</span>; R < s.length; R++) {
+        <span class="ck">if</span> (lastSeen.<span class="cf">has</span>(s[R])) {
+            <span class="cc">// Jump L to just after the previous occurrence</span>
+            <span class="cc">// But never move L backward (use max)</span>
+            L = <span class="ct">Math</span>.<span class="cf">max</span>(L, lastSeen.<span class="cf">get</span>(s[R]) + <span class="cn">1</span>);
+        }
+        lastSeen.<span class="cf">set</span>(s[R], R); <span class="cc">// update last seen index</span>
+        maxLen = <span class="ct">Math</span>.<span class="cf">max</span>(maxLen, R - L + <span class="cn">1</span>);
+    }
+
+    <span class="ck">return</span> maxLen;
+}</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p2-edges">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — each char added/removed from Set at most once</span>
+          <span class="cx-badge cx-space">Space: O(min(n, alphabet)) — Set bounded by unique chars</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>All unique "abcde":</strong> Window grows to full length. maxLen = n. Return n.</li>
+          <li><strong>All same "aaaa":</strong> Every R triggers shrink. Window always size 1. maxLen = 1.</li>
+          <li><strong>Empty string:</strong> Loop doesn't run. maxLen = 0. Return 0.</li>
+          <li><strong>Single char "a":</strong> R=0, no duplicate, add to Set, maxLen=1. Return 1.</li>
+          <li><strong>The max(L, ...) in Map approach:</strong> Critical. "dvdf" — 'd' first at 0, then at 2. At R=2: lastSeen['d']=0. L = max(1, 0+1) = 1. Correct — L was already at 1 (from 'v'). Without max: L would jump back to 1 (fine here), but in other cases L could jump backward which would include characters already removed from window.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM 3: Minimum Size Subarray Sum -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 03 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">Minimum Size Subarray Sum</div>
+      <div class="pc-lc">LeetCode #209 · <a href="https://leetcode.com/problems/minimum-size-subarray-sum/" target="_blank">leetcode.com/problems/minimum-size-subarray-sum</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p3-approach')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-dialogue')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-code')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-edges')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p3-approach">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Find the minimum length contiguous subarray with sum ≥ target. Return 0 if impossible.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Variant C — Find Shortest:</strong> Expand until condition met (sum ≥ target). Then shrink while still valid — record minimum length each time before shrinking. Stop shrinking when condition breaks.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Why shrink while valid (not while invalid):</strong> We want the SHORTEST window that satisfies sum ≥ target. Once valid, try to make it smaller. Keep shrinking from L — each shrink might still leave a valid window. Record minimum each time. Stop when shrinking would break the condition.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>All positive numbers assumption:</strong> Works because adding elements increases sum, removing decreases. With negative numbers, this approach breaks — use prefix sum + deque for that variant.</div></div>
+      </div>
+      <div class="pc-panel" id="p3-dialogue">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Minimum length subarray with sum ≥ target.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Are all numbers positive?</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Yes, all positive integers.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">All positive means adding elements increases sum, removing decreases it — sliding window works. This is the "find shortest" variant: expand R until sum ≥ target, then shrink from L while still valid, recording minimum each step.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Unlike "find longest" where I record after shrinking, here I record INSIDE the shrink loop — each valid state is a candidate for the minimum.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What if no subarray has sum ≥ target?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">I initialize minLen to Infinity. If the entire array's sum is less than target, minLen never gets updated. Return 0 in that case — problem convention for "no valid subarray."</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p3-code">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Minimum Size Subarray Sum — O(n)</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">minSubArrayLen</span>(target, nums) {
+    <span class="ck">let</span> L = <span class="cn">0</span>, sum = <span class="cn">0</span>;
+    <span class="ck">let</span> minLen = <span class="ct">Infinity</span>;
+
+    <span class="ck">for</span> (<span class="ck">let</span> R = <span class="cn">0</span>; R < nums.length; R++) {
+        sum += nums[R]; <span class="cc">// expand: add right element</span>
+
+        <span class="cc">// Shrink WHILE VALID: record min, then remove left</span>
+        <span class="ck">while</span> (sum >= target) {
+            minLen = <span class="ct">Math</span>.<span class="cf">min</span>(minLen, R - L + <span class="cn">1</span>); <span class="cc">// record before shrinking</span>
+            sum -= nums[L]; <span class="cc">// remove left element</span>
+            L++;            <span class="cc">// shrink window</span>
+        }
+    }
+
+    <span class="ck">return</span> minLen === <span class="ct">Infinity</span> ? <span class="cn">0</span> : minLen;
+}</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p3-edges">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — L and R each traverse at most n positions</span>
+          <span class="cx-badge cx-space">Space: O(1)</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Single element equals target [5], target=5:</strong> R=0, sum=5. While: minLen=1, sum=0, L=1. Loop ends. Return 1.</li>
+          <li><strong>No valid subarray [1,2,3], target=10:</strong> Sum never reaches 10. minLen stays Infinity. Return 0.</li>
+          <li><strong>Entire array is valid:</strong> minLen records the full array length at some point. Correct.</li>
+          <li><strong>Negative numbers don't work here:</strong> If array had [-1, 5, 3], removing -1 from left would INCREASE sum — the while loop logic breaks. Use binary search + prefix sums for that case (O(n log n)).</li>
+          <li><strong>Why record BEFORE removing L:</strong> At the point of recording, the window [L, R] is valid. After sum -= nums[L], the window might no longer be valid — so record first.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM 4: Longest Repeating Character Replacement -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 04 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">Longest Repeating Character Replacement</div>
+      <div class="pc-lc">LeetCode #424 · <a href="https://leetcode.com/problems/longest-repeating-character-replacement/" target="_blank">leetcode.com/problems/longest-repeating-character-replacement</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p4-approach')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-dialogue')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-code')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-edges')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p4-approach">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> You can replace at most k characters in a substring. Find the longest substring where all characters can be made the same with at most k replacements.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Key insight:</strong> In a window of size <code>windowSize</code>, if the most frequent character appears <code>maxFreq</code> times, we need <code>windowSize - maxFreq</code> replacements to make all characters the same. Window is valid when <code>windowSize - maxFreq ≤ k</code>.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Window condition:</strong> <code>(R - L + 1) - maxFreq &gt; k</code> → invalid. Shrink from L: remove s[L] from frequency map, L++.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>The maxFreq shortcut:</strong> We don't decrement maxFreq when shrinking. This is valid because we only care about finding a LONGER valid window — if maxFreq doesn't increase, we never find a longer window. The window size stays the same while invalid (L and R both move). We only grow when maxFreq increases.</div></div>
+        <div class="approach-step"><div class="as-num">5</div><div class="as-text"><strong>This is Variant B (find longest):</strong> Expand R. If invalid (replacements needed &gt; k), shrink L by 1. Record max window size only when valid. Unlike other B problems, we use <code>if</code> not <code>while</code> for shrinking here — because we only ever shrink by 1 at a time (window only shrinks when invalid, then R moves forward next iteration, maintaining the window size).</div></div>
+      </div>
+      <div class="pc-panel" id="p4-dialogue">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">At most k replacements. Find longest substring where all chars can be made the same.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">The key insight: if I have a window of size W where the most frequent character appears maxFreq times, I need W - maxFreq replacements to make all characters the same. The window is valid when W - maxFreq ≤ k.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">So I'll maintain a frequency map for the window. At each R, update the frequency and recalculate maxFreq. If (window size - maxFreq) exceeds k — window is invalid, shrink L by 1.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Why do you use if instead of while for shrinking here?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">We want the LONGEST window — we never need to shrink by more than 1 because we're looking for maximum. The window only grows when maxFreq increases enough to justify a larger window. When invalid, we shrink by exactly 1 to maintain the same window size, then R grows again. We track the maximum as R-L+1, which only increases when the window truly grows.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p4-code">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Longest Repeating Character Replacement — O(n)</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">characterReplacement</span>(s, k) {
+    <span class="ck">const</span> freq = {};
+    <span class="ck">let</span> L = <span class="cn">0</span>, maxFreq = <span class="cn">0</span>, maxLen = <span class="cn">0</span>;
+
+    <span class="ck">for</span> (<span class="ck">let</span> R = <span class="cn">0</span>; R < s.length; R++) {
+        <span class="cc">// Expand: add s[R], update frequency and maxFreq</span>
+        freq[s[R]] = (freq[s[R]] || <span class="cn">0</span>) + <span class="cn">1</span>;
+        maxFreq = <span class="ct">Math</span>.<span class="cf">max</span>(maxFreq, freq[s[R]]);
+
+        <span class="cc">// Check: replacements needed = window size - most frequent count</span>
+        <span class="ck">const</span> windowSize = R - L + <span class="cn">1</span>;
+        <span class="ck">if</span> (windowSize - maxFreq > k) {
+            <span class="cc">// Invalid: shrink by exactly 1 from left</span>
+            freq[s[L]]--;
+            L++;
+            <span class="cc">// Note: we DON'T update maxFreq here — it's a valid optimization</span>
+            <span class="cc">// maxFreq can only stay same or increase, never decrease usefully</span>
+        }
+
+        <span class="cc">// Record max — window is either valid or just shrunk by 1 (same size)</span>
+        maxLen = <span class="ct">Math</span>.<span class="cf">max</span>(maxLen, R - L + <span class="cn">1</span>);
+    }
+
+    <span class="ck">return</span> maxLen;
+}</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p4-edges">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — R advances n times, L advances at most n times</span>
+          <span class="cx-badge cx-space">Space: O(26) = O(1) — frequency for 26 letters</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>"AABABBA", k=1:</strong> AABAB has 3 A's, 2 B's, size 5. maxFreq=3. Replacements=2 &gt; k=1. Shrink. ABAB size 4, 2A 2B. Replacements=2 &gt; 1. Shrink. BAB size 3, 1A 2B. Replacements=1 ≤ 1. Valid! maxLen=4 was recorded earlier. Answer = 4.</li>
+          <li><strong>k=0:</strong> Must find longest run of same character. windowSize - maxFreq = number of non-dominant chars. Must be 0 → window size = maxFreq. Valid windows are all same char.</li>
+          <li><strong>Why not update maxFreq on shrink:</strong> When maxFreq doesn't decrease, we might think the window is valid when it isn't — but that's OK. We're looking for LONGEST, and we already recorded the maximum. If the window is technically invalid, R-L+1 won't be larger than maxLen anyway.</li>
+          <li><strong>k ≥ window size:</strong> Always valid (replace everything). maxLen = s.length.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- PROBLEM 5: Permutation in String -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 05 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">Permutation in String</div>
+      <div class="pc-lc">LeetCode #567 · <a href="https://leetcode.com/problems/permutation-in-string/" target="_blank">leetcode.com/problems/permutation-in-string</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p5-approach')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-dialogue')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-code')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-edges')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p5-approach">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Return true if s2 contains a permutation of s1 as a substring.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Key insight:</strong> A permutation of s1 is a window of s2 with the exact same character frequencies as s1. Fixed window size = s1.length.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Template A (Fixed Window):</strong> Build frequency map for s1. Slide a window of size s1.length over s2. At each position, check if window's frequency matches s1's frequency. If yes, return true.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Efficient frequency comparison:</strong> Instead of comparing two Maps per window (O(26) per slide), track a <code>matches</code> counter — number of characters with matching frequency. When matches = 26, the window is a permutation.</div></div>
+        <div class="approach-step"><div class="as-num">5</div><div class="as-text"><strong>matches counter logic:</strong> When adding character c to window: if windowFreq[c] becomes equal to s1Freq[c] → matches++. If it was equal before (now exceeds) → matches--. Symmetric when removing c from left. If matches === 26 → all chars match → permutation found.</div></div>
+      </div>
+      <div class="pc-panel" id="p5-dialogue">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Does s2 contain a permutation of s1?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">A permutation of s1 has the exact same character frequencies as s1. So I'm looking for a substring of s2 with length s1.length that has identical char frequencies to s1. Fixed window size — Template A.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Build frequency map for s1. Slide window of size s1.length over s2. Naively, compare maps per window — O(26) per slide, O(26n) total. I can optimize with a matches counter.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Explain the matches counter.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">I track how many of the 26 characters have matching counts between s1's map and the current window. When a char's window count becomes equal to s1's count, matches++. When it was equal and now differs, matches--. If matches = 26 — all characters match — found a permutation. This makes each slide O(1) instead of O(26).</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p5-code">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Permutation in String — O(n) with matches counter</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">checkInclusion</span>(s1, s2) {
+    <span class="ck">if</span> (s1.length > s2.length) <span class="ck">return false</span>;
+
+    <span class="ck">const</span> s1Freq = <span class="ck">new</span> <span class="ct">Array</span>(<span class="cn">26</span>).<span class="cf">fill</span>(<span class="cn">0</span>);
+    <span class="ck">const</span> winFreq = <span class="ck">new</span> <span class="ct">Array</span>(<span class="cn">26</span>).<span class="cf">fill</span>(<span class="cn">0</span>);
+    <span class="ck">const</span> a = <span class="cs">'a'</span>.<span class="cf">charCodeAt</span>(<span class="cn">0</span>);
+
+    <span class="ck">for</span> (<span class="ck">const</span> ch <span class="ck">of</span> s1) s1Freq[ch.<span class="cf">charCodeAt</span>(<span class="cn">0</span>) - a]++;
+
+    <span class="ck">let</span> matches = <span class="cn">0</span>;
+    <span class="cc">// Count how many chars already match (with s1 freq 0 — all 26 start matched?)</span>
+    <span class="cc">// Since winFreq is all 0 and some s1Freq might be 0: initially matches counts 0-freq chars</span>
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i < <span class="cn">26</span>; i++) <span class="ck">if</span> (s1Freq[i] === <span class="cn">0</span>) matches++;
+
+    <span class="ck">const</span> <span class="cf">update</span> = (idx, delta) => {
+        <span class="ck">if</span> (winFreq[idx] === s1Freq[idx]) matches--;  <span class="cc">// was matching, now won't be</span>
+        winFreq[idx] += delta;
+        <span class="ck">if</span> (winFreq[idx] === s1Freq[idx]) matches++;  <span class="cc">// now matches</span>
+    };
+
+    <span class="cc">// Build initial window of size s1.length</span>
+    <span class="ck">for</span> (<span class="ck">let</span> i = <span class="cn">0</span>; i < s1.length; i++) <span class="cf">update</span>(s2.<span class="cf">charCodeAt</span>(i) - a, <span class="cn">1</span>);
+    <span class="ck">if</span> (matches === <span class="cn">26</span>) <span class="ck">return true</span>;
+
+    <span class="cc">// Slide window</span>
+    <span class="ck">for</span> (<span class="ck">let</span> R = s1.length; R < s2.length; R++) {
+        <span class="cf">update</span>(s2.<span class="cf">charCodeAt</span>(R) - a, <span class="cn">1</span>);                    <span class="cc">// add right</span>
+        <span class="cf">update</span>(s2.<span class="cf">charCodeAt</span>(R - s1.length) - a, <span class="cn">-1</span>);       <span class="cc">// remove left</span>
+        <span class="ck">if</span> (matches === <span class="cn">26</span>) <span class="ck">return true</span>;
+    }
+
+    <span class="ck">return false</span>;
+}</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p5-edges">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n) — O(26) setup + O(n) sliding</span>
+          <span class="cx-badge cx-space">Space: O(26) = O(1) — two fixed-size arrays</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>s1 longer than s2:</strong> Guard at top returns false immediately.</li>
+          <li><strong>s1 = s2:</strong> Exactly one window — the whole s2. If same chars, return true.</li>
+          <li><strong>s1 has repeated chars "aab":</strong> s1Freq['a']=2, s1Freq['b']=1. Window must also have exactly 2 a's and 1 b. matches counter handles this correctly.</li>
+          <li><strong>Why start matches at count of s1Freq[i] === 0:</strong> Characters not in s1 (freq 0) should be considered "matched" when window freq is also 0. Pre-counting these avoids false negatives.</li>
+          <li><strong>Simpler version:</strong> Just compare Maps per slide — O(26n). Still acceptable in interviews. The matches counter is an optimization worth mentioning but not always required.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM BANK -->
+<div class="section" id="bank">
+  <div class="section-label">Section 06</div>
+  <h2>Problem Bank — 36 Problems</h2>
+  <div class="section-sub">Easy first, then Medium, then Hard. Note the variant (A/B/C) — helps you apply the right template.</div>
+
+  <div class="bank-progress">
+    <div class="bp-row"><span class="bp-label">Solved</span><span class="bp-count" id="bp-count">0 / 36</span></div>
+    <div class="bp-track"><div class="bp-fill" id="bp-fill"></div></div>
+  </div>
+
+  <div class="pb-filters">
+    <button class="pb-filter active" onclick="filterProblems('all',this)">All (36)</button>
+    <button class="pb-filter easy-filter" onclick="filterProblems('easy',this)">Easy</button>
+    <button class="pb-filter med-filter" onclick="filterProblems('medium',this)">Medium</button>
+    <button class="pb-filter hard-filter" onclick="filterProblems('hard',this)">Hard</button>
+    <button class="pb-filter" onclick="filterProblems('unsolved',this)">Unsolved</button>
+  </div>
+
+  <div class="pb-list" id="pb-list">
+    <div class="pb-item" data-diff="easy" data-id="pb0" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#121</div><div class="pb-name"><a href="https://leetcode.com/problems/best-time-to-buy-and-sell-stock/" target="_blank">Best Time to Buy and Sell Stock</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Track min, max profit</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb1" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#643</div><div class="pb-name"><a href="https://leetcode.com/problems/maximum-average-subarray-i/" target="_blank">Maximum Average Subarray I</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Variant A — fixed k</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb2" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1343</div><div class="pb-name"><a href="https://leetcode.com/problems/number-of-sub-arrays-of-size-k-and-average-greater-than-or-equal-to-threshold/" target="_blank">Subarrays of Size K and Avg ≥ Threshold</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Variant A — count valid windows</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb3" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1876</div><div class="pb-name"><a href="https://leetcode.com/problems/substrings-of-size-three-with-distinct-characters/" target="_blank">Substrings of Size 3 with Distinct Chars</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Variant A — count valid windows k=3</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb4" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#219</div><div class="pb-name"><a href="https://leetcode.com/problems/contains-duplicate-ii/" target="_blank">Contains Duplicate II</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Variant A — duplicate within k</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb5" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2090</div><div class="pb-name"><a href="https://leetcode.com/problems/k-radius-subarray-averages/" target="_blank">K-Radius Subarray Averages</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Variant A — sliding average</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb6" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1456</div><div class="pb-name"><a href="https://leetcode.com/problems/maximum-number-of-vowels-in-a-substring-of-given-length/" target="_blank">Max Vowels in Substring of Length K</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Variant A — count vowels in window</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb7" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2269</div><div class="pb-name"><a href="https://leetcode.com/problems/find-the-k-beauty-of-a-number/" target="_blank">Find the K-Beauty of a Number</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Variant A — divisibility check</div></div>
+
+    <div class="pb-item" data-diff="medium" data-id="pb8" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#3</div><div class="pb-name"><a href="https://leetcode.com/problems/longest-substring-without-repeating-characters/" target="_blank">Longest Substring Without Repeating Chars</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant B — no duplicates</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb9" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#209</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-size-subarray-sum/" target="_blank">Minimum Size Subarray Sum</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant C — shrink while valid</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb10" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#424</div><div class="pb-name"><a href="https://leetcode.com/problems/longest-repeating-character-replacement/" target="_blank">Longest Repeating Character Replacement</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant B — at most k replacements</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb11" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#567</div><div class="pb-name"><a href="https://leetcode.com/problems/permutation-in-string/" target="_blank">Permutation in String</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant A — fixed size, freq compare</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb12" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#438</div><div class="pb-name"><a href="https://leetcode.com/problems/find-all-anagrams-in-a-string/" target="_blank">Find All Anagrams in a String</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant A — collect all matches</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb13" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#904</div><div class="pb-name"><a href="https://leetcode.com/problems/fruit-into-baskets/" target="_blank">Fruit Into Baskets</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant B — at most 2 distinct</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb14" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1004</div><div class="pb-name"><a href="https://leetcode.com/problems/max-consecutive-ones-iii/" target="_blank">Max Consecutive Ones III</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant B — at most k zeros</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb15" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1052</div><div class="pb-name"><a href="https://leetcode.com/problems/grumpy-bookstore-owner/" target="_blank">Grumpy Bookstore Owner</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant A — max gained in window</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb16" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1208</div><div class="pb-name"><a href="https://leetcode.com/problems/get-equal-substrings-within-budget/" target="_blank">Get Equal Substrings Within Budget</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant C — cost ≤ maxCost</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb17" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2024</div><div class="pb-name"><a href="https://leetcode.com/problems/maximize-the-confusion-of-an-exam/" target="_blank">Maximize Confusion of an Exam</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant B — two passes (T→F, F→T)</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb18" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1493</div><div class="pb-name"><a href="https://leetcode.com/problems/longest-subarray-of-1s-after-deleting-one-element/" target="_blank">Longest Subarray of 1s After Deleting One</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant B — at most 1 zero</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb19" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2461</div><div class="pb-name"><a href="https://leetcode.com/problems/maximum-sum-of-distinct-subarrays-with-length-k/" target="_blank">Max Sum Distinct Subarrays Length K</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant A — all distinct + max sum</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb20" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1839</div><div class="pb-name"><a href="https://leetcode.com/problems/longest-substring-of-all-vowels-in-order/" target="_blank">Longest Substring of All Vowels in Order</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant B — ordered constraint</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb21" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1695</div><div class="pb-name"><a href="https://leetcode.com/problems/maximum-erasure-value/" target="_blank">Maximum Erasure Value</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant B — no duplicates, max sum</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb22" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2302</div><div class="pb-name"><a href="https://leetcode.com/problems/count-subarrays-with-score-less-than-k/" target="_blank">Count Subarrays With Score &lt; K</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant C — count valid windows</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb23" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2831</div><div class="pb-name"><a href="https://leetcode.com/problems/find-the-longest-equal-subarray/" target="_blank">Find the Longest Equal Subarray</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant B — at most k removals</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb24" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1477</div><div class="pb-name"><a href="https://leetcode.com/problems/find-two-non-overlapping-sub-arrays-each-with-target-sum/" target="_blank">Two Non-Overlapping Subarrays with Target Sum</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant C × 2, prefix tracking</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb25" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2379</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-recolors-to-get-k-consecutive-black-blocks/" target="_blank">Min Recolors for K Consecutive Black Blocks</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant A — count whites in window</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb26" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2134</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-swaps-to-group-all-1s-together-ii/" target="_blank">Min Swaps to Group All 1s Together II</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant A — circular, fixed window</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb27" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#3090</div><div class="pb-name"><a href="https://leetcode.com/problems/maximum-length-substring-with-two-occurrences/" target="_blank">Max Length Substring with Two Occurrences</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Variant B — at most 2 of each</div></div>
+
+    <div class="pb-item" data-diff="hard" data-id="pb28" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#76</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-window-substring/" target="_blank">Minimum Window Substring</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Variant C — contains all chars of t</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb29" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#239</div><div class="pb-name"><a href="https://leetcode.com/problems/sliding-window-maximum/" target="_blank">Sliding Window Maximum</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Variant A — monotonic deque</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb30" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#992</div><div class="pb-name"><a href="https://leetcode.com/problems/subarrays-with-k-different-integers/" target="_blank">Subarrays with K Different Integers</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">at most K − at most K-1</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb31" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#30</div><div class="pb-name"><a href="https://leetcode.com/problems/substring-with-concatenation-of-all-words/" target="_blank">Substring with Concatenation of All Words</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Variant A — word-level window</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb32" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1425</div><div class="pb-name"><a href="https://leetcode.com/problems/constrained-subsequence-sum/" target="_blank">Constrained Subsequence Sum</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">DP + sliding window max</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb33" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#862</div><div class="pb-name"><a href="https://leetcode.com/problems/shortest-subarray-with-sum-at-least-k/" target="_blank">Shortest Subarray with Sum at Least K</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Prefix sum + monotonic deque</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb34" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2444</div><div class="pb-name"><a href="https://leetcode.com/problems/count-subarrays-with-fixed-bounds/" target="_blank">Count Subarrays with Fixed Bounds</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Track last invalid + last min/max</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb35" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2009</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-number-of-operations-to-make-array-continuous/" target="_blank">Min Ops to Make Array Continuous</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Sort + sliding window on range</div></div>
+  </div>
+</div>
+
+<!-- Q&A -->
+<div class="section" id="qa">
+  <div class="section-label">Section 07</div>
+  <h2>15 Interview Questions</h2>
+  <div class="section-sub">Answer out loud before expanding. Focus on the conceptual answers — interviewers test understanding, not memorization.</div>
+
+  <div class="qa-list">
+
+    <div class="qa" id="qa1"><div class="qa-q" onclick="toggleQA('qa1')"><span><span class="qa-tag tag-core">Core</span>What is a sliding window? How does it achieve O(n) instead of O(n²)?</span><span class="qa-arr">▼</span></div><div class="qa-a">A sliding window is a contiguous subarray defined by two pointers L and R. Instead of re-computing each subarray from scratch (O(n) per subarray × O(n) subarrays = O(n²)), the window maintains a running state as it moves: when R advances, add the new element to the window state; when L advances, remove the leaving element. Each pointer moves at most n times (L only moves right, R only moves right). Total operations: at most 2n = O(n). The key property: the window state can be updated incrementally in O(1) — sum (add/subtract), frequency (increment/decrement), set (add/remove). If updating state is O(1), the overall algorithm is O(n).</div></div>
+
+    <div class="qa" id="qa2"><div class="qa-q" onclick="toggleQA('qa2')"><span><span class="qa-tag tag-vs">VS</span>What's the difference between Sliding Window and Two Pointers?</span><span class="qa-arr">▼</span></div><div class="qa-a">Both use two pointers. The distinction: <strong>Sliding Window</strong> — maintains a window with a specific invariant (condition on what's INSIDE the window). The window is a contiguous range [L, R] that expands and shrinks to maintain the condition. Focus is on the window's content. Works on arrays and strings. <strong>Two Pointers</strong> — pointers compare elements or count things, not necessarily maintaining a window invariant. Often moves based on comparison of elements at L and R (opposite ends), or one pointer follows the other (fast/slow). Works well on sorted arrays. Overlap: some problems can be solved with either. The window condition test: "Is there a constraint on what's inside the range [L, R]?" If yes → Sliding Window. "Are you comparing/combining elements at two specific positions?" → Two Pointers.</div></div>
+
+    <div class="qa" id="qa3"><div class="qa-q" onclick="toggleQA('qa3')"><span><span class="qa-tag tag-trap">Trap</span>Why use `while` for shrinking instead of `if`?</span><span class="qa-arr">▼</span></div><div class="qa-a">When the window becomes invalid, one shrink might not be enough to restore validity. Example: longest substring without repeats, window "abcdca", R adds 'a'. Now there are two 'a's. Shrinking once: remove s[L]='a', L++. Now window is "bcdca" — still has two 'a's! Need to keep shrinking until the duplicate is gone. Using <code>if</code> would only shrink once and leave an invalid window. Use <code>while</code> when one invalid event might require multiple shrinks. Exception: Longest Repeating Character Replacement uses <code>if</code> because we deliberately only want to shrink by 1 to maintain window size parity (we're finding the longest, and one shrink keeps the window the same size while R advances).</div></div>
+
+    <div class="qa" id="qa4"><div class="qa-q" onclick="toggleQA('qa4')"><span><span class="qa-tag tag-core">Core</span>What is the window size formula? What's a common off-by-one error?</span><span class="qa-arr">▼</span></div><div class="qa-a">Window size = <code>R - L + 1</code>. The +1 is because both L and R are inclusive. Example: L=2, R=5. Elements at indices 2, 3, 4, 5 = 4 elements. 5 - 2 = 3 (wrong). 5 - 2 + 1 = 4 (correct). Common off-by-one: returning <code>R - L</code> instead of <code>R - L + 1</code>. For fixed window sliding, the outgoing element is at index <code>R - k</code> (not <code>R - k + 1</code>): when window reaches [R-k+1, R], the element leaving is at R-k. Example: k=3, R=3. Window is [1,2,3]. Element leaving is arr[R-k] = arr[0]. arr[R-k+1] = arr[1] would be the wrong element.</div></div>
+
+    <div class="qa" id="qa5"><div class="qa-q" onclick="toggleQA('qa5')"><span><span class="qa-tag tag-interview">Interview</span>How do you identify that a problem needs a sliding window vs prefix sum + HashMap?</span><span class="qa-arr">▼</span></div><div class="qa-a">The distinguishing question: <strong>Is the condition ≤/≥ (inequality) or = (equality)?</strong> <strong>Inequality (≤, ≥, at most, at least):</strong> Sliding Window. When sum exceeds k, shrinking the window predictably decreases sum. The window can restore validity by shrinking. <strong>Equality (exactly k):</strong> Prefix Sum + HashMap. Example: subarray sum = k exactly (#560). If sum becomes k+1 and you remove an element (sum might go to k or to k-2 or anything). The window can't reliably "restore" exact equality by shrinking. The trick for equality: "at most k" - "at most k-1" = "exactly k". Some problems use this trick to apply sliding window to equality problems. If the problem says "at most", "no more than", "at least", "minimum/maximum" — Sliding Window. If "exactly" or "equal to" — Prefix Sum + HashMap or the subtraction trick.</div></div>
+
+    <div class="qa" id="qa6"><div class="qa-q" onclick="toggleQA('qa6')"><span><span class="qa-tag tag-interview">Interview</span>Explain the key insight for Longest Repeating Character Replacement.</span><span class="qa-arr">▼</span></div><div class="qa-a">In any window, to make all characters the same, you keep the most frequent character and replace everything else. Replacements needed = window size - max frequency of any single character. Window is valid when: (window size - maxFreq) ≤ k. The insight that makes it O(n): we track maxFreq but don't update it when shrinking. When L advances, we remove a character and the actual maxFreq might decrease — but we don't recalculate it. This is fine because: we only care about finding a LONGER valid window. If maxFreq decreases, the window can't be valid at the same size — so R-L stays constant (window doesn't grow). We only grow the window when we find a character with higher frequency than maxFreq (maxFreq increases). This means we only ever find windows of increasing size — exactly what we want for "find longest".</div></div>
+
+    <div class="qa" id="qa7"><div class="qa-q" onclick="toggleQA('qa7')"><span><span class="qa-tag tag-core">Core</span>What data structures do you use inside sliding windows? When to use each?</span><span class="qa-arr">▼</span></div><div class="qa-a"><strong>Running sum/count:</strong> Simple integer. Use when window condition involves sum (sum ≥ target, sum ≤ k). O(1) add/remove. <strong>HashMap/frequency array:</strong> When condition involves character/element frequency (at most k distinct, permutation match). O(1) add/remove, O(1) lookup. Use Map for any type, plain object/array for characters. <strong>Set:</strong> When condition is "no duplicates". O(1) add/remove/check. Simpler than Map when you don't need counts. <strong>Monotonic Deque:</strong> When you need min or max of the window efficiently (Sliding Window Maximum #239). O(1) amortized per operation. Elements in deque are always in sorted order (monotone). <strong>Sorted structure (TreeMap in Java):</strong> When you need sorted access to window elements. O(log n) add/remove but supports range queries. In JS: not built-in, simulate with sorted array or skip list.</div></div>
+
+    <div class="qa" id="qa8"><div class="qa-q" onclick="toggleQA('qa8')"><span><span class="qa-tag tag-trap">Trap</span>What's the "at most K" subtraction trick for "exactly K" problems?</span><span class="qa-arr">▼</span></div><div class="qa-a">Problem: count subarrays with exactly k distinct integers (#992). Sliding Window works for "at most k" but not "exactly k" (equality). The trick: subarrays with exactly k distinct = subarrays with at most k distinct - subarrays with at most k-1 distinct. Write a helper <code>atMost(k)</code> that counts subarrays with at most k distinct integers using Sliding Window. Answer = atMost(k) - atMost(k-1). Why it works: atMost(k) counts all subarrays with 1, 2, ..., or k distinct. atMost(k-1) counts those with 1, 2, ..., or k-1 distinct. The difference = subarrays with exactly k distinct. This trick converts many "exactly k" problems into two "at most k" sliding window calls. Look for it when you see "exactly k" with a counting constraint on unique elements.</div></div>
+
+    <div class="qa" id="qa9"><div class="qa-q" onclick="toggleQA('qa9')"><span><span class="qa-tag tag-interview">Interview</span>How do you solve Minimum Window Substring? (LeetCode #76)</span><span class="qa-arr">▼</span></div><div class="qa-a">Find smallest window in s that contains all characters of t. Variant C (find shortest). Build frequency map for t. Use a `need` counter = number of distinct characters in t that still need to be satisfied. Expand R: add s[R] to window map. If s[R]'s window count now equals t's count → need--. Shrink while need === 0 (window is valid): record current window size (candidate for minimum). Remove s[L] from window map. If s[L]'s count drops below t's needed count → need++. L++. When need > 0, stop shrinking, continue expanding. Time: O(n + m) where n = s.length, m = t.length. Space: O(n + m). Edge cases: if t has repeated chars (t="aa"), the window must have at least 2 a's. The frequency count handles this correctly.</div></div>
+
+    <div class="qa" id="qa10"><div class="qa-q" onclick="toggleQA('qa10')"><span><span class="qa-tag tag-core">Core</span>Why is it O(n) even though there's a nested while loop?</span><span class="qa-arr">▼</span></div><div class="qa-a">The nested while loop shrinks from L. L can only move right. L starts at 0 and can reach at most n. Across ALL iterations of the outer for loop, the total number of L movements is at most n. Not n per outer iteration — n total across all outer iterations. Think of it as a "charge": each element is added to the window once (when R reaches it) and removed from the window at most once (when L passes it). Total adds = n. Total removes ≤ n. Total operations = 2n = O(n). This amortized analysis is the standard explanation for why any sliding window with inner shrink loop is still O(n). Same reasoning applies to Two Pointer O(n) analysis. Important: this requires that L never moves backward — which is guaranteed by the structure of sliding window.</div></div>
+
+    <div class="qa" id="qa11"><div class="qa-q" onclick="toggleQA('qa11')"><span><span class="qa-tag tag-interview">Interview</span>When does a fixed window need a monotonic deque instead of a simple aggregate?</span><span class="qa-arr">▼</span></div><div class="qa-a">When you need the MAXIMUM or MINIMUM of the window — not just sum or count. Sliding Window Maximum (#239): find max of each window of size k. Naive: re-scan window each slide → O(nk). With deque: maintain a deque of indices in decreasing order of their values. When R advances: pop from back while arr[back] ≤ arr[R] (smaller values can never be the maximum while R is in the window). Push R. The front of the deque is always the index of the current window maximum. When L advances past the front index, pop front. Each element pushed and popped at most once → O(n) total. The deque is monotonic (decreasing) — front is always the max. This is the standard O(n) solution for range maximum queries with a sliding window.</div></div>
+
+    <div class="qa" id="qa12"><div class="qa-q" onclick="toggleQA('qa12')"><span><span class="qa-tag tag-trap">Trap</span>What goes wrong if you record the result inside the shrink loop for "find longest"?</span><span class="qa-arr">▼</span></div><div class="qa-a">For find-longest (Variant B), you record AFTER the shrink loop (once window is valid). If you record INSIDE the shrink loop: the window might be invalid at that point (shrink loop runs while invalid). You'd be recording invalid window sizes as candidates for the maximum. Example: find longest subarray with at most 2 distinct chars. Window = "aabbc" (3 distinct, invalid). Shrink loop runs. Inside: record R-L+1 for "aabb" size 4. But window is still invalid (3 distinct). Continue shrink: "abbc" still 3. Shrink: "bbc" = 2 distinct. Valid. Exit loop. Now if you'd recorded inside, you'd have recorded the invalid window. Correct: record AFTER the while loop exits — at that point, L has been advanced until the window is valid again.</div></div>
+
+    <div class="qa" id="qa13"><div class="qa-q" onclick="toggleQA('qa13')"><span><span class="qa-tag tag-interview">Interview</span>How do you count ALL valid subarrays, not just the longest?</span><span class="qa-arr">▼</span></div><div class="qa-a">When the window [L, R] is valid, count += R - L + 1. Why: all subarrays ending at R with left boundaries from L to R are valid. That's R - L + 1 subarrays: [L..R], [L+1..R], ..., [R..R]. When you slide R to the next position, L either stays (still valid) or moves right (shrink). In both cases, the count for the new R position includes R - L + 1 new valid subarrays. This counting trick is used in: Number of Subarrays with at most k distinct (#904), Subarray Product Less Than K (#713), and similar counting problems. Key: this works for "at most" conditions where all shorter subarrays ending at R are also valid. For "exactly k," use the subtraction trick.</div></div>
+
+    <div class="qa" id="qa14"><div class="qa-q" onclick="toggleQA('qa14')"><span><span class="qa-tag tag-vs">VS</span>Sliding Window vs Prefix Sum — which for "subarray sum = k exactly"?</span><span class="qa-arr">▼</span></div><div class="qa-a">Subarray sum = k exactly (#560): use Prefix Sum + HashMap. When sum increases to k+2 and you shrink, you might get k+1, k, or k-1 depending on what element you remove — unpredictable. Can't reliably "seek" equality by shrinking. Sliding Window for sum = k only works if all values are positive AND you can shrink predictably (positive means removing always decreases). If values can be 0 or negative → Prefix Sum + HashMap always works. When prefix[j] - prefix[i] = k, or equivalently prefix[i] = prefix[j] - k, use a HashMap: for each prefix sum, check if (prefix - k) exists in map. O(n) time and space. Sliding Window for sum ≥ k or sum ≤ k (with all positives) → O(n) time, O(1) space. When in doubt: sum constraints with equality → Prefix Sum. Sum constraints with inequality and all positives → Sliding Window.</div></div>
+
+    <div class="qa" id="qa15"><div class="qa-q" onclick="toggleQA('qa15')"><span><span class="qa-tag tag-interview">Interview</span>What's the template difference between "find longest" and "find shortest"?</span><span class="qa-arr">▼</span></div><div class="qa-a"><strong>Find longest (Variant B):</strong> Expand R (always). If window becomes INVALID: shrink L until VALID again. Record max window size AFTER shrink loop. The shrink loop runs while the window violates the condition. <strong>Find shortest (Variant C):</strong> Expand R until window becomes VALID. Once VALID: record current window size (candidate for minimum). Shrink L while STILL VALID (record each time). Stop shrinking when window becomes invalid again. The critical difference: in B, you shrink while INVALID and record AFTER. In C, you shrink while VALID and record BEFORE each shrink. This reversal is because B wants the biggest valid window (stop as soon as valid after shrinking) and C wants the smallest valid window (keep shrinking while you can). Code check: where is <code>maxLen = Math.max(...)</code> or <code>minLen = Math.min(...)</code> relative to the shrink loop? After = find longest. Inside (before shrinking) = find shortest.</div></div>
+
+  </div>
+
+  <div class="rev-card">
+    <div class="rev-title">Sliding Window — done when you can...</div>
+    <div class="rev-grid">
+      <div class="rev-item">Name 3 variants and give a LeetCode problem for each from memory</div>
+      <div class="rev-item">Explain why nested while loop is still O(n) — the amortized argument</div>
+      <div class="rev-item">Write all 3 templates from memory with correct record placement</div>
+      <div class="rev-item">Solve #3 (no repeats), #209 (min sum), #424 (char replacement) cold</div>
+      <div class="rev-item">Explain the "equality → at most K minus at most K-1" trick</div>
+      <div class="rev-item">Distinguish when to use Sliding Window vs Prefix Sum + HashMap</div>
+      <div class="rev-item">Know that record placement (inside vs after shrink) determines longest vs shortest</div>
+      <div class="rev-item"><strong>Solve 26+ of 36 problems before moving to Strings</strong></div>
+    </div>
+  </div>
+</div>
+
+<script>
+function switchTab(btn, panelId) {
+  const card = btn.closest('.problem-card');
+  card.querySelectorAll('.pc-tab').forEach(t => t.classList.remove('active'));
+  card.querySelectorAll('.pc-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+function toggleQA(id) { document.getElementById(id).classList.toggle('open'); }
+
+const PB_KEY = 'p1_p2_problems';
+function loadPB() { try { return JSON.parse(localStorage.getItem(PB_KEY)||'{}'); } catch(e) { return {}; } }
+function savePB(d) { try { localStorage.setItem(PB_KEY, JSON.stringify(d)); } catch(e) {} }
+let pbState = loadPB();
+
+function toggleProblem(item) {
+  const id = item.dataset.id;
+  pbState[id] = !pbState[id];
+  if (pbState[id]) item.classList.add('solved');
+  else item.classList.remove('solved');
+  savePB(pbState);
+  updateProgress();
+}
+function updateProgress() {
+  const all = document.querySelectorAll('#pb-list .pb-item');
+  const solvedEls = document.querySelectorAll('#pb-list .pb-item.solved');
+  const pct = all.length ? Math.round(solvedEls.length / all.length * 100) : 0;
+  document.getElementById('bp-count').textContent = solvedEls.length + ' / ' + all.length;
+  document.getElementById('bp-fill').style.width = pct + '%';
+}
+(function() {
+  document.querySelectorAll('#pb-list .pb-item').forEach(item => {
+    if (pbState[item.dataset.id]) item.classList.add('solved');
+  });
+  updateProgress();
+})();
+
+function filterProblems(filter, btn) {
+  document.querySelectorAll('.pb-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#pb-list .pb-item').forEach(item => {
+    const diff = item.dataset.diff;
+    const isSolved = item.classList.contains('solved');
+    let show = true;
+    if (filter === 'easy') show = diff === 'easy';
+    else if (filter === 'medium') show = diff === 'medium';
+    else if (filter === 'hard') show = diff === 'hard';
+    else if (filter === 'unsolved') show = !isSolved;
+    item.style.display = show ? 'flex' : 'none';
+  });
+}
+
+window.addEventListener('scroll', () => {
+  const sections = document.querySelectorAll('.section[id]');
+  const pills = document.querySelectorAll('.nav-pill');
+  let active = '';
+  sections.forEach(s => { if (s.getBoundingClientRect().top < 120) active = s.id; });
+  pills.forEach(p => p.classList.toggle('active', p.getAttribute('href') === '#' + active));
+});
+document.querySelectorAll('.nav-pill').forEach(p => {
+  p.addEventListener('click', function(e) {
+    e.preventDefault();
+    const target = document.querySelector(this.getAttribute('href'));
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
