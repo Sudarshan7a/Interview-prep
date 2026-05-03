@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phase 1 · Part 6 — Binary Search</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,600;0,700;1,400&family=Bricolage+Grotesque:wght@400;600;700;800&family=DM+Sans:wght@400;500&display=swap');
+:root{
+  --bg:#06060a;--s1:#0d0d14;--s2:#141420;--s3:#1c1c2c;--s4:#242434;
+  --b1:#343448;--b2:#505070;--b3:#707090;
+  --t1:#f0f0ff;--t2:#a0a0c8;--t3:#606080;--t4:#303048;
+  --mono:'JetBrains Mono',monospace;
+  --head:'Bricolage Grotesque',sans-serif;
+  --body:'DM Sans',sans-serif;
+  --acc:#f59e0b;--acc2:#fbbf24;--acc3:#fde68a;
+  --green:#4ade80;--red:#f87171;--blue:#60a5fa;--purple:#c084fc;--orange:#fb923c;--teal:#2dd4bf;
+  --easy:#4ade80;--medium:#facc15;--hard:#f87171;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--t1);font-family:var(--body);font-size:14px;line-height:1.7;min-height:100vh;}
+
+.top-bar{position:sticky;top:0;z-index:100;background:rgba(6,6,10,0.93);backdrop-filter:blur(12px);border-bottom:1px solid var(--s3);padding:10px 32px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.bar-left{display:flex;align-items:center;gap:16px;}
+.bar-badge{font-family:var(--mono);font-size:9px;letter-spacing:0.14em;text-transform:uppercase;color:var(--acc);background:rgba(245,158,11,0.1);padding:4px 10px;border-radius:99px;border:1px solid rgba(245,158,11,0.25);}
+.bar-title{font-family:var(--mono);font-size:11px;color:var(--t2);}
+.bar-right{display:flex;gap:6px;flex-wrap:wrap;}
+.nav-pill{font-family:var(--mono);font-size:9px;padding:4px 10px;border-radius:99px;border:1px solid var(--b1);color:var(--t3);cursor:pointer;text-decoration:none;transition:all 0.15s;background:none;}
+.nav-pill:hover,.nav-pill.active{border-color:var(--acc);color:var(--acc2);}
+
+.hero{padding:64px 48px 52px;position:relative;overflow:hidden;border-bottom:1px solid var(--s3);}
+.hero::before{content:'';position:absolute;top:-100px;left:-60px;width:500px;height:500px;background:radial-gradient(circle,rgba(245,158,11,0.07) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'BINARY SEARCH';position:absolute;bottom:-28px;right:-10px;font-family:var(--head);font-size:95px;font-weight:800;color:rgba(255,255,255,0.012);pointer-events:none;line-height:1;white-space:nowrap;}
+.h-phase{font-family:var(--mono);font-size:10px;letter-spacing:0.16em;text-transform:uppercase;color:var(--acc);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.h-phase::before{content:'';width:24px;height:2px;background:var(--acc);}
+.hero h1{font-family:var(--head);font-size:clamp(32px,6vw,68px);font-weight:800;line-height:1.0;letter-spacing:-0.03em;margin-bottom:16px;}
+.hero h1 em{font-style:normal;background:linear-gradient(135deg,var(--acc),var(--acc3));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-desc{font-size:14px;color:var(--t2);max-width:580px;line-height:1.75;margin-bottom:24px;}
+.hero-stats{display:flex;gap:24px;flex-wrap:wrap;}
+.stat{text-align:center;}
+.stat-num{font-family:var(--head);font-size:28px;font-weight:800;color:var(--acc2);}
+.stat-label{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);margin-top:2px;}
+
+.section{padding:48px;border-bottom:1px solid var(--s3);}
+.section-label{font-family:var(--mono);font-size:9px;letter-spacing:0.16em;text-transform:uppercase;color:var(--t3);margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+.section-label::after{content:'';flex:1;height:1px;background:var(--s3);}
+.section h2{font-family:var(--head);font-size:28px;font-weight:800;margin-bottom:8px;letter-spacing:-0.01em;}
+.section-sub{font-size:13px;color:var(--t2);margin-bottom:24px;max-width:600px;line-height:1.6;}
+
+.explain{font-size:14px;color:var(--t2);line-height:1.8;margin-bottom:16px;}
+.explain strong{color:var(--t1);}
+.explain code{font-family:var(--mono);font-size:12px;background:var(--s3);padding:1px 6px;border-radius:4px;color:var(--acc3);}
+
+.insight{background:linear-gradient(135deg,rgba(245,158,11,0.08),rgba(251,191,36,0.03));border:1px solid rgba(245,158,11,0.2);border-left:3px solid var(--acc);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:var(--t1);line-height:1.7;}
+.insight strong{color:var(--acc2);}
+.warn-box{background:rgba(248,113,113,0.06);border:1px solid rgba(248,113,113,0.2);border-left:3px solid var(--red);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:#fecaca;line-height:1.7;}
+.warn-box strong{color:var(--red);}
+.good-box{background:rgba(74,222,128,0.06);border:1px solid rgba(74,222,128,0.2);border-left:3px solid var(--green);border-radius:0 10px 10px 0;padding:16px 20px;margin:16px 0;font-size:13px;color:#bbf7d0;line-height:1.7;}
+.good-box strong{color:var(--green);}
+
+/* binary search visualization */
+.bs-vis{background:var(--s1);border:1px solid var(--s3);border-radius:12px;padding:20px;margin:16px 0;}
+.bs-label{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);margin-bottom:12px;}
+.bs-array{display:flex;gap:3px;margin-bottom:8px;flex-wrap:wrap;}
+.bs-cell{min-width:38px;height:38px;border:1px solid var(--b1);border-radius:5px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:600;color:var(--t2);position:relative;flex-shrink:0;}
+.bs-cell.lo{border-color:var(--green);color:var(--green);background:rgba(74,222,128,0.08);}
+.bs-cell.hi{border-color:var(--red);color:var(--red);background:rgba(248,113,113,0.08);}
+.bs-cell.mid{border-color:var(--acc);color:var(--acc);background:rgba(245,158,11,0.1);}
+.bs-cell.eliminated{background:var(--s3);color:var(--t4);border-color:var(--s4);}
+.bs-ptr{font-family:var(--mono);font-size:8px;text-transform:uppercase;margin-top:2px;}
+.bs-ptr.l{color:var(--green);}
+.bs-ptr.r{color:var(--red);}
+.bs-ptr.m{color:var(--acc);}
+.bs-step{font-size:12px;color:var(--t2);line-height:1.6;padding:8px 12px;background:var(--s2);border-radius:6px;margin-top:8px;}
+
+/* code */
+.code-wrap{background:var(--s1);border:1px solid var(--s3);border-radius:12px;overflow:hidden;margin:16px 0;}
+.code-header{background:var(--s2);padding:10px 16px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--s3);}
+.code-lang{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--acc2);}
+.code-label{font-family:var(--mono);font-size:9px;color:var(--t3);}
+.code-wrap pre{font-family:var(--mono);font-size:12px;line-height:1.85;padding:20px;color:#e0d8b0;overflow-x:auto;white-space:pre;}
+.ck{color:#f87171;}.cs{color:#86efac;}.cn{color:#a5b4fc;}.cf{color:#fde68a;}
+.cc{color:#484030;font-style:italic;}.ct{color:#7dd3fc;font-weight:600;}.co{color:#fb923c;}.cm{color:#c084fc;}
+
+/* variant cards */
+.variant-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:10px;margin:16px 0;}
+.var-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:18px;}
+.vc-tag{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;color:var(--acc2);margin-bottom:6px;}
+.vc-title{font-family:var(--head);font-size:15px;font-weight:700;margin-bottom:6px;}
+.vc-desc{font-size:12px;color:var(--t2);line-height:1.6;}
+.vc-ex{font-family:var(--mono);font-size:9px;color:var(--t3);margin-top:8px;background:var(--s2);padding:6px 10px;border-radius:4px;line-height:1.6;}
+
+/* steps */
+.steps-grid{display:grid;gap:10px;margin:16px 0;}
+.step-card{background:var(--s1);border:1px solid var(--s3);border-radius:10px;padding:18px 20px;display:flex;gap:16px;align-items:flex-start;}
+.step-n{font-family:var(--head);font-size:32px;font-weight:800;color:var(--s4);flex-shrink:0;line-height:1;}
+.step-title{font-family:var(--head);font-size:15px;font-weight:700;color:var(--t1);margin-bottom:6px;}
+.step-text{font-size:12px;color:var(--t2);line-height:1.6;}
+.step-say{background:var(--s2);border-radius:6px;padding:8px 12px;margin-top:8px;font-family:var(--mono);font-size:11px;color:var(--green);line-height:1.6;}
+.step-say::before{content:'SAY: ';color:var(--t3);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;}
+
+/* problem cards */
+.problem-card{background:var(--s1);border:1px solid var(--s3);border-radius:14px;overflow:hidden;margin-bottom:20px;}
+.pc-header{padding:20px 24px 16px;border-bottom:1px solid var(--s3);}
+.pc-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;}
+.pc-num{font-family:var(--mono);font-size:9px;letter-spacing:0.12em;text-transform:uppercase;color:var(--t3);}
+.diff-badge{font-family:var(--mono);font-size:9px;padding:3px 10px;border-radius:99px;font-weight:600;}
+.diff-easy{background:rgba(74,222,128,0.1);color:var(--easy);border:1px solid rgba(74,222,128,0.25);}
+.diff-medium{background:rgba(250,204,21,0.1);color:var(--medium);border:1px solid rgba(250,204,21,0.25);}
+.diff-hard{background:rgba(248,113,113,0.1);color:var(--hard);border:1px solid rgba(248,113,113,0.25);}
+.pc-title{font-family:var(--head);font-size:20px;font-weight:800;margin-bottom:4px;}
+.pc-lc{font-family:var(--mono);font-size:10px;color:var(--t3);}
+.pc-lc a{color:var(--acc2);text-decoration:none;}
+.pc-lc a:hover{text-decoration:underline;}
+.pc-tabs{display:flex;border-bottom:1px solid var(--s3);overflow-x:auto;}
+.pc-tab{font-family:var(--mono);font-size:10px;letter-spacing:0.08em;text-transform:uppercase;padding:10px 18px;cursor:pointer;color:var(--t3);border-bottom:2px solid transparent;transition:all 0.15s;background:none;border-top:none;border-left:none;border-right:none;white-space:nowrap;}
+.pc-tab:hover{color:var(--t2);}
+.pc-tab.active{color:var(--acc2);border-bottom-color:var(--acc);}
+.pc-body{padding:22px 24px;}
+.pc-panel{display:none;}
+.pc-panel.active{display:block;}
+
+.approach-step{display:flex;gap:12px;margin-bottom:14px;align-items:flex-start;}
+.as-num{font-family:var(--mono);font-size:11px;font-weight:700;color:var(--acc2);background:rgba(245,158,11,0.1);border-radius:50%;width:24px;height:24px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.as-text{font-size:13px;color:var(--t2);line-height:1.6;}
+.as-text strong{color:var(--t1);}
+.as-text code{font-family:var(--mono);font-size:11px;background:var(--s3);padding:1px 5px;border-radius:3px;color:var(--acc3);}
+
+.dialogue{background:var(--s2);border-radius:10px;padding:4px 0;margin:8px 0;}
+.d-line{display:flex;gap:10px;padding:8px 16px;font-size:13px;line-height:1.6;}
+.d-line:nth-child(even){background:var(--s3);}
+.d-speaker{font-family:var(--mono);font-size:9px;letter-spacing:0.1em;text-transform:uppercase;flex-shrink:0;padding-top:2px;min-width:60px;}
+.d-iv{color:var(--orange);}
+.d-you{color:var(--acc2);}
+.d-msg{color:var(--t2);}
+.d-msg strong{color:var(--t1);}
+.d-msg em{color:var(--green);font-style:normal;font-family:var(--mono);font-size:11px;}
+
+.complexity-row{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 8px;}
+.cx-badge{font-family:var(--mono);font-size:11px;padding:5px 12px;border-radius:6px;border:1px solid var(--s4);}
+.cx-time{border-color:rgba(245,158,11,0.3);color:var(--acc2);}
+.cx-space{border-color:rgba(74,222,128,0.3);color:var(--green);}
+
+.edge-list{list-style:none;}
+.edge-list li{font-size:13px;color:var(--t2);padding:6px 0;border-bottom:1px solid var(--s3);display:flex;gap:10px;}
+.edge-list li:last-child{border-bottom:none;}
+.edge-list li::before{content:'⚠';font-size:11px;margin-top:2px;flex-shrink:0;}
+
+.pb-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.pb-filter{font-family:var(--mono);font-size:10px;padding:5px 12px;border-radius:6px;border:1px solid var(--b1);color:var(--t3);cursor:pointer;background:none;transition:all 0.15s;}
+.pb-filter:hover,.pb-filter.active{background:var(--s2);border-color:var(--b2);color:var(--t1);}
+.pb-filter.easy-filter.active{border-color:var(--easy);color:var(--easy);}
+.pb-filter.med-filter.active{border-color:var(--medium);color:var(--medium);}
+.pb-filter.hard-filter.active{border-color:var(--hard);color:var(--hard);}
+.pb-list{display:grid;gap:6px;}
+.pb-item{background:var(--s1);border:1px solid var(--s3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;transition:border-color 0.15s;cursor:pointer;}
+.pb-item:hover{border-color:var(--b2);}
+.pb-cb{width:18px;height:18px;border-radius:4px;border:1.5px solid var(--b1);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;color:transparent;transition:all 0.15s;}
+.pb-item.solved .pb-cb{background:var(--green);border-color:var(--green);color:#000;}
+.pb-num{font-family:var(--mono);font-size:10px;color:var(--t3);flex-shrink:0;min-width:40px;}
+.pb-name{flex:1;font-size:13px;color:var(--t2);}
+.pb-name a{color:inherit;text-decoration:none;}
+.pb-name a:hover{color:var(--acc2);}
+.pb-item.solved .pb-name{color:var(--t4);text-decoration:line-through;}
+.pb-diff{font-family:var(--mono);font-size:9px;flex-shrink:0;}
+.pb-diff.e{color:var(--easy);}
+.pb-diff.m{color:var(--medium);}
+.pb-diff.h{color:var(--hard);}
+.pb-pattern{font-family:var(--mono);font-size:9px;color:var(--t4);flex-shrink:0;}
+@media(max-width:640px){.pb-pattern{display:none;}}
+.bank-progress{background:var(--s2);border:1px solid var(--s3);border-radius:10px;padding:16px 20px;margin-bottom:16px;}
+.bp-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.bp-label{font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--t3);}
+.bp-count{font-family:var(--head);font-size:18px;font-weight:800;color:var(--acc2);}
+.bp-track{height:5px;background:var(--s3);border-radius:99px;overflow:hidden;}
+.bp-fill{height:100%;background:linear-gradient(90deg,var(--acc),var(--orange));border-radius:99px;transition:width 0.4s ease;width:0%;}
+
+.qa-list{display:grid;gap:8px;}
+.qa{background:var(--s1);border:1px solid var(--s3);border-radius:10px;overflow:hidden;}
+.qa-q{padding:14px 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;justify-content:space-between;align-items:flex-start;gap:12px;transition:background 0.15s;}
+.qa-q:hover{background:var(--s2);}
+.qa-arr{color:var(--t3);font-size:10px;flex-shrink:0;margin-top:3px;transition:transform 0.2s;}
+.qa.open .qa-arr{transform:rotate(180deg);}
+.qa-a{display:none;padding:16px 18px;border-top:1px solid var(--s3);font-size:13px;color:var(--t2);line-height:1.8;background:var(--s2);}
+.qa.open .qa-a{display:block;}
+.qa-a strong{color:var(--t1);}
+.qa-a code{font-family:var(--mono);font-size:11px;background:var(--s3);padding:1px 5px;border-radius:3px;color:var(--acc3);}
+.qa-tag{font-family:var(--mono);font-size:8px;letter-spacing:0.1em;text-transform:uppercase;padding:2px 7px;border-radius:99px;margin-right:6px;vertical-align:middle;}
+.tag-core{background:rgba(245,158,11,0.1);color:var(--acc2);}
+.tag-interview{background:rgba(96,165,250,0.1);color:var(--blue);}
+.tag-trap{background:rgba(248,113,113,0.1);color:var(--red);}
+.tag-advanced{background:rgba(192,132,252,0.1);color:var(--purple);}
+
+.rev-card{background:linear-gradient(135deg,rgba(245,158,11,0.06),rgba(251,191,36,0.02));border:1px solid rgba(245,158,11,0.15);border-radius:14px;padding:24px;margin-top:20px;}
+.rev-title{font-family:var(--head);font-size:16px;font-weight:700;margin-bottom:14px;color:var(--acc2);}
+.rev-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+@media(max-width:580px){.rev-grid{grid-template-columns:1fr;}}
+.rev-item{font-size:12px;color:var(--t2);padding:6px 0 6px 16px;position:relative;line-height:1.5;}
+.rev-item::before{content:'→';position:absolute;left:0;color:var(--acc);font-family:var(--mono);}
+.rev-item strong{color:var(--t1);}
+
+.phase-complete{background:linear-gradient(135deg,rgba(74,222,128,0.1),rgba(45,212,191,0.05));border:1px solid rgba(74,222,128,0.25);border-radius:14px;padding:32px;margin-top:24px;text-align:center;}
+.pc-emoji{font-size:40px;margin-bottom:12px;}
+.pc-title{font-family:var(--head);font-size:24px;font-weight:800;color:var(--green);margin-bottom:8px;}
+.pc-sub{font-size:13px;color:var(--t2);line-height:1.7;max-width:500px;margin:0 auto 20px;}
+.pc-link{display:inline-flex;align-items:center;gap:8px;font-family:var(--mono);font-size:11px;padding:12px 24px;background:rgba(74,222,128,0.1);border:1px solid rgba(74,222,128,0.3);border-radius:8px;color:var(--green);text-decoration:none;transition:all 0.15s;}
+.pc-link:hover{background:rgba(74,222,128,0.2);}
+
+@media(max-width:640px){.section,.hero{padding:28px 20px;}.top-bar{padding:10px 16px;}.hero h1{font-size:32px;}.bs-array{gap:2px;}.bs-cell{min-width:32px;height:32px;font-size:11px;}}
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div class="bar-left">
+    <span class="bar-badge">Phase 1 · Part 6</span>
+    <span class="bar-title">Binary Search · Final Pattern</span>
+  </div>
+  <div class="bar-right">
+    <a class="nav-pill" href="#concept">Concept</a>
+    <a class="nav-pill" href="#variants">Variants</a>
+    <a class="nav-pill" href="#framework">Framework</a>
+    <a class="nav-pill" href="#template">Templates</a>
+    <a class="nav-pill" href="#problems">Solved</a>
+    <a class="nav-pill" href="#bank">Bank</a>
+    <a class="nav-pill" href="#qa">Q&amp;A</a>
+  </div>
+</div>
+
+<div class="hero">
+  <div class="h-phase">Phase 1 · Part 6 of 6 · Final DSA Pattern</div>
+  <h1>Binary<br><em>Search</em></h1>
+  <p class="hero-desc">Binary Search is not just "find a number in a sorted array." The real power is applying it to any monotonic decision function — any problem where you can ask "is X feasible?" and the answer changes from No to Yes (or Yes to No) at exactly one point. This converts O(n) linear scans to O(log n) on any sorted space.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">35</div><div class="stat-label">Problems</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Solved + Explained</div></div>
+    <div class="stat"><div class="stat-num">15</div><div class="stat-label">Interview Q&amp;As</div></div>
+    <div class="stat"><div class="stat-num">1wk</div><div class="stat-label">Suggested Pace</div></div>
+  </div>
+</div>
+
+<!-- CONCEPT -->
+<div class="section" id="concept">
+  <div class="section-label">Section 01</div>
+  <h2>The Core Idea — Halving the Search Space</h2>
+  <div class="section-sub">Binary search works on any sorted (or monotonic) space. Each comparison eliminates half the remaining candidates. O(log n) — 1 billion elements in 30 comparisons.</div>
+
+  <p class="explain">
+    Binary search halves the search space at each step. Start with the full range [lo, hi]. Pick the middle element. If it's the answer, done. If the answer is to the left, set hi = mid - 1. If to the right, set lo = mid + 1. Repeat until the space collapses.
+  </p>
+
+  <!-- Visual trace -->
+  <div class="bs-vis">
+    <div class="bs-label">Find target=7 in [-1, 0, 3, 5, 7, 9, 12]</div>
+    <div class="bs-array">
+      <div class="bs-cell lo"><div>-1</div><div class="bs-ptr l">lo</div></div>
+      <div class="bs-cell"><div>0</div></div>
+      <div class="bs-cell"><div>3</div></div>
+      <div class="bs-cell mid"><div>5</div><div class="bs-ptr m">mid</div></div>
+      <div class="bs-cell"><div>7</div></div>
+      <div class="bs-cell"><div>9</div></div>
+      <div class="bs-cell hi"><div>12</div><div class="bs-ptr r">hi</div></div>
+    </div>
+    <div class="bs-step">Step 1: mid=3, nums[3]=5 &lt; 7 → target is to the RIGHT → lo = mid+1 = 4</div>
+  </div>
+
+  <div class="bs-vis">
+    <div class="bs-label">Round 2: lo=4, hi=6</div>
+    <div class="bs-array">
+      <div class="bs-cell eliminated"><div>-1</div></div>
+      <div class="bs-cell eliminated"><div>0</div></div>
+      <div class="bs-cell eliminated"><div>3</div></div>
+      <div class="bs-cell eliminated"><div>5</div></div>
+      <div class="bs-cell lo mid"><div>7</div><div class="bs-ptr l">lo/mid</div></div>
+      <div class="bs-cell hi"><div>9</div><div class="bs-ptr r">hi</div></div>
+      <div class="bs-cell"><div>12</div></div>
+    </div>
+    <div class="bs-step">Step 2: mid=4, nums[4]=7 = 7 → FOUND at index 4. Eliminated 4 elements in 2 steps.</div>
+  </div>
+
+  <div class="insight">
+    <strong>The real power of Binary Search:</strong> You don't need an actual sorted array. You need a <em>monotonic decision function</em> — any function where the answer is "No, No, No, Yes, Yes, Yes" (or the reverse). Binary search finds the boundary between No and Yes in O(log n). This is why it applies to problems far beyond "search in sorted array."
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Classic Binary Search — find exact target</span></div>
+    <pre>
+<span class="ck">function</span> <span class="cf">binarySearch</span>(nums, target) {
+    <span class="ck">let</span> lo = <span class="cn">0</span>, hi = nums.length - <span class="cn">1</span>;
+
+    <span class="ck">while</span> (lo <= hi) {                          <span class="cc">// ≤ not &lt;</span>
+        <span class="ck">const</span> mid = lo + <span class="ct">Math</span>.<span class="cf">floor</span>((hi - lo) / <span class="cn">2</span>); <span class="cc">// avoids overflow</span>
+
+        <span class="ck">if</span> (nums[mid] === target) {
+            <span class="ck">return</span> mid;          <span class="cc">// exact match found</span>
+        } <span class="ck">else if</span> (nums[mid] < target) {
+            lo = mid + <span class="cn">1</span>;        <span class="cc">// target is to the right</span>
+        } <span class="ck">else</span> {
+            hi = mid - <span class="cn">1</span>;        <span class="cc">// target is to the left</span>
+        }
+    }
+
+    <span class="ck">return</span> -<span class="cn">1</span>; <span class="cc">// not found</span>
+}
+
+<span class="cc">// Why lo + (hi - lo) / 2 instead of (lo + hi) / 2:</span>
+<span class="cc">// If lo and hi are both large, lo + hi can overflow a 32-bit integer.</span>
+<span class="cc">// In JS, numbers are 64-bit floats so this rarely matters,</span>
+<span class="cc">// but the habit is important for Java/C++ interviews.</span></pre>
+  </div>
+
+  <div class="warn-box">
+    <strong>The 3 classic binary search bugs — memorize and avoid:</strong><br><br>
+    ✗ <code>lo &lt; hi</code> instead of <code>lo &lt;= hi</code> → misses the last element when lo === hi<br>
+    ✗ <code>mid = (lo + hi) / 2</code> → integer overflow (use <code>lo + Math.floor((hi-lo)/2)</code>)<br>
+    ✗ <code>lo = mid</code> or <code>hi = mid</code> without +1/-1 → infinite loop when lo === hi<br><br>
+    The template with <code>lo &lt;= hi</code>, <code>lo = mid+1</code>, <code>hi = mid-1</code> is the safest. Use it for all basic binary search. The lower/upper bound variants have different rules — covered in templates.
+  </div>
+</div>
+
+<!-- VARIANTS -->
+<div class="section" id="variants">
+  <div class="section-label">Section 02</div>
+  <h2>5 Binary Search Variants</h2>
+  <div class="section-sub">Exact search is the easy case. The real interview problems use one of these 4 other variants. Know each one's termination condition and what lo/hi represents after the loop.</div>
+
+  <div class="variant-grid">
+    <div class="var-card">
+      <div class="vc-tag">Variant 1</div>
+      <div class="vc-title">Exact Search</div>
+      <div class="vc-desc">Find if target exists. Loop while lo ≤ hi. Three-way check: equal/left/right. Return index or -1.</div>
+      <div class="vc-ex">Binary Search (#704) · Search in Rotated Array</div>
+    </div>
+    <div class="var-card">
+      <div class="vc-tag">Variant 2</div>
+      <div class="vc-title">Lower Bound (first ≥ target)</div>
+      <div class="vc-desc">Find the leftmost position where target could be inserted to keep array sorted. Loop while lo &lt; hi. Move hi = mid when condition is met. lo is the answer after the loop.</div>
+      <div class="vc-ex">First Bad Version · Search Insert Position · Lower Bound</div>
+    </div>
+    <div class="var-card">
+      <div class="vc-tag">Variant 3</div>
+      <div class="vc-title">Upper Bound (last ≤ target)</div>
+      <div class="vc-desc">Find the rightmost position. Loop while lo &lt; hi. Move lo = mid+1 when condition is met (note: mid = lo + ceil((hi-lo)/2) to avoid infinite loop).</div>
+      <div class="vc-ex">Last position of element · Find Right Boundary</div>
+    </div>
+    <div class="var-card">
+      <div class="vc-tag">Variant 4 ⭐</div>
+      <div class="vc-title">Binary Search on Answer</div>
+      <div class="vc-desc">The search space is NOT an array but a range of possible answers. Define a feasibility function: "can we achieve X?". Binary search on X. O(log(max-min) × check_cost).</div>
+      <div class="vc-ex">Koko Eating Bananas · Minimum Days to Make Bouquets · Capacity to Ship Packages</div>
+    </div>
+    <div class="var-card">
+      <div class="vc-tag">Variant 5</div>
+      <div class="vc-title">Rotated / Modified Array</div>
+      <div class="vc-desc">Array is sorted but rotated, or has one special property. Use mid to determine which half is sorted, then decide which half contains the target.</div>
+      <div class="vc-ex">Search in Rotated Sorted Array · Find Min in Rotated Array · Find Peak Element</div>
+    </div>
+  </div>
+
+  <p class="explain"><strong>Binary Search on Answer — the advanced pattern explained:</strong></p>
+
+  <p class="explain">
+    The most powerful binary search variant. Instead of searching in an array, you search in the <strong>space of possible answers</strong>. The key insight: if a solution with answer X is feasible, then any answer Y &gt; X is also feasible (or vice versa). This monotonic property means binary search applies.
+  </p>
+
+  <div class="good-box">
+    <strong>How to recognize "Binary Search on Answer":</strong><br><br>
+    ✓ Problem asks for minimum/maximum value satisfying some condition<br>
+    ✓ You can write a <code>canDo(X)</code> function that returns true/false<br>
+    ✓ The condition is monotonic: if canDo(X) is true, canDo(X+1) is also true (or false for all smaller X)<br>
+    ✓ Problem involves "minimize the maximum" or "maximize the minimum"<br><br>
+    Template: binary search on X in [lo, hi]. At each mid: if canDo(mid) → record answer, try smaller (hi = mid). Else try larger (lo = mid + 1).
+  </div>
+</div>
+
+<!-- FRAMEWORK -->
+<div class="section" id="framework">
+  <div class="section-label">Section 03</div>
+  <h2>Interview Framework</h2>
+  <div class="section-sub">The 5 questions to answer before writing any binary search code.</div>
+
+  <div class="steps-grid">
+    <div class="step-card">
+      <div class="step-n">1</div>
+      <div class="step-content">
+        <div class="step-title">What is the search space?</div>
+        <div class="step-text">Is it indices in an array? A range of values (like eating speed or ship capacity)? A range of days? Clearly defining the search space sets lo and hi. For arrays: lo=0, hi=n-1 or lo=0, hi=n. For answer space: lo=minimum_possible_answer, hi=maximum_possible_answer.</div>
+        <div class="step-say">"The search space is the range of possible eating speeds — from 1 banana per hour (minimum) to max(piles) bananas per hour (worst case: eat the largest pile in one hour). I'll binary search within this range."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">2</div>
+      <div class="step-content">
+        <div class="step-title">What is the condition (feasibility function)?</div>
+        <div class="step-text">Define exactly what makes a mid value "valid" or "feasible." For sorted array: nums[mid] === target. For Koko: canFinish(speed) = sum of ceil(pile/speed) for each pile ≤ h hours. The feasibility function is the core logic — everything else is scaffolding.</div>
+        <div class="step-say">"My feasibility function: given a speed k, can Koko finish all bananas in h hours? Check: for each pile, it takes ceil(pile/k) hours. If total hours ≤ h, feasible. This is O(n) per check."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">3</div>
+      <div class="step-content">
+        <div class="step-title">Which boundary are you finding? (exact, lower, upper)</div>
+        <div class="step-text">Exact: target exists exactly. Lower bound: first position where condition switches to true. Upper bound: last position where condition is true. This determines whether you use lo ≤ hi (exact) or lo &lt; hi with careful hi/lo updates (bounds). State this explicitly before coding.</div>
+        <div class="step-say">"I'm looking for the minimum feasible speed — the first X where canFinish(X) is true. So I'm finding the lower bound. I'll use lo &lt; hi, and when mid is feasible, I try smaller: hi = mid. When not feasible, lo = mid+1."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">4</div>
+      <div class="step-content">
+        <div class="step-title">What does lo represent after the loop?</div>
+        <div class="step-text">For lo &lt; hi template: when the loop ends, lo === hi. This single value is your answer. Understand WHY: the loop invariant maintains that the answer is always in [lo, hi]. The loop shrinks this interval until lo === hi. For the lo ≤ hi template: if loop ends without returning, return -1 (not found).</div>
+        <div class="step-say">"After the loop, lo === hi. At this point, lo is the minimum speed where canFinish is true — the invariant guarantees this. I return lo."</div>
+      </div>
+    </div>
+    <div class="step-card">
+      <div class="step-n">5</div>
+      <div class="step-content">
+        <div class="step-title">Verify: trace through a small example, state complexity</div>
+        <div class="step-text">Binary search complexity: O(log n) iterations × O(cost of feasibility check). For arrays: O(log n) total. For "binary search on answer": O(log(hi-lo) × n) if check is O(n). Always state both the log factor AND the check cost. Common mistake: stating only log n.</div>
+        <div class="step-say">"Time: O(n log m) where n is the number of piles and m is max(piles). Log m iterations of binary search, each checking all n piles. Space: O(1)."</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEMPLATES -->
+<div class="section" id="template">
+  <div class="section-label">Section 04</div>
+  <h2>The 4 Templates</h2>
+  <div class="section-sub">Learn T1 first (exact). T2 and T3 for bounds. T4 for "binary search on answer" — the interview favourite.</div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template 1 — Exact Search (three-way check)</span></div>
+    <pre>
+<span class="ck">function</span> <span class="cf">exactSearch</span>(nums, target) {
+    <span class="ck">let</span> lo = <span class="cn">0</span>, hi = nums.length - <span class="cn">1</span>;
+
+    <span class="ck">while</span> (lo <= hi) {   <span class="cc">// ≤ because lo === hi is still a valid position to check</span>
+        <span class="ck">const</span> mid = lo + <span class="ct">Math</span>.<span class="cf">floor</span>((hi - lo) / <span class="cn">2</span>);
+
+        <span class="ck">if</span>      (nums[mid] === target) <span class="ck">return</span> mid;    <span class="cc">// found</span>
+        <span class="ck">else if</span> (nums[mid] <  target) lo = mid + <span class="cn">1</span>;  <span class="cc">// target right</span>
+        <span class="ck">else</span>                          hi = mid - <span class="cn">1</span>;  <span class="cc">// target left</span>
+    }
+    <span class="ck">return</span> -<span class="cn">1</span>; <span class="cc">// not found</span>
+}</pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template 2 — Lower Bound (first position where condition is true)</span></div>
+    <pre>
+<span class="cc">// Find: smallest index where nums[i] >= target</span>
+<span class="cc">// Or: first bad version, first true in [false,false,true,true,true]</span>
+<span class="ck">function</span> <span class="cf">lowerBound</span>(nums, target) {
+    <span class="ck">let</span> lo = <span class="cn">0</span>, hi = nums.length; <span class="cc">// hi = n (not n-1) to handle "insert at end"</span>
+
+    <span class="ck">while</span> (lo < hi) {   <span class="cc">// strict &lt; — loop exits when lo === hi</span>
+        <span class="ck">const</span> mid = lo + <span class="ct">Math</span>.<span class="cf">floor</span>((hi - lo) / <span class="cn">2</span>);
+
+        <span class="ck">if</span> (nums[mid] >= target) {
+            hi = mid;    <span class="cc">// mid could be the answer — don't exclude it</span>
+        } <span class="ck">else</span> {
+            lo = mid + <span class="cn">1</span>; <span class="cc">// mid is definitely NOT the answer</span>
+        }
+    }
+
+    <span class="ck">return</span> lo; <span class="cc">// lo === hi: the first position where nums[i] >= target</span>
+}
+<span class="cc">// Invariant: answer is always in [lo, hi]</span>
+<span class="cc">// When loop ends, lo === hi is the exact answer</span></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template 3 — Upper Bound (last position where condition is true)</span></div>
+    <pre>
+<span class="cc">// Find: largest index where nums[i] <= target</span>
+<span class="ck">function</span> <span class="cf">upperBound</span>(nums, target) {
+    <span class="ck">let</span> lo = <span class="cn">0</span>, hi = nums.length - <span class="cn">1</span>;
+
+    <span class="ck">while</span> (lo < hi) {
+        <span class="cc">// CEILING division — avoids infinite loop when lo = hi - 1</span>
+        <span class="ck">const</span> mid = lo + <span class="ct">Math</span>.<span class="cf">ceil</span>((hi - lo) / <span class="cn">2</span>);
+
+        <span class="ck">if</span> (nums[mid] <= target) {
+            lo = mid;    <span class="cc">// mid could be the answer — don't exclude it</span>
+        } <span class="ck">else</span> {
+            hi = mid - <span class="cn">1</span>; <span class="cc">// mid is definitely NOT the answer</span>
+        }
+    }
+
+    <span class="ck">return</span> lo; <span class="cc">// last position where nums[i] <= target</span>
+}
+<span class="cc">// Why ceiling? When lo and hi are adjacent (lo = hi-1):</span>
+<span class="cc">// Floor: mid = lo → lo = mid = lo → infinite loop</span>
+<span class="cc">// Ceiling: mid = hi → if valid: lo = hi → loop ends</span></pre>
+  </div>
+
+  <div class="code-wrap">
+    <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Template 4 — Binary Search on Answer (Koko Eating Bananas pattern)</span></div>
+    <pre>
+<span class="ck">function</span> <span class="cf">binarySearchOnAnswer</span>(piles, h) {
+    <span class="cc">// Search space: [lo, hi] = [min_possible_answer, max_possible_answer]</span>
+    <span class="ck">let</span> lo = <span class="cn">1</span>;                     <span class="cc">// minimum speed: 1</span>
+    <span class="ck">let</span> hi = <span class="ct">Math</span>.<span class="cf">max</span>(...piles);    <span class="cc">// maximum speed: largest pile</span>
+
+    <span class="ck">while</span> (lo < hi) {
+        <span class="ck">const</span> mid = lo + <span class="ct">Math</span>.<span class="cf">floor</span>((hi - lo) / <span class="cn">2</span>);
+
+        <span class="ck">if</span> (<span class="cf">canFinish</span>(piles, mid, h)) {
+            hi = mid;     <span class="cc">// mid works — try smaller (find MINIMUM)</span>
+        } <span class="ck">else</span> {
+            lo = mid + <span class="cn">1</span>; <span class="cc">// mid too slow — need larger speed</span>
+        }
+    }
+
+    <span class="ck">return</span> lo; <span class="cc">// minimum speed that works</span>
+}
+
+<span class="ck">function</span> <span class="cf">canFinish</span>(piles, speed, h) {
+    <span class="ck">let</span> hours = <span class="cn">0</span>;
+    <span class="ck">for</span> (<span class="ck">const</span> pile <span class="ck">of</span> piles) {
+        hours += <span class="ct">Math</span>.<span class="cf">ceil</span>(pile / speed);
+    }
+    <span class="ck">return</span> hours <= h;
+}
+<span class="cc">// Pattern: find MINIMUM → when feasible: hi = mid (try smaller)</span>
+<span class="cc">// Pattern: find MAXIMUM → when feasible: lo = mid (try larger), ceiling mid</span></pre>
+  </div>
+</div>
+
+<!-- SOLVED PROBLEMS -->
+<div class="section" id="problems">
+  <div class="section-label">Section 05</div>
+  <h2>5 Fully Solved Problems</h2>
+  <div class="section-sub">Covers all 4 templates + the rotated array variant. Study all 4 tabs — especially the Binary Search on Answer problems.</div>
+
+  <!-- P1: Binary Search -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 01 of 05</span><span class="diff-badge diff-easy">Easy</span></div>
+      <div class="pc-title">Binary Search</div>
+      <div class="pc-lc">LeetCode #704 · <a href="https://leetcode.com/problems/binary-search/" target="_blank">leetcode.com/problems/binary-search</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p1-a')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-d')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-c')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p1-e')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p1-a">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Given a sorted array and target, return the index of target or -1 if not found. O(log n) required.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Template 1 (exact search):</strong> lo=0, hi=n-1. While lo ≤ hi: compute mid. Three-way check: equal (return mid), less (lo=mid+1), greater (hi=mid-1). Return -1 if loop exits.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Why lo ≤ hi:</strong> When lo equals hi, there's exactly one element left to check. We must check it. If we used lo &lt; hi, we'd exit the loop without checking this last element.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Why mid = lo + (hi-lo)/2:</strong> Prevents integer overflow. In languages with fixed-size integers (Java, C++), (lo+hi) can overflow if both are near Integer.MAX_VALUE. In JS this is safe due to 64-bit floats, but the habit matters for Java interviews.</div></div>
+      </div>
+      <div class="pc-panel" id="p1-d">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Implement binary search on a sorted array. Must be O(log n).</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Three pointers: lo at index 0, hi at the last index. At each step, compute mid as lo plus floor of (hi minus lo) divided by 2 — this form prevents overflow. Compare nums[mid] to target: if equal, return mid. If target is to the right, lo = mid+1. If to the left, hi = mid-1. Loop condition is lo ≤ hi — when they're equal, we still have one element to check.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Why lo ≤ hi and not lo &lt; hi?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">When lo equals hi, there's exactly one element left to check — we haven't determined if it's the target yet. With lo &lt; hi, we'd exit the loop and miss it. With lo ≤ hi, we check it. If it's the target, return mid. If not, lo = mid+1 (or hi = mid-1) makes lo &gt; hi and the loop exits naturally, returning -1.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What if the array has duplicates and you want the first occurrence?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Switch to the lower bound template. When nums[mid] === target, instead of returning immediately, set hi = mid — keep searching left for an earlier occurrence. When the loop ends (lo === hi), that's the first occurrence. This is Template 2.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p1-c">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Binary Search — Template 1</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">search</span>(nums, target) {
+    <span class="ck">let</span> lo = <span class="cn">0</span>, hi = nums.length - <span class="cn">1</span>;
+
+    <span class="ck">while</span> (lo <= hi) {
+        <span class="ck">const</span> mid = lo + <span class="ct">Math</span>.<span class="cf">floor</span>((hi - lo) / <span class="cn">2</span>);
+
+        <span class="ck">if</span>      (nums[mid] === target) <span class="ck">return</span> mid;
+        <span class="ck">else if</span> (nums[mid] <  target) lo = mid + <span class="cn">1</span>;
+        <span class="ck">else</span>                          hi = mid - <span class="cn">1</span>;
+    }
+
+    <span class="ck">return</span> -<span class="cn">1</span>;
+}</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p1-e">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(log n) — halve search space each step</span>
+          <span class="cx-badge cx-space">Space: O(1) — just three variables</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Empty array:</strong> lo=0, hi=-1. lo &gt; hi immediately. Return -1. Correct.</li>
+          <li><strong>Single element:</strong> lo=hi=0. Check nums[0]. If target, return 0. Else lo=1&gt;hi=0, return -1.</li>
+          <li><strong>Target not in array:</strong> Loop exits with lo &gt; hi. Return -1.</li>
+          <li><strong>Target at lo or hi:</strong> At some point mid will equal the boundary index. Found normally.</li>
+          <li><strong>All same elements:</strong> [5,5,5,5], target=5. First mid hits a 5, return that mid. If target=3: lo moves right each time since nums[mid]=5&gt;3... wait, 5 &gt; 3 so hi = mid-1. Loop exits. Return -1.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- P2: First Bad Version -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 02 of 05</span><span class="diff-badge diff-easy">Easy</span></div>
+      <div class="pc-title">First Bad Version</div>
+      <div class="pc-lc">LeetCode #278 · <a href="https://leetcode.com/problems/first-bad-version/" target="_blank">leetcode.com/problems/first-bad-version</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p2-a')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-d')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-c')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p2-e')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p2-a">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Given n versions 1..n. Some version was corrupted and everything after is also bad. Find the first bad version using a provided isBadVersion(v) API.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Pattern:</strong> [Good, Good, Good, Bad, Bad, Bad] — classic lower bound. Find the first position where isBadVersion(v) is true. Template 2.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>When mid is bad:</strong> hi = mid (mid could be the first bad — don't exclude it). When mid is good: lo = mid+1 (mid is definitely not the first bad). Loop exits when lo === hi = first bad version.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Minimize API calls:</strong> Each isBadVersion call costs. Binary search calls it O(log n) times — optimal. A linear scan would call it n times in the worst case.</div></div>
+      </div>
+      <div class="pc-panel" id="p2-d">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Find the first bad version. You have an isBadVersion API.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">The versions are [Good...Good, Bad...Bad] — the first bad splits the array into a monotone pattern. This is lower bound binary search. I want the first position where isBadVersion is true.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">lo=1, hi=n. Loop while lo &lt; hi. If isBadVersion(mid) is true — this could be the first bad — set hi=mid (don't exclude mid). If false — mid is good — set lo=mid+1. When the loop exits, lo equals hi equals the first bad version.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Why lo &lt; hi instead of lo ≤ hi here?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Because I want the loop to exit when lo === hi — that single remaining value IS the answer. If I used lo ≤ hi, I'd need a separate "return" inside the loop when mid is bad and lo===hi, or handle the exit case differently. The lo &lt; hi template exits naturally when the interval collapses to one element.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p2-c">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">First Bad Version — Lower Bound (Template 2)</span></div>
+          <pre>
+<span class="ck">var</span> solution = <span class="ck">function</span>(isBadVersion) {
+    <span class="ck">return function</span>(n) {
+        <span class="ck">let</span> lo = <span class="cn">1</span>, hi = n;
+
+        <span class="ck">while</span> (lo < hi) {   <span class="cc">// strict &lt; — exits when lo === hi (the answer)</span>
+            <span class="ck">const</span> mid = lo + <span class="ct">Math</span>.<span class="cf">floor</span>((hi - lo) / <span class="cn">2</span>);
+
+            <span class="ck">if</span> (<span class="cf">isBadVersion</span>(mid)) {
+                hi = mid;      <span class="cc">// mid could be first bad — keep it in range</span>
+            } <span class="ck">else</span> {
+                lo = mid + <span class="cn">1</span>; <span class="cc">// mid is good — first bad must be after</span>
+            }
+        }
+
+        <span class="ck">return</span> lo; <span class="cc">// lo === hi: the first bad version</span>
+    };
+};</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p2-e">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(log n) — log n API calls</span>
+          <span class="cx-badge cx-space">Space: O(1)</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Version 1 is bad:</strong> lo=1, hi=n. mid=n/2. isBadVersion(mid)=true. hi=mid. Eventually hi shrinks to 1. lo===hi===1. Return 1.</li>
+          <li><strong>Version n is the only bad:</strong> isBadVersion always false until n. lo keeps moving right. Eventually lo=n, hi=n. Loop exits. Return n.</li>
+          <li><strong>Why hi starts at n (not n-1):</strong> The first bad version could be at position n. If we start hi=n-1, we'd never check the last version. Using hi=n includes it in the search space.</li>
+          <li><strong>Invariant:</strong> The first bad version is always in [lo, hi]. lo only moves past definite goods. hi only moves to potential bads. When lo===hi, that must be the first bad.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- P3: Koko Eating Bananas -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 03 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">Koko Eating Bananas</div>
+      <div class="pc-lc">LeetCode #875 · <a href="https://leetcode.com/problems/koko-eating-bananas/" target="_blank">leetcode.com/problems/koko-eating-bananas</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p3-a')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-d')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-c')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p3-e')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p3-a">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Koko can eat k bananas per hour. She must finish all piles in h hours. Find the minimum k. Piles are arrays of banana counts.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Binary Search on Answer:</strong> The answer k is somewhere in [1, max(piles)]. For any k, we can check if it's feasible in O(n). The feasibility is monotonic: if k works, k+1 also works. Find the minimum k that works.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Feasibility check:</strong> For each pile, Koko needs ceil(pile/k) hours. Total hours = sum of ceil(pile/k). If total ≤ h → feasible. O(n) per check.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Why max(piles) as hi:</strong> At speed max(piles), Koko finishes each pile in exactly 1 hour. Total hours = number of piles ≤ h (guaranteed). So max(piles) is always feasible — it's a valid upper bound.</div></div>
+        <div class="approach-step"><div class="as-num">5</div><div class="as-text"><strong>Template 4:</strong> lo=1, hi=max(piles). When canFinish(mid): hi=mid (try smaller, find minimum). When !canFinish(mid): lo=mid+1 (need faster). Return lo after loop.</div></div>
+      </div>
+      <div class="pc-panel" id="p3-d">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Find the minimum eating speed for Koko to finish all bananas in h hours.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">The possible eating speeds range from 1 to max(piles). For any speed k, I can check feasibility in O(n): does sum of ceil(pile/k) for all piles ≤ h hours? The feasibility is monotonic — faster is always feasible if slower is. This is binary search on the answer space.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Lo=1, hi=max(piles). Binary search: if canFinish(mid) → hi=mid (mid works, look for something smaller). Else → lo=mid+1 (too slow). At the end, lo is the minimum feasible speed.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What's the time complexity?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">O(n log m) where n is number of piles and m is max(piles). Log m iterations of binary search, each running the O(n) feasibility check. Space O(1).</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Why not just try speeds from 1 to max(piles) linearly?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">That would be O(m × n) — m up to 10^9, n up to 10^4, total 10^13 operations. Way too slow. Binary search reduces to O(log m × n) — about 30 × 10^4 = 300,000 operations. That's the power of binary search on answer space.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p3-c">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Koko Eating Bananas — Binary Search on Answer</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">minEatingSpeed</span>(piles, h) {
+    <span class="ck">let</span> lo = <span class="cn">1</span>;
+    <span class="ck">let</span> hi = <span class="ct">Math</span>.<span class="cf">max</span>(...piles);
+
+    <span class="ck">while</span> (lo < hi) {
+        <span class="ck">const</span> mid = lo + <span class="ct">Math</span>.<span class="cf">floor</span>((hi - lo) / <span class="cn">2</span>);
+
+        <span class="ck">if</span> (<span class="cf">canFinish</span>(piles, mid, h)) {
+            hi = mid;      <span class="cc">// works at mid → try smaller</span>
+        } <span class="ck">else</span> {
+            lo = mid + <span class="cn">1</span>; <span class="cc">// too slow → need faster</span>
+        }
+    }
+
+    <span class="ck">return</span> lo; <span class="cc">// minimum feasible speed</span>
+}
+
+<span class="ck">function</span> <span class="cf">canFinish</span>(piles, speed, h) {
+    <span class="ck">let</span> totalHours = <span class="cn">0</span>;
+    <span class="ck">for</span> (<span class="ck">const</span> pile <span class="ck">of</span> piles) {
+        totalHours += <span class="ct">Math</span>.<span class="cf">ceil</span>(pile / speed); <span class="cc">// hours for this pile</span>
+    }
+    <span class="ck">return</span> totalHours <= h;
+}</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p3-e">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(n log m) — n = piles, m = max(piles)</span>
+          <span class="cx-badge cx-space">Space: O(1)</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Single pile [10], h=1:</strong> lo=1, hi=10. Binary search finds k=10 (must eat 10 in 1 hour). Return 10.</li>
+          <li><strong>h ≥ total bananas:</strong> Speed of 1 always works. lo never moves from 1. Return 1.</li>
+          <li><strong>h = number of piles:</strong> Must eat each pile in exactly 1 hour. Minimum speed = max(piles).</li>
+          <li><strong>Integer ceiling in JS:</strong> Math.ceil(pile/speed). Alternative: Math.floor((pile + speed - 1) / speed) — integer-only ceiling without floating point. Both work in JS.</li>
+          <li><strong>Why max(piles) is a valid upper bound:</strong> At speed max(piles), each pile takes exactly 1 hour. Total = n piles ≤ h (problem guarantees a solution exists). So hi is always a valid answer — binary search will find something ≤ hi.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- P4: Search in Rotated Sorted Array -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 04 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">Search in Rotated Sorted Array</div>
+      <div class="pc-lc">LeetCode #33 · <a href="https://leetcode.com/problems/search-in-rotated-sorted-array/" target="_blank">leetcode.com/problems/search-in-rotated-sorted-array</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p4-a')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-d')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-c')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p4-e')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p4-a">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> A sorted array was rotated at some unknown pivot. Find the target. Array has no duplicates. O(log n) required.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Key insight:</strong> Even after rotation, one of the two halves [lo, mid] or [mid, hi] is always sorted. Determine which half is sorted, then check if target is in that sorted half. If yes, search there. If no, search the other half.</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Which half is sorted:</strong> If nums[lo] ≤ nums[mid] → left half [lo, mid] is sorted (no rotation in this half). Else → right half [mid, hi] is sorted.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Is target in the sorted half:</strong> If left half is sorted and nums[lo] ≤ target &lt; nums[mid] → target must be in left half → hi = mid-1. Else → go right → lo = mid+1. Mirror logic for right half.</div></div>
+      </div>
+      <div class="pc-panel" id="p4-d">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Search in a rotated sorted array. O(log n) required.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">A rotated sorted array has one key property: at any mid point, at least one of the two halves is fully sorted. I determine which half is sorted, then check if the target falls in that sorted range. If yes, search there. If no, search the other half.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">If nums[lo] ≤ nums[mid], the left half is sorted. If target is in [nums[lo], nums[mid]) — go left. Otherwise go right. Mirror for the right half: if nums[mid] ≤ nums[hi], the right is sorted. Target in (nums[mid], nums[hi]] — go right. Otherwise go left.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What if there are duplicates?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">Duplicates break the "which half is sorted" check. If nums[lo] === nums[mid], we can't tell which side is sorted. We'd need to skip duplicates: lo++ and hi-- when nums[lo] === nums[mid] === nums[hi]. This degrades to O(n) in the worst case but remains O(log n) on average. That's LeetCode #81 — Search in Rotated Array II.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p4-c">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Search in Rotated Sorted Array — O(log n)</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">search</span>(nums, target) {
+    <span class="ck">let</span> lo = <span class="cn">0</span>, hi = nums.length - <span class="cn">1</span>;
+
+    <span class="ck">while</span> (lo <= hi) {
+        <span class="ck">const</span> mid = lo + <span class="ct">Math</span>.<span class="cf">floor</span>((hi - lo) / <span class="cn">2</span>);
+
+        <span class="ck">if</span> (nums[mid] === target) <span class="ck">return</span> mid;
+
+        <span class="cc">// Determine which half is sorted</span>
+        <span class="ck">if</span> (nums[lo] <= nums[mid]) {
+            <span class="cc">// Left half [lo, mid] is sorted</span>
+            <span class="ck">if</span> (nums[lo] <= target && target < nums[mid]) {
+                hi = mid - <span class="cn">1</span>; <span class="cc">// target in sorted left half</span>
+            } <span class="ck">else</span> {
+                lo = mid + <span class="cn">1</span>; <span class="cc">// target in right half</span>
+            }
+        } <span class="ck">else</span> {
+            <span class="cc">// Right half [mid, hi] is sorted</span>
+            <span class="ck">if</span> (nums[mid] < target && target <= nums[hi]) {
+                lo = mid + <span class="cn">1</span>; <span class="cc">// target in sorted right half</span>
+            } <span class="ck">else</span> {
+                hi = mid - <span class="cn">1</span>; <span class="cc">// target in left half</span>
+            }
+        }
+    }
+
+    <span class="ck">return</span> -<span class="cn">1</span>;
+}</pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p4-e">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(log n) — binary search guaranteed</span>
+          <span class="cx-badge cx-space">Space: O(1)</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Not rotated [1,2,3,4,5]:</strong> nums[lo]=1 ≤ nums[mid] always. Always enters left branch. Standard binary search.</li>
+          <li><strong>Rotation at index 1 [6,1,2,3,4,5]:</strong> lo=0, mid=2. nums[0]=6 &gt; nums[2]=2. Right half [2..5] is sorted. Target 1 not in (2,5]. Go left. hi=1. lo=0, hi=1, mid=0. nums[0]=6=target? No. nums[lo]=6 &gt; nums[mid]=6... wait, they're equal → left sorted. Target 1 not in [6,6). Go right. lo=1. nums[1]=1=target. Return 1.</li>
+          <li><strong>Target not present:</strong> Loop exits with lo &gt; hi. Return -1.</li>
+          <li><strong>Why nums[lo] ≤ nums[mid] (not &lt;):</strong> The ≤ handles the case when lo === mid (single element — always "sorted"). Strict &lt; would miss this case.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- P5: Find Minimum in Rotated Sorted Array -->
+  <div class="problem-card">
+    <div class="pc-header">
+      <div class="pc-row"><span class="pc-num">Problem 05 of 05</span><span class="diff-badge diff-medium">Medium</span></div>
+      <div class="pc-title">Find Minimum in Rotated Sorted Array</div>
+      <div class="pc-lc">LeetCode #153 · <a href="https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/" target="_blank">leetcode.com/problems/find-minimum-in-rotated-sorted-array</a></div>
+    </div>
+    <div class="pc-tabs">
+      <button class="pc-tab active" onclick="switchTab(this,'p5-a')">Approach</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-d')">Interview Dialogue</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-c')">Code</button>
+      <button class="pc-tab" onclick="switchTab(this,'p5-e')">Complexity + Edges</button>
+    </div>
+    <div class="pc-body">
+      <div class="pc-panel active" id="p5-a">
+        <div class="approach-step"><div class="as-num">1</div><div class="as-text"><strong>Problem:</strong> Find the minimum element in a rotated sorted array. Array has no duplicates. The minimum is the pivot point — where the array "restarts" from a smaller value.</div></div>
+        <div class="approach-step"><div class="as-num">2</div><div class="as-text"><strong>Key insight:</strong> Compare nums[mid] to nums[hi]. If nums[mid] &gt; nums[hi] → the minimum is in the right half (the rotation is in the right half). If nums[mid] ≤ nums[hi] → the minimum is in the left half (or at mid itself).</div></div>
+        <div class="approach-step"><div class="as-num">3</div><div class="as-text"><strong>Why compare to nums[hi] not nums[lo]:</strong> If not rotated, nums[lo] &lt; nums[mid] — doesn't tell us where the minimum is. But nums[mid] vs nums[hi] tells us: if nums[mid] &gt; nums[hi], the big-to-small "jump" (the pivot) must be to the right of mid.</div></div>
+        <div class="approach-step"><div class="as-num">4</div><div class="as-text"><strong>Template 2 variant:</strong> lo &lt; hi. When nums[mid] &gt; nums[hi]: lo = mid+1 (minimum is to the right). Else: hi = mid (minimum could be at mid). Return nums[lo] after the loop.</div></div>
+      </div>
+      <div class="pc-panel" id="p5-d">
+        <div class="dialogue">
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Find the minimum in a rotated sorted array.</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">The minimum is the rotation point — where the value "resets" to a smaller value. I binary search by comparing nums[mid] to nums[hi]. If nums[mid] &gt; nums[hi], the rotation point (minimum) is in the right half — lo = mid+1. Otherwise the minimum is at mid or to the left — hi = mid. Loop exits when lo === hi = index of minimum.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">Why nums[hi] and not nums[lo]?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">If we compare to nums[lo]: if nums[lo] &lt; nums[mid], the left half is sorted — but we don't know if the minimum is in the right half or left half without more info. Comparing to nums[hi] is cleaner: if nums[mid] &gt; nums[hi], there's a "drop" somewhere to the right of mid — the minimum must be there. This uniquely determines which half contains the minimum.</div></div>
+          <div class="d-line"><span class="d-speaker d-iv">Interviewer</span><div class="d-msg">What if the array isn't rotated?</div></div>
+          <div class="d-line"><span class="d-speaker d-you">You</span><div class="d-msg">nums[mid] will always be ≤ nums[hi] (since the array is sorted ascending). So hi keeps shrinking toward lo. Eventually lo === hi === 0, which is the minimum (first element). Correct for non-rotated arrays.</div></div>
+        </div>
+      </div>
+      <div class="pc-panel" id="p5-c">
+        <div class="code-wrap" style="margin:0;">
+          <div class="code-header"><span class="code-lang">JavaScript</span><span class="code-label">Find Minimum in Rotated Array — O(log n)</span></div>
+          <pre>
+<span class="ck">function</span> <span class="cf">findMin</span>(nums) {
+    <span class="ck">let</span> lo = <span class="cn">0</span>, hi = nums.length - <span class="cn">1</span>;
+
+    <span class="ck">while</span> (lo < hi) {
+        <span class="ck">const</span> mid = lo + <span class="ct">Math</span>.<span class="cf">floor</span>((hi - lo) / <span class="cn">2</span>);
+
+        <span class="ck">if</span> (nums[mid] > nums[hi]) {
+            <span class="cc">// Mid is in the "high" part — minimum is to the right</span>
+            lo = mid + <span class="cn">1</span>;
+        } <span class="ck">else</span> {
+            <span class="cc">// Mid could be the minimum or minimum is to the left</span>
+            hi = mid;
+        }
+    }
+
+    <span class="ck">return</span> nums[lo]; <span class="cc">// lo === hi: index of minimum element</span>
+}
+
+<span class="cc">// Trace [4,5,6,7,0,1,2]:</span>
+<span class="cc">// lo=0, hi=6, mid=3, nums[3]=7 > nums[6]=2 → lo=4</span>
+<span class="cc">// lo=4, hi=6, mid=5, nums[5]=1 ≤ nums[6]=2 → hi=5</span>
+<span class="cc">// lo=4, hi=5, mid=4, nums[4]=0 ≤ nums[5]=1 → hi=4</span>
+<span class="cc">// lo=4=hi: return nums[4]=0 ✓</span></pre>
+        </div>
+      </div>
+      <div class="pc-panel" id="p5-e">
+        <div class="complexity-row">
+          <span class="cx-badge cx-time">Time: O(log n)</span>
+          <span class="cx-badge cx-space">Space: O(1)</span>
+        </div>
+        <ul class="edge-list">
+          <li><strong>Not rotated [1,2,3,4,5]:</strong> nums[mid] ≤ nums[hi] always. hi shrinks to 0. Return nums[0]=1. Correct.</li>
+          <li><strong>Rotated by 1 [2,3,4,5,1]:</strong> hi=4. Minimum is at index 4. Binary search converges there.</li>
+          <li><strong>Single element [1]:</strong> lo=hi=0. Loop doesn't run. Return nums[0]=1. Correct.</li>
+          <li><strong>Two elements [2,1]:</strong> lo=0, hi=1, mid=0. nums[0]=2 &gt; nums[1]=1. lo=1. lo===hi=1. Return nums[1]=1. Correct.</li>
+          <li><strong>Two elements [1,2]:</strong> mid=0. nums[0]=1 ≤ nums[1]=2. hi=0. lo===hi=0. Return nums[0]=1. Correct.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PROBLEM BANK -->
+<div class="section" id="bank">
+  <div class="section-label">Section 06</div>
+  <h2>Problem Bank — 35 Problems</h2>
+  <div class="section-sub">Master the "Binary Search on Answer" group — those are the interview favourites at Swiggy/PhonePe/CRED level.</div>
+
+  <div class="bank-progress">
+    <div class="bp-row"><span class="bp-label">Solved</span><span class="bp-count" id="bp-count">0 / 35</span></div>
+    <div class="bp-track"><div class="bp-fill" id="bp-fill"></div></div>
+  </div>
+
+  <div class="pb-filters">
+    <button class="pb-filter active" onclick="filterProblems('all',this)">All (35)</button>
+    <button class="pb-filter easy-filter" onclick="filterProblems('easy',this)">Easy</button>
+    <button class="pb-filter med-filter" onclick="filterProblems('medium',this)">Medium</button>
+    <button class="pb-filter hard-filter" onclick="filterProblems('hard',this)">Hard</button>
+    <button class="pb-filter" onclick="filterProblems('unsolved',this)">Unsolved</button>
+  </div>
+
+  <div class="pb-list" id="pb-list">
+    <!-- Classic / Exact -->
+    <div class="pb-item" data-diff="easy" data-id="pb0" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#704</div><div class="pb-name"><a href="https://leetcode.com/problems/binary-search/" target="_blank">Binary Search</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Classic exact — Template 1</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb1" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#278</div><div class="pb-name"><a href="https://leetcode.com/problems/first-bad-version/" target="_blank">First Bad Version</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Lower bound — Template 2</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb2" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#35</div><div class="pb-name"><a href="https://leetcode.com/problems/search-insert-position/" target="_blank">Search Insert Position</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Lower bound insert</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb3" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#374</div><div class="pb-name"><a href="https://leetcode.com/problems/guess-number-higher-or-lower/" target="_blank">Guess Number Higher or Lower</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Classic binary search</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb4" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#744</div><div class="pb-name"><a href="https://leetcode.com/problems/find-smallest-letter-greater-than-target/" target="_blank">Smallest Letter Greater Than Target</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Lower bound circular</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb5" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#69</div><div class="pb-name"><a href="https://leetcode.com/problems/sqrtx/" target="_blank">Sqrt(x)</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Upper bound on integers</div></div>
+    <div class="pb-item" data-diff="easy" data-id="pb6" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#367</div><div class="pb-name"><a href="https://leetcode.com/problems/valid-perfect-square/" target="_blank">Valid Perfect Square</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Binary search on integers</div></div>
+    <!-- Find first/last occurrence -->
+    <div class="pb-item" data-diff="medium" data-id="pb7" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#34</div><div class="pb-name"><a href="https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/" target="_blank">First and Last Position in Sorted Array</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Lower bound + upper bound</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb8" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2529</div><div class="pb-name"><a href="https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/" target="_blank">Maximum Count of Positive and Negative</a></div><div class="pb-diff e">Easy</div><div class="pb-pattern">Binary search boundary</div></div>
+    <!-- Rotated Array -->
+    <div class="pb-item" data-diff="medium" data-id="pb9" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#33</div><div class="pb-name"><a href="https://leetcode.com/problems/search-in-rotated-sorted-array/" target="_blank">Search in Rotated Sorted Array</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Rotated — sorted half check</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb10" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#153</div><div class="pb-name"><a href="https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/" target="_blank">Find Minimum in Rotated Sorted Array</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Compare mid to hi</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb11" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#81</div><div class="pb-name"><a href="https://leetcode.com/problems/search-in-rotated-sorted-array-ii/" target="_blank">Search in Rotated Array II (duplicates)</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Rotated + skip duplicates</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb12" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#154</div><div class="pb-name"><a href="https://leetcode.com/problems/find-minimum-in-rotated-sorted-array-ii/" target="_blank">Find Min in Rotated Array II (duplicates)</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">Rotated min + duplicates</div></div>
+    <!-- Peak finding -->
+    <div class="pb-item" data-diff="medium" data-id="pb13" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#162</div><div class="pb-name"><a href="https://leetcode.com/problems/find-peak-element/" target="_blank">Find Peak Element</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Compare mid to mid+1</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb14" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1901</div><div class="pb-name"><a href="https://leetcode.com/problems/find-a-peak-element-ii/" target="_blank">Find Peak Element II (2D)</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Binary search on columns</div></div>
+    <!-- Binary search on answer -->
+    <div class="pb-item" data-diff="medium" data-id="pb15" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#875</div><div class="pb-name"><a href="https://leetcode.com/problems/koko-eating-bananas/" target="_blank">Koko Eating Bananas</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">BS on speed — Template 4</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb16" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1011</div><div class="pb-name"><a href="https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/" target="_blank">Capacity to Ship Packages</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">BS on capacity</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb17" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1482</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/" target="_blank">Minimum Days to Make M Bouquets</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">BS on days</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb18" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1283</div><div class="pb-name"><a href="https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/" target="_blank">Find Smallest Divisor Given Threshold</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">BS on divisor</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb19" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2064</div><div class="pb-name"><a href="https://leetcode.com/problems/minimized-maximum-of-products-distributed-to-any-store/" target="_blank">Minimized Maximum Products to Stores</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">BS on maximum</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb20" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2187</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-time-to-complete-trips/" target="_blank">Minimum Time to Complete Trips</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">BS on time</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb21" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#410</div><div class="pb-name"><a href="https://leetcode.com/problems/split-array-largest-sum/" target="_blank">Split Array Largest Sum</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">BS on max partition sum</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb22" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#774</div><div class="pb-name"><a href="https://leetcode.com/problems/minimize-max-distance-to-gas-station/" target="_blank">Minimize Max Distance to Gas Station</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">BS on distance (real-valued)</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb23" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1231</div><div class="pb-name"><a href="https://leetcode.com/problems/divide-chocolate/" target="_blank">Divide Chocolate</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">BS maximize minimum</div></div>
+    <!-- 2D Binary Search -->
+    <div class="pb-item" data-diff="medium" data-id="pb24" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#74</div><div class="pb-name"><a href="https://leetcode.com/problems/search-a-2d-matrix/" target="_blank">Search a 2D Matrix</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Treat 2D as 1D sorted</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb25" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#240</div><div class="pb-name"><a href="https://leetcode.com/problems/search-a-2d-matrix-ii/" target="_blank">Search a 2D Matrix II</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Start top-right, eliminate row/col</div></div>
+    <!-- Math / implicit BS -->
+    <div class="pb-item" data-diff="medium" data-id="pb26" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#540</div><div class="pb-name"><a href="https://leetcode.com/problems/single-element-in-a-sorted-array/" target="_blank">Single Element in Sorted Array</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Parity-based BS</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb27" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#852</div><div class="pb-name"><a href="https://leetcode.com/problems/peak-index-in-a-mountain-array/" target="_blank">Peak Index in a Mountain Array</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Binary search on slope</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb28" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#658</div><div class="pb-name"><a href="https://leetcode.com/problems/find-k-closest-elements/" target="_blank">Find K Closest Elements</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">BS on window start</div></div>
+    <div class="pb-item" data-diff="medium" data-id="pb29" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2300</div><div class="pb-name"><a href="https://leetcode.com/problems/successful-pairs-of-spells-and-potions/" target="_blank">Successful Pairs of Spells and Potions</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">Sort + lower bound</div></div>
+    <!-- Hard -->
+    <div class="pb-item" data-diff="hard" data-id="pb30" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#4</div><div class="pb-name"><a href="https://leetcode.com/problems/median-of-two-sorted-arrays/" target="_blank">Median of Two Sorted Arrays</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">BS on partition boundary</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb31" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#378</div><div class="pb-name"><a href="https://leetcode.com/problems/kth-smallest-element-in-a-sorted-matrix/" target="_blank">Kth Smallest in Sorted Matrix</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">BS on value</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb32" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#1870</div><div class="pb-name"><a href="https://leetcode.com/problems/minimum-speed-to-arrive-on-time/" target="_blank">Minimum Speed to Arrive on Time</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">BS on speed</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb33" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#719</div><div class="pb-name"><a href="https://leetcode.com/problems/find-k-th-smallest-pair-distance/" target="_blank">Find K-th Smallest Pair Distance</a></div><div class="pb-diff h">Hard</div><div class="pb-pattern">BS on distance + sliding window</div></div>
+    <div class="pb-item" data-diff="hard" data-id="pb34" onclick="toggleProblem(this)"><div class="pb-cb">✓</div><div class="pb-num">#2616</div><div class="pb-name"><a href="https://leetcode.com/problems/minimize-the-maximum-difference-of-pairs/" target="_blank">Minimize Maximum Difference of Pairs</a></div><div class="pb-diff m">Medium</div><div class="pb-pattern">BS on max diff + greedy check</div></div>
+  </div>
+</div>
+
+<!-- Q&A -->
+<div class="section" id="qa">
+  <div class="section-label">Section 07</div>
+  <h2>15 Interview Questions</h2>
+  <div class="section-sub">Answer out loud. Binary search is deceptively tricky — the off-by-one errors and template choices are what interviews test.</div>
+
+  <div class="qa-list">
+
+    <div class="qa" id="qa1"><div class="qa-q" onclick="toggleQA('qa1')"><span><span class="qa-tag tag-trap">Trap</span>What are the 3 most common binary search bugs? How do you avoid each?</span><span class="qa-arr">▼</span></div><div class="qa-a"><strong>Bug 1 — Wrong loop condition:</strong> Using lo &lt; hi when you should use lo ≤ hi (or vice versa). Fix: exact search uses lo ≤ hi (must check when lo===hi). Bound-finding uses lo &lt; hi (exit when interval collapses to one element). <strong>Bug 2 — Integer overflow in mid calculation:</strong> (lo + hi) / 2 can overflow. Fix: always use lo + Math.floor((hi - lo) / 2). <strong>Bug 3 — Infinite loop from wrong boundary update:</strong> Using lo = mid (without +1) or hi = mid (without -1) in the wrong template. Fix: for lo &lt; hi template: when moving lo, always use lo = mid+1 (mid is excluded). When moving hi, use hi = mid (mid is included as potential answer). For upper bound template: use ceiling mid to avoid infinite loop when lo = hi-1.</div></div>
+
+    <div class="qa" id="qa2"><div class="qa-q" onclick="toggleQA('qa2')"><span><span class="qa-tag tag-core">Core</span>What is "Binary Search on the Answer Space"? Give an example.</span><span class="qa-arr">▼</span></div><div class="qa-a">Instead of searching in an array, you search in the range of possible answers. The key: define a feasibility function canDo(X) that returns true/false. The condition must be monotonic: if canDo(X) is true, canDo(X+1) is also true (for minimum-finding problems). Binary search finds the exact boundary. Example — Koko Eating Bananas: "What's the minimum eating speed?" Binary search on speed from 1 to max(piles). For each speed, check if she can finish in h hours. The feasibility switches from false to true at exactly one speed — find that boundary. Time: O(log(answer_range) × check_cost). Recognition: problem asks "find minimum/maximum X such that condition holds," and you can write a O(n) or O(n log n) feasibility check.</div></div>
+
+    <div class="qa" id="qa3"><div class="qa-q" onclick="toggleQA('qa3')"><span><span class="qa-tag tag-interview">Interview</span>Explain the lower bound template. What does lo represent after the loop?</span><span class="qa-arr">▼</span></div><div class="qa-a">Lower bound: find the first (leftmost) position where a condition becomes true. Template: lo=0, hi=n. Loop while lo &lt; hi. Mid = lo + floor((hi-lo)/2). If condition(mid) is true: hi = mid (mid could be the answer, don't exclude it). If false: lo = mid+1 (mid is definitely not the answer, exclude it). After the loop, lo === hi. This single value is the leftmost position where the condition is true. Why it works: the invariant "the answer is always in [lo, hi]" is maintained throughout. lo only moves past definite non-answers. hi only moves to potential answers. When the interval collapses to one element, that must be the answer. Use for: first occurrence of value in sorted array, first bad version, search insert position, first position satisfying some monotonic condition.</div></div>
+
+    <div class="qa" id="qa4"><div class="qa-q" onclick="toggleQA('qa4')"><span><span class="qa-tag tag-trap">Trap</span>Why does the upper bound template need ceiling mid instead of floor mid?</span><span class="qa-arr">▼</span></div><div class="qa-a">Upper bound: find the LAST position where condition is true. When condition(mid) is true: lo = mid (mid could be the answer, keep it). When false: hi = mid-1. The problem: if lo = hi-1 and we use floor mid: mid = lo+floor((hi-lo)/2) = lo+0 = lo. Then lo = mid = lo — lo doesn't move. Infinite loop! Fix: use ceiling mid when moving lo = mid (not lo = mid+1). Ceiling: mid = lo + ceil((hi-lo)/2). When lo=hi-1: mid=lo+1=hi. If condition(hi)=true: lo=hi → loop exits. If false: hi=mid-1=lo → loop exits. Both cases terminate. Memorize: lower bound uses floor mid (lo = mid+1 always moves). Upper bound uses ceiling mid (lo = mid must still make progress).</div></div>
+
+    <div class="qa" id="qa5"><div class="qa-q" onclick="toggleQA('qa5')"><span><span class="qa-tag tag-interview">Interview</span>How do you search in a rotated sorted array? What's the key insight?</span><span class="qa-arr">▼</span></div><div class="qa-a">Key insight: even after rotation, at every midpoint, at least one half is fully sorted. Determine which half is sorted: if nums[lo] ≤ nums[mid], the left half [lo, mid] is sorted. Otherwise the right half [mid, hi] is sorted. Then check if target falls in the sorted half's range. If yes, binary search there (half is sorted — normal comparison works). If no, search the other half. This eliminates half the array each step → O(log n). The ≤ in nums[lo] ≤ nums[mid] handles lo===mid (single element — trivially sorted). Code: while(lo≤hi), compute mid, check sorted half, check target range, eliminate half. Return -1 if not found. For duplicates (LC#81): if nums[lo]===nums[mid], can't determine which half is sorted — increment lo (sacrifice one element, O(n) worst case).</div></div>
+
+    <div class="qa" id="qa6"><div class="qa-q" onclick="toggleQA('qa6')"><span><span class="qa-tag tag-interview">Interview</span>How do you implement Sqrt(x) using binary search?</span><span class="qa-arr">▼</span></div><div class="qa-a">Find the largest integer k where k² ≤ x. This is upper bound binary search on integers 0..x. lo=0, hi=x (or hi=min(x,46340) for 32-bit optimization since 46340²≈2^31). Loop while lo &lt; hi: ceiling mid (to avoid infinite loop). If mid*mid ≤ x: lo=mid (could be answer). Else: hi=mid-1 (too large). Return lo. Note: mid*mid can overflow 32-bit integers for large x. Use BigInt or compare mid ≤ x/mid (integer division) instead. Alternative brute force: increment from 0 until k*k &gt; x, return k-1. O(sqrt(x)) — acceptable for small inputs. Binary search is O(log x) — much better. The answer space [0, x] has x+1 elements, log₂ of which is about 15-30 bits — very fast.</div></div>
+
+    <div class="qa" id="qa7"><div class="qa-q" onclick="toggleQA('qa7')"><span><span class="qa-tag tag-core">Core</span>What's the time complexity of binary search? Why O(log n)?</span><span class="qa-arr">▼</span></div><div class="qa-a">Each iteration, the search space is halved. Starting with n elements: after 1 step → n/2. After 2 steps → n/4. After k steps → n/2^k. We stop when 1 element remains: n/2^k = 1 → k = log₂(n). So: O(log n) iterations. For 1 billion elements: log₂(10^9) ≈ 30. Binary search finds any element in 30 comparisons — regardless of n. For "Binary Search on Answer": iterations = log₂(hi - lo). If the answer space is [1, 10^9]: log₂(10^9) ≈ 30 iterations. Each feasibility check is O(n). Total: O(n log(10^9)) = O(30n). Space: O(1) — just the lo, hi, mid variables. No recursion stack (iterative). Recursive binary search has O(log n) stack space.</div></div>
+
+    <div class="qa" id="qa8"><div class="qa-q" onclick="toggleQA('qa8')"><span><span class="qa-tag tag-interview">Interview</span>How do you search in a 2D matrix where each row is sorted? (#74 and #240)</span><span class="qa-arr">▼</span></div><div class="qa-a"><strong>#74 (rows sorted, first element of each row &gt; last of previous):</strong> The entire matrix is effectively one sorted array. Treat it as such: lo=0, hi=m*n-1. mid maps to row=floor(mid/n), col=mid%n. Standard binary search. O(log(m*n)) = O(log m + log n). <strong>#240 (rows sorted, columns sorted — but no row≥row guarantee):</strong> Different approach: start at top-right corner. If matrix[row][col] == target: found. If &gt; target: move left (col--). If &lt; target: move down (row++). Each step eliminates a row or column. O(m+n). Why not binary search #240: the 2D structure doesn't reduce to a 1D sorted sequence. The top-right elimination approach exploits both sorted dimensions. Know both problems and their different approaches — interviewers use them to test if you understand WHY binary search works, not just the mechanics.</div></div>
+
+    <div class="qa" id="qa9"><div class="qa-q" onclick="toggleQA('qa9')"><span><span class="qa-tag tag-advanced">Advanced</span>How would you binary search on a real-valued (non-integer) answer?</span><span class="qa-arr">▼</span></div><div class="qa-a">When the answer is a real number (floating point), use a fixed number of iterations instead of lo &lt; hi: run 100 iterations of binary search (or until hi - lo &lt; 1e-9). Each iteration: mid = (lo + hi) / 2.0. Floating point mid has no integer division issues. If feasible: hi = mid. Else: lo = mid. After 100 iterations, lo ≈ hi with precision 2^(-100) ≈ 10^-30. For problems requiring 1e-6 precision: about 60 iterations suffice. Example: Minimize Max Distance to Gas Station — binary search on the maximum gap (real number). The feasibility check counts how many stations to add to keep all gaps ≤ mid. This pattern is cleaner than trying to handle floating point with ≤ comparisons.</div></div>
+
+    <div class="qa" id="qa10"><div class="qa-q" onclick="toggleQA('qa10')"><span><span class="qa-tag tag-interview">Interview</span>What is the "Capacity to Ship Packages" problem? Why is it binary search?</span><span class="qa-arr">▼</span></div><div class="qa-a">LeetCode #1011. Ship packages (with weights) within D days. Find minimum ship capacity. Binary search on the answer (capacity): lo = max(weights) (minimum: can ship the heaviest), hi = sum(weights) (maximum: ship everything in 1 day). Feasibility: can we ship all within D days at this capacity? Simulate: greedily pack packages into each day until adding the next would exceed capacity, then start a new day. If days needed ≤ D → feasible. Why binary search: capacity range is monotonic — if capacity C works, C+1 also works. Find the minimum C where feasible → lower bound binary search on [max, sum]. This is a classic "binary search on answer" that appears at PhonePe/Swiggy level interviews. The pattern: minimize a resource (capacity, speed, days) → binary search + greedy feasibility check.</div></div>
+
+    <div class="qa" id="qa11"><div class="qa-q" onclick="toggleQA('qa11')"><span><span class="qa-tag tag-trap">Trap</span>What goes wrong with binary search when the array has duplicates?</span><span class="qa-arr">▼</span></div><div class="qa-a">Classic binary search: if you want ANY occurrence, works fine. But for "first occurrence" or "last occurrence" of a target in an array with duplicates: must use lower/upper bound templates. For "first occurrence": when nums[mid]===target, don't return immediately — set hi=mid and continue searching left. For "last occurrence": when nums[mid]===target, set lo=mid and continue right (with ceiling mid to avoid infinite loop). For rotated sorted array with duplicates (#81): when nums[lo]===nums[mid]===nums[hi], can't determine which half is sorted. Must skip: lo++, hi--. This degrades to O(n) worst case (all same elements). Always clarify with the interviewer: "Are there duplicates? Do you want first/last/any occurrence?" This affects both the template choice and worst-case complexity.</div></div>
+
+    <div class="qa" id="qa12"><div class="qa-q" onclick="toggleQA('qa12')"><span><span class="qa-tag tag-interview">Interview</span>Explain "Find First and Last Position" (#34). Why two binary searches?</span><span class="qa-arr">▼</span></div><div class="qa-a">LeetCode #34. Find the first and last index of target in a sorted array with duplicates. Solution: two separate binary searches. First binary search: lower bound — first index where nums[i] >= target. Check if nums[lo] === target. If yes, lo is the first position. Second binary search: upper bound — last index where nums[i] <= target. Check if nums[lo] === target. If yes, lo is the last position. Return [first, last] or [-1,-1] if target not found. Why two searches: a single binary search can find any occurrence of target, but finding both boundaries requires knowing how far left and right the duplicates extend — that's two separate monotonic problems. Time: O(log n) per search, O(log n) total. Never use O(n) linear scan to extend outward from a found position — that would be O(n) total in the worst case.</div></div>
+
+    <div class="qa" id="qa13"><div class="qa-q" onclick="toggleQA('qa13')"><span><span class="qa-tag tag-advanced">Advanced</span>How does "Split Array Largest Sum" use binary search? (#410)</span><span class="qa-arr">▼</span></div><div class="qa-a">LeetCode #410 (Hard). Split array into k subarrays to minimize the maximum subarray sum. Binary search on the answer (the maximum sum): lo = max(nums) (minimum: each number must be in its own subarray), hi = sum(nums) (maximum: all in one subarray). Feasibility: given maximum allowed sum X, can we split the array into at most k subarrays each summing ≤ X? Greedy check: scan left to right, greedily add to current subarray until adding next would exceed X — start a new subarray. Count subarrays needed. If count ≤ k → feasible. Binary search finds minimum X where feasible. Time: O(n log(sum)). This problem also has a DP solution O(n²k) but binary search is O(n log(sum)) — much better for large inputs. The "minimize maximum" framing is the signal for this BS+greedy pattern.</div></div>
+
+    <div class="qa" id="qa14"><div class="qa-q" onclick="toggleQA('qa14')"><span><span class="qa-tag tag-interview">Interview</span>How do you find the peak element in an array? Why binary search works on unsorted data?</span><span class="qa-arr">▼</span></div><div class="qa-a">LeetCode #162. A peak element is one that's strictly greater than its neighbors. Binary search works even though the array isn't globally sorted because of a local monotonicity: at any mid, if nums[mid] &lt; nums[mid+1], then a peak exists to the right (nums[mid+1] might be the peak, or there's a larger element further right — but by the "left boundary = -infinity" rule, a peak must exist). If nums[mid] &gt; nums[mid+1], a peak exists to the left (or at mid). Algorithm: lo=0, hi=n-1, lo&lt;hi. Compare nums[mid] to nums[mid+1]. If nums[mid] &lt; nums[mid+1]: lo=mid+1 (go right). Else: hi=mid (go left). Return nums[lo] after loop. O(log n). The key: we don't need a global sorted property — the local slope (rising or falling) tells us which direction to search.</div></div>
+
+    <div class="qa" id="qa15"><div class="qa-q" onclick="toggleQA('qa15')"><span><span class="qa-tag tag-core">Core</span>When does binary search NOT apply? What's the pre-condition?</span><span class="qa-arr">▼</span></div><div class="qa-a">Binary search requires a <strong>monotonic property</strong>: the answer space must be divided into exactly two regions (No/Yes, or smaller/larger) with a single boundary. If the answer space is not monotonic — e.g., "find any element satisfying a condition where the condition doesn't have a clean boundary" — binary search won't work. Examples where it fails: finding the maximum of a general function (might have multiple peaks — need ternary search or different approach). Finding a specific element in an unsorted array (no monotonic structure — need linear scan or hash). "Is this number prime" (no monotonic property with respect to the number itself). Examples where it applies more broadly than expected: sorted matrices (with the right starting point), "feasibility" problems with monotonic feasibility, decision problems with monotonic answer space. The key question: "If I increase the answer by 1, does feasibility only go from false→true (or true→false)?" If yes, binary search.</div></div>
+
+  </div>
+
+  <div class="rev-card">
+    <div class="rev-title">Binary Search — done when you can...</div>
+    <div class="rev-grid">
+      <div class="rev-item">Write Template 1 (exact) cold — lo≤hi, lo=mid+1, hi=mid-1</div>
+      <div class="rev-item">Write Template 2 (lower bound) — lo&lt;hi, hi=mid when true, lo=mid+1 when false</div>
+      <div class="rev-item">Explain why Template 4 uses hi=mid when feasible (finding minimum)</div>
+      <div class="rev-item">Solve Koko Eating Bananas — identify search space, write canFinish</div>
+      <div class="rev-item">Explain the rotated array key insight (one half is always sorted)</div>
+      <div class="rev-item">State all 3 classic bugs + fix for each without thinking</div>
+      <div class="rev-item">Explain why upper bound needs ceiling mid to avoid infinite loop</div>
+      <div class="rev-item"><strong>Solve 25+ of 35 problems. Phase 1 is now COMPLETE. →</strong></div>
+    </div>
+  </div>
+
+  <!-- PHASE COMPLETE CELEBRATION -->
+  <div class="phase-complete">
+    <div class="pc-emoji">🎯</div>
+    <div class="pc-title">Phase 1 Complete!</div>
+    <div class="pc-sub">You've covered all 7 core DSA patterns: Arrays+Hashing, Two Pointers, Sliding Window, Strings, Linked Lists, Stack+Queue, and Binary Search. That's ~250 problems, 7 complete guides, and 105 interview Q&As. Time to move to Phase 2 — Advanced DSA (Graphs, DP, Heaps, Trie) + Full Stack Deepening.</div>
+    <a href="phase2.html" class="pc-link">Open Phase 2 → Advanced DSA + Full Stack</a>
+  </div>
+</div>
+
+<script>
+function switchTab(btn, panelId) {
+  const card = btn.closest('.problem-card');
+  card.querySelectorAll('.pc-tab').forEach(t => t.classList.remove('active'));
+  card.querySelectorAll('.pc-panel').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(panelId).classList.add('active');
+}
+function toggleQA(id) { document.getElementById(id).classList.toggle('open'); }
+const PB_KEY = 'p1_p6_problems';
+function loadPB() { try { return JSON.parse(localStorage.getItem(PB_KEY)||'{}'); } catch(e) { return {}; } }
+function savePB(d) { try { localStorage.setItem(PB_KEY, JSON.stringify(d)); } catch(e) {} }
+let pbState = loadPB();
+function toggleProblem(item) {
+  const id = item.dataset.id;
+  pbState[id] = !pbState[id];
+  item.classList.toggle('solved', pbState[id]);
+  savePB(pbState);
+  updateProgress();
+}
+function updateProgress() {
+  const all = document.querySelectorAll('#pb-list .pb-item');
+  const solved = document.querySelectorAll('#pb-list .pb-item.solved');
+  const pct = all.length ? Math.round(solved.length / all.length * 100) : 0;
+  document.getElementById('bp-count').textContent = solved.length + ' / ' + all.length;
+  document.getElementById('bp-fill').style.width = pct + '%';
+}
+(function() {
+  document.querySelectorAll('#pb-list .pb-item').forEach(item => {
+    if (pbState[item.dataset.id]) item.classList.add('solved');
+  });
+  updateProgress();
+})();
+function filterProblems(filter, btn) {
+  document.querySelectorAll('.pb-filter').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#pb-list .pb-item').forEach(item => {
+    const diff = item.dataset.diff;
+    const isSolved = item.classList.contains('solved');
+    let show = true;
+    if (filter === 'easy') show = diff === 'easy';
+    else if (filter === 'medium') show = diff === 'medium';
+    else if (filter === 'hard') show = diff === 'hard';
+    else if (filter === 'unsolved') show = !isSolved;
+    item.style.display = show ? 'flex' : 'none';
+  });
+}
+window.addEventListener('scroll', () => {
+  const sections = document.querySelectorAll('.section[id]');
+  const pills = document.querySelectorAll('.nav-pill');
+  let active = '';
+  sections.forEach(s => { if (s.getBoundingClientRect().top < 120) active = s.id; });
+  pills.forEach(p => p.classList.toggle('active', p.getAttribute('href') === '#' + active));
+});
+document.querySelectorAll('.nav-pill').forEach(p => {
+  p.addEventListener('click', function(e) {
+    e.preventDefault();
+    const t = document.querySelector(this.getAttribute('href'));
+    if (t) t.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  });
+});
+</script>
+</body>
+</html>
